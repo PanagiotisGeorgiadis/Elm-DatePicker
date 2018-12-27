@@ -1,0 +1,137 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif; }
+
+.half-width {
+  width: 50%; }
+
+.third-width {
+  width: 33.3%; }
+
+.quarter-width {
+  width: 25%; }
+
+.fifth-width {
+  width: 400px; }
+
+.calendar_ {
+  width: 315px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-row-gap: 10px;
+  grid-auto-rows: 32px; }
+  .calendar_ .date {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer; }
+    .calendar_ .date.today {
+      font-weight: bold; }
+    .calendar_ .date:hover .date-inner {
+      background-color: rgba(0, 0, 0, 0.4); }
+    .calendar_ .date.selected {
+      color: white; }
+      .calendar_ .date.selected .date-inner {
+        background-color: #D71A21; }
+    .calendar_ .date .date-inner {
+      width: 32px;
+      height: 32px;
+      z-index: 2;
+      border-radius: 50%; }
+    .calendar_ .date.date-range {
+      background-color: rgba(215, 26, 33, 0.2); }
+    .calendar_ .date.date-range-start:after {
+      content: "";
+      width: 80%;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      border-top-left-radius: 50%;
+      border-bottom-left-radius: 50%;
+      background-color: rgba(215, 26, 33, 0.2); }
+    .calendar_ .date.date-range-end:after {
+      content: "";
+      width: 80%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      border-top-right-radius: 50%;
+      border-bottom-right-radius: 50%;
+      background-color: rgba(215, 26, 33, 0.2); }
+
+.weekdays {
+  width: 100%;
+  padding: 6px 0;
+  display: flex; }
+  .weekdays span {
+    flex: 1;
+    text-align: center; }
+
+/* Real Deal */
+.single-calendar-view {
+  width: 315px; }
+
+.double-calendar-view {
+  width: 680px;
+  display: flex;
+  flex-wrap: wrap; }
+  .double-calendar-view .double-month-picker {
+    flex: 1; }
+  .double-calendar-view .calendar {
+    flex: 0.5; }
+  .double-calendar-view .calendar:last-child {
+    margin-left: 50px; }
+
+.single-month-picker,
+.double-month-picker {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: lightgray; }
+  .single-month-picker .month-name,
+  .double-month-picker .month-name {
+    width: 140px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 30px; }
+
+.single-month-picker .action {
+  width: 30px;
+  height: 30px;
+  font-size: 24px;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer; }
+
+.double-month-picker {
+  justify-content: space-between; }
+  .double-month-picker .next-month,
+  .double-month-picker .previous-month {
+    width: 320px;
+    height: 30px;
+    position: relative;
+    line-height: 30px;
+    text-align: center; }
+    .double-month-picker .next-month .action,
+    .double-month-picker .previous-month .action {
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      top: 0;
+      font-size: 24px;
+      line-height: 30px;
+      cursor: pointer; }
+  .double-month-picker .next-month > .action {
+    right: 12px; }
+  .double-month-picker .previous-month > .action {
+    left: 12px; }

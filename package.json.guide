@@ -1,0 +1,33 @@
+Elm Init:
+    Usage: `npm run elm-init`
+    Note: Should only be needed when initiating a project.
+
+
+Elm Install:
+    Usage: `npm run elm-install -- { package-name }`
+    Example: npm run elm-install elm/url
+
+
+Elm Make:
+    Usage: `npm run elm-make`
+    Note: This command shouldn't need any changes since we will be compiling the
+    project to a bundle.elm.js file and then using it through an Html serving file.
+
+
+Compile Sass:
+    Usage: `npm run compile-sass`
+    Note: This command is just running the nodeSass configuration that we've set.
+    If we need something changed we should update the nodeSass.js file.
+
+
+Start:
+    Usage: `npm start`
+    Note: This command wraps up the whole application runtime along with the
+    live reload custom solution. The whole app is implemented in the app.js file.
+
+
+Testing:
+    In order to test this project you should have a tests folder and elm-test installed in your local path.
+    https://package.elm-lang.org/packages/elm-explorations/test/latest/
+    If you want to write your own tests I would suggest that you first run `npm run test-init`.
+    After that you can either use `npm test` or `npm run test-watch`.

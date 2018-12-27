@@ -1,0 +1,67 @@
+.single-month-picker,
+.double-month-picker {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgray;
+
+    .month-name {
+        width: 140px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 30px;
+    }
+}
+
+
+.single-month-picker {
+
+    .action {
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+}
+
+
+.double-month-picker {
+    // width: 700px;
+    // min-width: 700px;
+    // max-width: 700px;
+    justify-content: space-between;
+
+    .next-month,
+    .previous-month {
+        width: 320px;
+        height: 30px;
+        position: relative;
+        line-height: 30px;
+        text-align: center;
+
+        .action {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: 0;
+            font-size: 24px;
+            line-height: 30px;
+            cursor: pointer;
+        }
+    }
+
+    .next-month > .action {
+        right: 12px;
+    }
+
+    .previous-month > .action {
+        left: 12px;
+    }
+
+}
