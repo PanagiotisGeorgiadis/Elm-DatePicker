@@ -26,6 +26,7 @@ type alias DateViewModel msg =
     , selectedDate : Maybe DateTime
     , dateSelectionHandler : Maybe (DateTime -> msg)
     , onHoverListener : Maybe (DateTime -> msg)
+    , disablePastDates : Bool
     }
 
 
@@ -114,6 +115,7 @@ type alias CalendarModel_ a =
     { a
         | today : DateTime
         , primaryDate : DateTime
+        , disablePastDates : Bool
 
         -- , singleDate : Maybe Calendar.Date
         -- , dateRangeStart : Maybe Calendar.Date
@@ -128,7 +130,7 @@ type alias CalendarModel_ a =
 
 
 view2 : CalendarModel_ a -> CalendarViewModel msg -> Html msg
-view2 { today, primaryDate } { dateSelectionHandler, selectedDate, onHoverListener, rangeStart, rangeEnd } =
+view2 { today, primaryDate, disablePastDates } { dateSelectionHandler, selectedDate, onHoverListener, rangeStart, rangeEnd } =
     let
         monthDates =
             DateTime.getDatesInMonth primaryDate
@@ -159,6 +161,7 @@ view2 { today, primaryDate } { dateSelectionHandler, selectedDate, onHoverListen
             , selectedDate = selectedDate_
             , dateSelectionHandler = dateSelectionHandler
             , onHoverListener = onHoverListener
+            , disablePastDates = disablePastDates
             }
 
         datesHtml =
@@ -208,7 +211,7 @@ weekdaysHtml =
 
 
 dateHtml : DateViewModel msg -> Html msg
-dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverListener } =
+dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverListener, disablePastDates } =
     let
         date_ =
             -- Calendar.dayToInt (Calendar.getDay date)
@@ -221,6 +224,9 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
             -- Maybe.mapWithDefault ((==) date) False today
             -- today == date
             DateTime.compareDates today date == EQ
+
+        isPastDate =
+            DateTime.compareDates today date == GT
 
         isSelected =
             Maybe.mapWithDefault ((==) date) False selectedDate
@@ -238,6 +244,13 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
             else
                 List.any ((==) date) dateRange
 
+        isDisabledDate =
+            if disablePastDates then
+                isPastDate
+
+            else
+                False
+
         dateClassList =
             [ ( "date", True )
             , ( "today", isToday )
@@ -245,26 +258,33 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
             , ( "date-range", isPartOfTheDateRange )
             , ( "date-range-start", isStartOfTheDateRange )
             , ( "date-range-end", isEndOfTheDateRange )
+            , ( "disabled", isDisabledDate )
             ]
     in
-    span
-        [ classList dateClassList
-        , title fullDateString
-        , case onHoverListener of
-            Just listener ->
-                onMouseOver (listener date)
+    if isDisabledDate then
+        span [ classList dateClassList, title fullDateString ]
+            [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
+            ]
 
-            Nothing ->
-                Attributes.none
-        , case dateSelectionHandler of
-            Just handler ->
-                onClick (handler date)
+    else
+        span
+            [ classList dateClassList
+            , title fullDateString
+            , case onHoverListener of
+                Just listener ->
+                    onMouseOver (listener date)
 
-            Nothing ->
-                Attributes.none
-        ]
-        [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
-        ]
+                Nothing ->
+                    Attributes.none
+            , case dateSelectionHandler of
+                Just handler ->
+                    onClick (handler date)
+
+                Nothing ->
+                    Attributes.none
+            ]
+            [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
+            ]
 
 
 emptyDateHtml : Html msg

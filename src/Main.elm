@@ -20,6 +20,7 @@ import Html exposing (..)
 import Task
 import Time
 import Url exposing (Url)
+import Utils.Setters exposing (updateDisablePastDates)
 import Utils.Time as Time
 
 
@@ -49,18 +50,18 @@ type Msg
 -- | DoubleDatePickerMsg DatePicker.Msg
 {-
    Configs to add:
-   allowPastDateSelection
-   showOnHover selection
+   1) disablePastDates :: Bool    -- DONE.
+   2) showOnHover selection
    -- Maybe if you dont showOnHover selection we disable past dates and
    -- select only future dates.
-   useKeyboardListeners ( Only on single date picker ? )
+   3) useKeyboardListeners ( Only on single date picker ? )
+   4) minDateDistance :: Int
 
    Check the contenteditable if it can be implemented as a single line
    only for the time picker.
 
    Also check the start and end dates to always be sorted even if the user
    selects the start date after the end date.
-
 
 -}
 
@@ -142,11 +143,17 @@ update msg model =
 
                 todayDateTime =
                     DateTime.fromPosix todayPosix
+
+                singleDatePickerModel =
+                    updateDisablePastDates True (SingleDatePicker.initialise todayDateTime)
+
+                doubleDatePickerModel =
+                    updateDisablePastDates True (DoubleDatePicker.initialise todayDateTime)
             in
             ( { model
                 | today = Just todayPosix
-                , singleDatePickerModel = Just (SingleDatePicker.initialise todayDateTime)
-                , doubleDatePickerModel = Just (DoubleDatePicker.initialise todayDateTime)
+                , singleDatePickerModel = Just singleDatePickerModel
+                , doubleDatePickerModel = Just doubleDatePickerModel
               }
             , Cmd.none
             )

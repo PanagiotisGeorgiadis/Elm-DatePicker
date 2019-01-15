@@ -9,6 +9,7 @@ type alias Model =
     { today : DateTime
     , primaryDate : DateTime
     , selectedDate : Maybe DateTime
+    , disablePastDates : Bool
     }
 
 
@@ -17,6 +18,7 @@ initialise today =
     { today = today
     , primaryDate = today
     , selectedDate = Nothing
+    , disablePastDates = False
     }
 
 

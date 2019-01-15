@@ -17,6 +17,7 @@ type alias Model =
     -- , shadowRangeStart : Maybe Calendar.Date
     , shadowRangeEnd : Maybe DateTime
     , dateRange : List DateTime
+    , disablePastDates : Bool
     }
 
 
@@ -46,6 +47,7 @@ initialise today =
     -- , shadowRangeStart = Nothing
     , shadowRangeEnd = Nothing
     , dateRange = []
+    , disablePastDates = False
     }
 
 
