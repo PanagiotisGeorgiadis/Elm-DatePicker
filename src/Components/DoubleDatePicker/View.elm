@@ -1,15 +1,13 @@
 module Components.DoubleDatePicker.View exposing (doubleDatePickerView, view)
 
--- import DateTime.Calendar as Calendar
-
 import Components.Calendar as Calendar
 import Components.DoubleDatePicker.Update exposing (..)
 import Components.MonthPicker as MonthPicker
 import DateTime.DateTime as DateTime
-import Html exposing (..)
+import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseLeave)
-import Models.Calendar exposing (CalendarViewModel)
+import Models.Calendar exposing (CalendarViewModel, isBetweenFutureLimit, isBetweenPastLimit)
 
 
 view : Model -> Html Msg
@@ -21,22 +19,25 @@ doubleDatePickerView : Model -> Html Msg
 doubleDatePickerView model =
     let
         nextDate =
-            -- Calendar.getNextMonth model.primaryDate
             DateTime.getNextMonth model.primaryDate
 
         nextModel =
             { model | primaryDate = nextDate }
 
-        -- ( rangeStart, rangeEnd ) =
-        --     ( List.head model.dateRange
-        --     , List.head (List.reverse model.dateRange)
-        --     )
         pickerConfig =
             { date = model.primaryDate
-            , previousButtonHandler = Just PreviousMonth
-            , nextButtonHandler = Just NextMonth
+            , previousButtonHandler =
+                if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+                    Just PreviousMonth
 
-            -- , dateSelectionHandler = Nothing
+                else
+                    Nothing
+            , nextButtonHandler =
+                if isBetweenFutureLimit model.today nextDate model.futureDatesLimit then
+                    Just NextMonth
+
+                else
+                    Nothing
             }
 
         rangeEnd =
@@ -53,10 +54,13 @@ doubleDatePickerView model =
         calendarViewModel =
             { dateSelectionHandler = Just SelectDate
             , selectedDate = Nothing
-            , onHoverListener = Just DateHoverDetected
-            , rangeStart = model.rangeStart
+            , onHoverListener =
+                if model.showOnHover then
+                    Just DateHoverDetected
 
-            -- , rangeEnd = model.rangeEnd
+                else
+                    Nothing
+            , rangeStart = model.rangeStart
             , rangeEnd = rangeEnd
             }
     in

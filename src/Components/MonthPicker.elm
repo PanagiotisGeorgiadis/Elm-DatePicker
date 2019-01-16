@@ -1,11 +1,10 @@
-module Components.MonthPicker exposing (DoubleMonthPickerConfig, SingleMonthPickerConfig, doubleMonthPickerView2, monthPickerText2, singleMonthPickerView2)
-
--- import DateTime.Calendar as Calendar
+module Components.MonthPicker exposing (DoubleMonthPickerConfig, SingleMonthPickerConfig, doubleMonthPickerView2, singleMonthPickerView2)
 
 import DateTime.DateTime as DateTime exposing (DateTime)
 import Html exposing (Html, div, i, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Models.Calendar exposing (DateLimit(..))
 import Time exposing (Month(..))
 import Utils.Time as Time
 
@@ -71,7 +70,7 @@ singleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
     in
     div [ class "single-month-picker" ]
         [ previousButtonHtml
-        , span [ class "month-name" ] [ text (monthPickerText2 date) ]
+        , span [ class "month-name" ] [ text (monthPickerText date) ]
         , nextButtonHtml
         ]
 
@@ -113,6 +112,7 @@ type alias DoubleMonthPickerConfig msg =
     , nextButtonHandler : Maybe msg
 
     -- , dateSelectionHandler : Maybe msg
+    -- , futureDatesLimit : DateLimit
     }
 
 
@@ -120,7 +120,6 @@ doubleMonthPickerView2 : DoubleMonthPickerConfig msg -> Html msg
 doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
     let
         nextMonthDate =
-            -- Calendar.getNextMonth date
             DateTime.getNextMonth date
 
         previousButtonHtml =
@@ -129,7 +128,7 @@ doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
                     i [ class "fa fa-caret-left action", onClick action ] []
 
                 Nothing ->
-                    text ""
+                    i [ class "fa fa-caret-left action disabled" ] []
 
         nextButtonHtml =
             case nextButtonHandler of
@@ -137,15 +136,15 @@ doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
                     i [ class "fa fa-caret-right action", onClick action ] []
 
                 Nothing ->
-                    text ""
+                    i [ class "fa fa-caret-right action disabled" ] []
     in
     div [ class "double-month-picker" ]
         [ div [ class "previous-month" ]
             [ previousButtonHtml
-            , span [ class "month-name" ] [ text (monthPickerText2 date) ]
+            , span [ class "month-name" ] [ text (monthPickerText date) ]
             ]
         , div [ class "next-month" ]
-            [ span [ class "month-name" ] [ text (monthPickerText2 nextMonthDate) ]
+            [ span [ class "month-name" ] [ text (monthPickerText nextMonthDate) ]
             , nextButtonHtml
             ]
         ]
@@ -166,13 +165,10 @@ doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
 --     monthToString month ++ " " ++ String.fromInt year
 
 
-monthPickerText2 : DateTime -> String
-monthPickerText2 date =
+monthPickerText : DateTime -> String
+monthPickerText date =
     let
         ( month, year ) =
-            -- ( Calendar.getMonth date
-            -- , Calendar.yearToInt (Calendar.getYear date)
-            -- )
             ( DateTime.getMonth date
             , DateTime.getYearInt date
             )

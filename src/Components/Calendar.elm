@@ -221,8 +221,6 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
             Time.toHumanReadableDate date
 
         isToday =
-            -- Maybe.mapWithDefault ((==) date) False today
-            -- today == date
             DateTime.compareDates today date == EQ
 
         isPastDate =
@@ -245,24 +243,29 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
                 List.any ((==) date) dateRange
 
         isDisabledDate =
-            if disablePastDates then
-                isPastDate
-
-            else
-                False
+            disablePastDates && isPastDate
 
         dateClassList =
             [ ( "date", True )
             , ( "today", isToday )
             , ( "selected", isSelected || isStartOfTheDateRange || isEndOfTheDateRange )
             , ( "date-range", isPartOfTheDateRange )
-            , ( "date-range-start", isStartOfTheDateRange )
-            , ( "date-range-end", isEndOfTheDateRange )
+
+            -- The "not isEndOfTheDateRange" clause is added in order to fix a css bug.
+            , ( "date-range-start", isStartOfTheDateRange && not isEndOfTheDateRange )
+
+            -- The "not isStartOfTheDateRange" clause is added in order to fix a css bug.
+            , ( "date-range-end", not isStartOfTheDateRange && isEndOfTheDateRange )
+
+            -- , ( "invalid-selection", isInvalidSelection )
             , ( "disabled", isDisabledDate )
             ]
     in
     if isDisabledDate then
-        span [ classList dateClassList, title fullDateString ]
+        span
+            [ classList dateClassList
+            , title fullDateString
+            ]
             [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
             ]
 

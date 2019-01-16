@@ -1,23 +1,21 @@
 module Components.DoubleDatePicker.Update exposing (ExternalMsg(..), Model, Msg(..), initialise, update)
 
--- import DateTime.Calendar as Calendar
-
 import DateTime.DateTime as DateTime exposing (DateTime)
+import Models.Calendar exposing (DateLimit)
 
 
 type alias Model =
     { today : DateTime
     , primaryDate : DateTime
-
-    -- , dateSelectionHandler : Maybe (Calendar.Date -> msg)
-    -- , singleDate : Maybe Calendar.Date
     , rangeStart : Maybe DateTime
     , rangeEnd : Maybe DateTime
-
-    -- , shadowRangeStart : Maybe Calendar.Date
     , shadowRangeEnd : Maybe DateTime
     , dateRange : List DateTime
+    , showOnHover : Bool
     , disablePastDates : Bool
+    , minDateRangeOffset : Int
+    , pastDatesLimit : DateLimit
+    , futureDatesLimit : DateLimit
     }
 
 
@@ -34,20 +32,29 @@ type ExternalMsg
     = None
 
 
-initialise : DateTime -> Model
-initialise today =
+type alias Config c =
+    { c
+        | showOnHover : Bool
+        , disablePastDates : Bool
+        , minDateRangeOffset : Int
+        , futureDatesLimit : DateLimit
+        , pastDatesLimit : DateLimit
+    }
+
+
+initialise : Config c -> DateTime -> Model
+initialise { showOnHover, disablePastDates, minDateRangeOffset, futureDatesLimit, pastDatesLimit } today =
     { today = today
     , primaryDate = today
-
-    -- , dateSelectionHandler : Maybe (Calendar.Date -> msg)
-    -- , singleDate : Maybe Calendar.Date
     , rangeStart = Nothing
     , rangeEnd = Nothing
-
-    -- , shadowRangeStart = Nothing
     , shadowRangeEnd = Nothing
     , dateRange = []
-    , disablePastDates = False
+    , showOnHover = showOnHover
+    , disablePastDates = disablePastDates
+    , minDateRangeOffset = minDateRangeOffset
+    , pastDatesLimit = pastDatesLimit
+    , futureDatesLimit = futureDatesLimit
     }
 
 
@@ -74,21 +81,33 @@ update model msg =
 
         SelectDate date ->
             let
-                -- _ = Debug.log "SelectDate date" date
-                -- _ = Debug.log "model" model
                 updatedModel =
                     { model | shadowRangeEnd = Nothing }
-
-                _ =
-                    Debug.log "SelectDate" updatedModel
             in
             case ( model.rangeStart, model.rangeEnd ) of
                 ( Just start, Nothing ) ->
                     -- Date Range Complete
-                    ( { updatedModel | rangeEnd = Just date }
-                    , Cmd.none
-                    , None
-                    )
+                    case DateTime.compareDates start date of
+                        LT ->
+                            -- Normal case.
+                            ( { updatedModel | rangeEnd = Just date }
+                            , Cmd.none
+                            , None
+                            )
+
+                        EQ ->
+                            -- Cancels out the selected date.
+                            ( { updatedModel | rangeStart = Nothing, rangeEnd = Nothing }
+                            , Cmd.none
+                            , None
+                            )
+
+                        GT ->
+                            -- Reversed case. ie. the user selected the rangeEnd first.
+                            ( { updatedModel | rangeStart = Just date, rangeEnd = Just start }
+                            , Cmd.none
+                            , None
+                            )
 
                 ( Nothing, Just end ) ->
                     -- Some imposible state
@@ -118,9 +137,6 @@ update model msg =
                     )
 
         DateHoverDetected date ->
-            -- let
-            --     _ = Debug.log "Date hover detected" date
-            -- in
             case ( model.rangeStart, model.rangeEnd ) of
                 ( Just start, Nothing ) ->
                     ( { model | shadowRangeEnd = Just date }

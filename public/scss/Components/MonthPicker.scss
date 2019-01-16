@@ -53,6 +53,11 @@
             font-size: 24px;
             line-height: 30px;
             cursor: pointer;
+
+            &.disabled {
+                color: rgba(0, 0, 0, 0.4);
+                cursor: default;
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import Components.SingleDatePicker.View as SingleDatePicker
 import DateTime.Calendar as Calendar
 import DateTime.DateTime as DateTime
 import Html exposing (..)
+import Models.Calendar exposing (DateLimit(..))
 import Task
 import Time
 import Url exposing (Url)
@@ -51,11 +52,19 @@ type Msg
 {-
    Configs to add:
    1) disablePastDates :: Bool    -- DONE.
-   2) showOnHover selection
-   -- Maybe if you dont showOnHover selection we disable past dates and
-   -- select only future dates.
-   3) useKeyboardListeners ( Only on single date picker ? )
-   4) minDateDistance :: Int
+   2) showOnHover selection       -- DONE.
+   3) useKeyboardListeners ( Only on single date picker ? ) -- Think about that.
+   4) minDateRangeOffset :: Int -- Think about how to implement that.
+   5) futureDatesLimit :: DateLimit -- DONE
+   6) pastDatesLimit :: DateLimit   -- DONE
+   7) showHumanReadableDateString ?
+   8) humanReadableDateFormat ?
+        Example:
+            type DateFormat = US | EU
+   9) minAvailableDate.
+   10) maxAvailableDate.
+   11) availableDateRange -- We could combine the two properties above into a date range list.
+
 
    Check the contenteditable if it can be implemented as a single line
    only for the time picker.
@@ -138,22 +147,25 @@ update msg model =
                 --
                 -- todayDate =
                 --     DateTime.date todayDateTime
-                _ =
-                    0
-
                 todayDateTime =
                     DateTime.fromPosix todayPosix
 
-                singleDatePickerModel =
-                    updateDisablePastDates True (SingleDatePicker.initialise todayDateTime)
+                singleDatePickerConfig =
+                    { disablePastDates = False
+                    }
 
-                doubleDatePickerModel =
-                    updateDisablePastDates True (DoubleDatePicker.initialise todayDateTime)
+                doubleDatePickerConfig =
+                    { showOnHover = True
+                    , disablePastDates = True
+                    , minDateRangeOffset = 3
+                    , pastDatesLimit = MonthLimit 24
+                    , futureDatesLimit = MonthLimit 24
+                    }
             in
             ( { model
                 | today = Just todayPosix
-                , singleDatePickerModel = Just singleDatePickerModel
-                , doubleDatePickerModel = Just doubleDatePickerModel
+                , singleDatePickerModel = Just (SingleDatePicker.initialise singleDatePickerConfig todayDateTime)
+                , doubleDatePickerModel = Just (DoubleDatePicker.initialise doubleDatePickerConfig todayDateTime)
               }
             , Cmd.none
             )

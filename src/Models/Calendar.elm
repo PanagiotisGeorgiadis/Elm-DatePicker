@@ -1,7 +1,6 @@
-module Models.Calendar exposing (CalendarViewModel)
+module Models.Calendar exposing (CalendarViewModel, DateLimit(..), isBetweenFutureLimit, isBetweenPastLimit)
 
-import DateTime.Calendar as Calendar
-import DateTime.DateTime exposing (DateTime)
+import DateTime.DateTime as DateTime exposing (DateTime)
 import Time
 
 
@@ -55,3 +54,49 @@ type alias CalendarViewModel msg =
     , rangeStart : Maybe DateTime
     , rangeEnd : Maybe DateTime
     }
+
+
+type DateLimit
+    = NoLimit
+    | MonthLimit Int
+    | YearLimit Int
+
+
+isBetweenFutureLimit : DateTime -> DateTime -> DateLimit -> Bool
+isBetweenFutureLimit lhs rhs dateLimit =
+    let
+        yearDiff =
+            DateTime.getYearInt rhs - DateTime.getYearInt lhs
+
+        monthDiff =
+            (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    in
+    case dateLimit of
+        NoLimit ->
+            True
+
+        MonthLimit limit ->
+            monthDiff < limit
+
+        YearLimit limit ->
+            yearDiff < limit
+
+
+isBetweenPastLimit : DateTime -> DateTime -> DateLimit -> Bool
+isBetweenPastLimit lhs rhs dateLimit =
+    let
+        yearDiff =
+            DateTime.getYearInt rhs - DateTime.getYearInt lhs
+
+        monthDiff =
+            (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    in
+    case dateLimit of
+        NoLimit ->
+            True
+
+        MonthLimit limit ->
+            monthDiff >= negate limit
+
+        YearLimit limit ->
+            yearDiff >= negate limit

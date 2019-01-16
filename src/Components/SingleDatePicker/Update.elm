@@ -13,12 +13,16 @@ type alias Model =
     }
 
 
-initialise : DateTime -> Model
-initialise today =
+type alias Config c =
+    { c | disablePastDates : Bool }
+
+
+initialise : Config c -> DateTime -> Model
+initialise { disablePastDates } today =
     { today = today
     , primaryDate = today
     , selectedDate = Nothing
-    , disablePastDates = False
+    , disablePastDates = disablePastDates
     }
 
 
