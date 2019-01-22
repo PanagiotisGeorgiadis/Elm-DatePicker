@@ -101,52 +101,16 @@ calendarView model =
         monthDates =
             DateTime.getDatesInMonth model.primaryDate
 
-        dateRange =
-            case ( model.rangeStart, rangeEnd ) of
-                ( Just start, Just end ) ->
-                    DateTime.getDateRange start end
-
-                ( Just start, _ ) ->
-                    [ start ]
-
-                _ ->
-                    []
-
-        -- dateViewModel date =
-        --     { today = model.today
-        --     , date = date
-        --     , dateRange = dateRange
-        --
-        --     -- , dateSelectionHandler = Just SelectDate
-        --     -- , onHoverListener =
-        --     --     if model.showOnHover then
-        --     --         Just DateHoverDetected
-        --     --
-        --     --     else
-        --     --         Nothing
-        --     , disablePastDates = model.disablePastDates
-        --     }
-        dateViewModel2 =
-            { today = model.today
-
-            -- , dateRange = dateRange
-            , rangeStart = model.rangeStart
-            , rangeEnd = rangeEnd
-            , showOnHover = model.showOnHover
-            , disablePastDates = model.disablePastDates
-            }
-
         datesHtml =
-            List.map (dateHtml dateViewModel2) monthDates
-
-        firstDayOfTheMonth =
-            getFirstDayOfTheMonth model.primaryDate
-
-        firstWeekdayOfTheMonth =
-            Maybe.map DateTime.getWeekday firstDayOfTheMonth
+            List.map (dateHtml model) monthDates
 
         precedingWeekdaysCount =
-            Maybe.mapWithDefault Time.precedingWeekdays 0 firstWeekdayOfTheMonth
+            case getFirstDayOfTheMonth model.primaryDate of
+                Just firstDayOfTheMonth ->
+                    Time.precedingWeekdays (DateTime.getWeekday firstDayOfTheMonth)
+
+                Nothing ->
+                    0
 
         precedingDatesHtml =
             List.repeat precedingWeekdaysCount emptyDateHtml
@@ -164,62 +128,55 @@ calendarView model =
         ]
 
 
-type alias DateViewModel2 =
-    { today : DateTime
-
-    -- , date : DateTime
-    -- , dateRange : List DateTime
-    , rangeStart : Maybe DateTime
-    , rangeEnd : Maybe DateTime
-
-    -- , selectedDate : Maybe DateTime
-    -- , dateSelectionHandler : Maybe (DateTime -> msg)
-    -- , onHoverListener : Maybe (DateTime -> msg)
-    -- Change that into isDisabled and let the parent decide that. ?
-    , showOnHover : Bool
-    , disablePastDates : Bool
-    }
-
-
-dateHtml : DateViewModel2 -> DateTime -> Html Msg
-dateHtml { today, rangeStart, rangeEnd, showOnHover, disablePastDates } date =
+dateHtml : Model -> DateTime -> Html Msg
+dateHtml model date =
     let
-        dateRange =
-            case ( rangeStart, rangeEnd ) of
-                ( Just start, Just end ) ->
-                    DateTime.getDateRange start end
+        rangeEnd =
+            case model.shadowRangeEnd of
+                Just end ->
+                    Just end
 
-                ( Just start, _ ) ->
-                    [ start ]
+                Nothing ->
+                    model.rangeEnd
+
+        ( visualRangeStart, visualRangeEnd ) =
+            case ( model.rangeStart, rangeEnd ) of
+                ( Just start, Just end ) ->
+                    case DateTime.compareDates start end of
+                        GT ->
+                            ( Just end, Just start )
+
+                        _ ->
+                            ( Just start, Just end )
 
                 _ ->
-                    []
+                    ( model.rangeStart, rangeEnd )
 
         fullDateString =
             Time.toHumanReadableDate date
 
         isToday =
-            DateTime.compareDates today date == EQ
-
-        isPastDate =
-            DateTime.compareDates today date == GT
+            DateTime.compareDates model.today date == EQ
 
         isStartOfTheDateRange =
-            Maybe.mapWithDefault ((==) date) False rangeStart
+            Maybe.mapWithDefault ((==) date) False visualRangeStart
 
         isEndOfTheDateRange =
-            Maybe.mapWithDefault ((==) date) False rangeEnd
+            Maybe.mapWithDefault ((==) date) False visualRangeEnd
 
         isPartOfTheDateRange =
-            case ( rangeStart, rangeEnd ) of
+            case ( visualRangeStart, visualRangeEnd ) of
                 ( Just start, Just end ) ->
                     (DateTime.compareDates start date == LT) && (DateTime.compareDates end date == GT)
 
                 _ ->
                     False
 
+        isPastDate =
+            DateTime.compareDates model.today date == GT
+
         isDisabledDate =
-            disablePastDates && isPastDate
+            model.disablePastDates && isPastDate
 
         -- isInvalidSelection =
         --     case selectedDate of
@@ -238,8 +195,8 @@ dateHtml { today, rangeStart, rangeEnd, showOnHover, disablePastDates } date =
             , ( "selected", isStartOfTheDateRange || isEndOfTheDateRange )
             , ( "date-range", isPartOfTheDateRange )
 
-            -- The "not isEndOfTheDateRange" clause is added in order to fix a css bug.
-            , ( "date-range-start", isStartOfTheDateRange && not isEndOfTheDateRange && rangeEnd /= Nothing )
+            -- The "not isEndOfTheDateRange && visualRangeEnd /= Nothing" clause is added in order to fix a css bug.
+            , ( "date-range-start", isStartOfTheDateRange && not isEndOfTheDateRange && visualRangeEnd /= Nothing )
 
             -- The "not isStartOfTheDateRange" clause is added in order to fix a css bug.
             , ( "date-range-end", not isStartOfTheDateRange && isEndOfTheDateRange )
@@ -260,7 +217,7 @@ dateHtml { today, rangeStart, rangeEnd, showOnHover, disablePastDates } date =
         span
             [ classList dateClassList
             , title fullDateString
-            , if showOnHover then
+            , if model.showOnHover then
                 onMouseOver (DateHoverDetected date)
 
               else
