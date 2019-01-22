@@ -1,4 +1,14 @@
-module Utils.Time exposing (monthToString, monthToStringCondensed, precedingWeekdays, timeToString, toHumanReadableDate, toHumanReadableTime, weekdayToString, weekdayToStringCondensed, zeroTime)
+module Utils.Time exposing
+    ( monthToString
+    , monthToStringCondensed
+    , precedingWeekdays
+    , timeToString
+    , toHumanReadableDate
+    , toHumanReadableTime
+    , weekdayToString
+    , weekdayToStringCondensed
+    , zeroTime
+    )
 
 -- import DateTime.Calendar as Calendar
 

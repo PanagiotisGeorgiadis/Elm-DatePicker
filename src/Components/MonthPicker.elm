@@ -58,7 +58,7 @@ singleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
                     i [ class "fa fa-caret-left action", onClick action ] []
 
                 Nothing ->
-                    text ""
+                    i [ class "fa fa-caret-left action disabled" ] []
 
         nextButtonHtml =
             case nextButtonHandler of
@@ -66,7 +66,7 @@ singleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
                     i [ class "fa fa-caret-right action", onClick action ] []
 
                 Nothing ->
-                    text ""
+                    i [ class "fa fa-caret-right action disabled" ] []
     in
     div [ class "single-month-picker" ]
         [ previousButtonHtml

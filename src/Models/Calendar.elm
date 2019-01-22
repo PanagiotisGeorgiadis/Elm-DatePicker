@@ -1,7 +1,6 @@
 module Models.Calendar exposing (CalendarViewModel, DateLimit(..), isBetweenFutureLimit, isBetweenPastLimit)
 
 import DateTime.DateTime as DateTime exposing (DateTime)
-import Time
 
 
 

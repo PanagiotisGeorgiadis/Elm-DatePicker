@@ -117,6 +117,8 @@ type alias CalendarModel_ a =
         , primaryDate : DateTime
         , disablePastDates : Bool
 
+        --
+        -- , minDateRangeOffset : Int
         -- , singleDate : Maybe Calendar.Date
         -- , dateRangeStart : Maybe Calendar.Date
         -- , dateRangeEnd : Maybe Calendar.Date
@@ -245,6 +247,17 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
         isDisabledDate =
             disablePastDates && isPastDate
 
+        -- isInvalidSelection =
+        --     case selectedDate of
+        --         Just selectedDate_ ->
+        --             let
+        --                 dayDiff =
+        --                     abs (DateTime.getDayDiff selectedDate_ date)
+        --             in
+        --             dayDiff < minDateRangeOffset
+        --
+        --         Nothing ->
+        --             False
         dateClassList =
             [ ( "date", True )
             , ( "today", isToday )

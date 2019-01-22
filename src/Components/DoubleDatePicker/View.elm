@@ -1,5 +1,7 @@
 module Components.DoubleDatePicker.View exposing (doubleDatePickerView, view)
 
+-- import Components.Calendar2 as Calendar2
+
 import Components.Calendar as Calendar
 import Components.DoubleDatePicker.Update exposing (..)
 import Components.MonthPicker as MonthPicker
@@ -62,6 +64,8 @@ doubleDatePickerView model =
                     Nothing
             , rangeStart = model.rangeStart
             , rangeEnd = rangeEnd
+
+            -- , minDateRangeOffset = model.minDateRangeOffset
             }
     in
     div
