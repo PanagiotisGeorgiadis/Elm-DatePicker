@@ -78,10 +78,7 @@ calendarView model =
         datesHtml =
             List.map (dateHtml model) monthDates
 
-        -- firstWeekdayOfTheMonth =
-        --     Maybe.map DateTime.getWeekday (getFirstDayOfTheMonth model.primaryDate)
         precedingWeekdaysCount =
-            -- Maybe.mapWithDefault Time.precedingWeekdays 0 firstWeekdayOfTheMonth
             case getFirstDayOfTheMonth model.primaryDate of
                 Just firstDayOfTheMonth ->
                     Time.precedingWeekdays (DateTime.getWeekday firstDayOfTheMonth)
@@ -135,20 +132,19 @@ getFirstDayOfTheMonth date =
 dateHtml : Model -> DateTime -> Html Msg
 dateHtml { today, selectedDate, disablePastDates } date =
     let
-        date_ =
-            DateTime.getDayInt date
-
         fullDateString =
             Time.toHumanReadableDate date
 
         isToday =
-            DateTime.compareDates today date == EQ
+            -- DateTime.compareDates today date == EQ
+            areDatesEqual today date
 
         isPastDate =
             DateTime.compareDates today date == GT
 
         isSelected =
-            Maybe.mapWithDefault ((==) date) False selectedDate
+            -- Maybe.mapWithDefault ((==) date) False selectedDate
+            Maybe.mapWithDefault (areDatesEqual date) False selectedDate
 
         -- isStartOfTheDateRange =
         --     Maybe.mapWithDefault ((==) date) False (List.head dateRange)
@@ -197,7 +193,7 @@ dateHtml { today, selectedDate, disablePastDates } date =
             [ classList dateClassList
             , title fullDateString
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
             ]
 
     else
@@ -206,8 +202,13 @@ dateHtml { today, selectedDate, disablePastDates } date =
             , title fullDateString
             , onClick (SelectDate date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt date_) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
             ]
+
+
+areDatesEqual : DateTime -> DateTime -> Bool
+areDatesEqual lhs rhs =
+    DateTime.compareDates lhs rhs == EQ
 
 
 {-| Extract to another file as a common view fragment

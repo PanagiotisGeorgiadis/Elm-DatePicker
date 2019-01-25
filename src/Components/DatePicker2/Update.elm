@@ -1,4 +1,11 @@
-module Components.DatePicker2.Update exposing (DatePickerConfig, Model, Msg(..), ViewType(..), initialise, update)
+module Components.DatePicker2.Update exposing
+    ( DatePickerConfig
+    , Model
+    , Msg(..)
+    , ViewType(..)
+    , initialise
+    , update
+    )
 
 import DateTime.DateTime as DateTime exposing (DateTime)
 import Models.Calendar exposing (DateLimit)
@@ -12,7 +19,6 @@ type alias Model =
     , pastDatesLimit : DateLimit
     , futureDatesLimit : DateLimit
     , selectedDate : Maybe DateTime
-    , dateSelectionHandler : Maybe (DateTime -> Msg)
     }
 
 
@@ -44,7 +50,6 @@ initialise { today, viewType, primaryDate, pastDatesLimit, futureDatesLimit, dis
     , pastDatesLimit = pastDatesLimit
     , futureDatesLimit = futureDatesLimit
     , disablePastDates = disablePastDates
-    , dateSelectionHandler = Just SelectDate
     }
 
 
@@ -57,40 +62,31 @@ type Msg
     | SelectDate DateTime
 
 
-type ExternalMsg
-    = None
-
-
-update : Msg -> Model -> ( Model, Cmd Msg, ExternalMsg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
             ( model
             , Cmd.none
-            , None
             )
 
         PreviousMonth ->
             ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
             , Cmd.none
-            , None
             )
 
         NextMonth ->
             ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
             , Cmd.none
-            , None
             )
 
         SelectDate date ->
             if model.selectedDate == Just date then
                 ( { model | selectedDate = Nothing }
                 , Cmd.none
-                , None
                 )
 
             else
                 ( { model | selectedDate = Just date }
                 , Cmd.none
-                , None
                 )
