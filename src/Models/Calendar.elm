@@ -1,4 +1,11 @@
-module Models.Calendar exposing (CalendarViewModel, DateLimit(..), isBetweenFutureLimit, isBetweenPastLimit)
+module Models.Calendar exposing
+    ( CalendarViewModel
+    , DateLimit(..)
+    , decrementDays
+    , incrementDays
+    , isBetweenFutureLimit
+    , isBetweenPastLimit
+    )
 
 import DateTime.DateTime as DateTime exposing (DateTime)
 
@@ -61,41 +68,69 @@ type DateLimit
     | YearLimit Int
 
 
+getYearDiff : DateTime -> DateTime -> Int
+getYearDiff lhs rhs =
+    DateTime.getYearInt rhs - DateTime.getYearInt lhs
+
+
+getMonthDiff : DateTime -> DateTime -> Int
+getMonthDiff lhs rhs =
+    (getYearDiff lhs rhs * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+
+
 isBetweenFutureLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenFutureLimit lhs rhs dateLimit =
-    let
-        yearDiff =
-            DateTime.getYearInt rhs - DateTime.getYearInt lhs
-
-        monthDiff =
-            (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
-    in
+    -- let
+    --     yearDiff =
+    --         DateTime.getYearInt rhs - DateTime.getYearInt lhs
+    --
+    --     monthDiff =
+    --         (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    -- in
     case dateLimit of
         NoLimit ->
             True
 
         MonthLimit limit ->
-            monthDiff < limit
+            getMonthDiff lhs rhs < limit
 
         YearLimit limit ->
-            yearDiff < limit
+            getYearDiff lhs rhs < limit
 
 
 isBetweenPastLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenPastLimit lhs rhs dateLimit =
-    let
-        yearDiff =
-            DateTime.getYearInt rhs - DateTime.getYearInt lhs
-
-        monthDiff =
-            (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
-    in
+    -- let
+    --     yearDiff =
+    --         DateTime.getYearInt rhs - DateTime.getYearInt lhs
+    --
+    --     monthDiff =
+    --         (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    -- in
     case dateLimit of
         NoLimit ->
             True
 
         MonthLimit limit ->
-            monthDiff >= negate limit
+            getMonthDiff lhs rhs >= negate limit
 
         YearLimit limit ->
-            yearDiff >= negate limit
+            getYearDiff lhs rhs >= negate limit
+
+
+incrementDays : Int -> DateTime -> DateTime
+incrementDays days date =
+    if days > 0 then
+        incrementDays (days - 1) (DateTime.getNextDay date)
+
+    else
+        date
+
+
+decrementDays : Int -> DateTime -> DateTime
+decrementDays days date =
+    if days > 0 then
+        decrementDays (days - 1) (DateTime.getPreviousDay date)
+
+    else
+        date

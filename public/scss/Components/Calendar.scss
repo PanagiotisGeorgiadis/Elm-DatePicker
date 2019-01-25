@@ -41,6 +41,16 @@ $primaryColor-Hex: #D71A21;
             }
         }
 
+        &.invalid {
+            color: rgba(0, 0, 0, 0.2);
+            cursor: not-allowed;
+            &:hover {
+                .date-inner {
+                    background-color: transparent;
+                }
+            }
+        }
+
         &.disabled {
             color: rgba(0, 0, 0, 0.2);
             cursor: default;
