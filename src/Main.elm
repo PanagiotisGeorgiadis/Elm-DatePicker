@@ -739,7 +739,7 @@ update msg model =
                             DateRangePicker123.update subMsg datePickerModel
                     in
                     ( { model | doubleConstrainedDateRangePicker123 = Just subModel }
-                    , Cmd.none
+                    , Cmd.map DoubleDateRangeMsg123_C subCmd
                     )
 
                 Nothing ->

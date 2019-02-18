@@ -297,30 +297,6 @@ initialiseConstrainedCalendar2 { today, viewType } constraints =
         }
 
 
-
--- {-| I think that it doesn't work and adds overhead. -}
--- type alias ConstrainedProps =
---     { today : DateTime
---     , viewType : ViewType
---     , disablePastDates : Bool
---     }
---
--- {-| I think that it doesn't work and adds overhead. -}
--- initialiseConstrainedCalendar : Constraints -> Model2
--- initialiseConstrainedCalendar constraints =
---     -- initialiseConstrainedCalendar : ConstrainedCalendarConfig -> Constraints -> Model2
---     -- initialiseConstrainedCalendar { today, viewType, disablePastDates } constraints =
---     Constrained_ constraints
---         -- { today = today
---         -- , viewType = viewType
---         -- , disablePastDates = disablePastDates
---         { primaryDate = constraints.minDate
---         , rangeStart = Nothing
---         , rangeEnd = Nothing
---         , shadowRangeEnd = Nothing
---         }
-
-
 type alias UnconstrainedModel =
     { today : DateTime -- Should belong in Props.
     , viewType : ViewType -- Should belong in Props.
@@ -342,17 +318,6 @@ type alias UnconstrainedCalendarConfig =
     , pastDatesLimit : DateLimit
     , futureDatesLimit : DateLimit
     }
-
-
-
--- {-| I think that it doesn't work and adds overhead. -}
--- type alias UnconstrainedProps =
---     { today : DateTime
---     , viewType : ViewType
---     , disablePastDates : Bool
---     , pastDatesLimit : DateLimit
---     , futureDatesLimit : DateLimit
---     }
 
 
 initialiseUnconstrainedCalendar2 : UnconstrainedCalendarConfig -> Model2

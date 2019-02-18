@@ -1,4 +1,4 @@
-module Utils.Html.Attributes exposing (..)
+module Utils.Html.Attributes exposing (none)
 
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)

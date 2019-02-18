@@ -1,21 +1,7 @@
 body {
-  width: 100vw;
-  height: 100vh;
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif; }
-
-.half-width {
-  width: 50%; }
-
-.third-width {
-  width: 33.3%; }
-
-.quarter-width {
-  width: 25%; }
-
-.fifth-width {
-  width: 400px; }
 
 .calendar_ {
   width: 315px;
@@ -40,6 +26,16 @@ body {
       color: white; }
       .calendar_ .date.selected .date-inner {
         background-color: #D71A21; }
+    .calendar_ .date.invalid {
+      color: rgba(0, 0, 0, 0.2);
+      cursor: not-allowed; }
+      .calendar_ .date.invalid:hover .date-inner {
+        background-color: transparent; }
+    .calendar_ .date.disabled {
+      color: rgba(0, 0, 0, 0.2);
+      cursor: default; }
+      .calendar_ .date.disabled:hover .date-inner {
+        background-color: transparent; }
     .calendar_ .date .date-inner {
       width: 32px;
       height: 32px;
@@ -112,6 +108,9 @@ body {
   line-height: 30px;
   text-align: center;
   cursor: pointer; }
+  .single-month-picker .action.disabled {
+    color: rgba(0, 0, 0, 0.4);
+    cursor: default; }
 
 .double-month-picker {
   justify-content: space-between; }
@@ -131,6 +130,10 @@ body {
       font-size: 24px;
       line-height: 30px;
       cursor: pointer; }
+      .double-month-picker .next-month .action.disabled,
+      .double-month-picker .previous-month .action.disabled {
+        color: rgba(0, 0, 0, 0.4);
+        cursor: default; }
   .double-month-picker .next-month > .action {
     right: 12px; }
   .double-month-picker .previous-month > .action {

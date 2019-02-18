@@ -190,29 +190,29 @@ update msg model =
                             case DateTime.compareDates start date of
                                 LT ->
                                     -- Normal case.
-                                    updateDateRangeOffset { model_ | rangeEnd = Just date }
+                                    { model_ | rangeEnd = Just date }
 
                                 EQ ->
                                     -- Cancels out the selected date.
-                                    updateDateRangeOffset { model_ | rangeStart = Nothing, rangeEnd = Nothing }
+                                    { model_ | rangeStart = Nothing, rangeEnd = Nothing }
 
                                 GT ->
                                     -- Reversed case. ie. the user selected the rangeEnd first.
-                                    updateDateRangeOffset { model_ | rangeStart = Just date, rangeEnd = Just start }
+                                    { model_ | rangeStart = Just date, rangeEnd = Just start }
 
                         ( Nothing, Just end ) ->
-                            -- Some imposible state
-                            updateDateRangeOffset { model_ | rangeStart = Just date, rangeEnd = Nothing }
+                            -- Fixing some imposible state
+                            { model_ | rangeStart = Just date, rangeEnd = Nothing }
 
                         ( Just start, Just end ) ->
                             -- Resetting the date range here
-                            updateDateRangeOffset { model_ | rangeStart = Just date, rangeEnd = Nothing }
+                            { model_ | rangeStart = Just date, rangeEnd = Nothing }
 
                         ( Nothing, Nothing ) ->
                             -- Starting the date range process.
-                            updateDateRangeOffset { model_ | rangeStart = Just date }
+                            { model_ | rangeStart = Just date }
             in
-            ( updatedModel
+            ( updateDateRangeOffset updatedModel
             , Cmd.none
             )
 

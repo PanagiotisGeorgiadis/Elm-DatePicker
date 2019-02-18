@@ -1,12 +1,10 @@
 {
   "name": "datepicker",
   "version": "1.0.0",
-  "description": "TravelRepublic Date Picker module written in Elm.",
+  "description": "Date Picker module written in Elm.",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "elm-init": "elm init",
-    "elm-install": "elm install",
     "elm-make": "elm make ./src/Main.elm --output=./public/scripts/elm.bundle.js",
     "compile-sass": "node nodeSass.js",
     "test-init": "elm-test init",
