@@ -2,7 +2,7 @@ module Components.SingleDatePicker.Update exposing (ExternalMsg(..), Model, Msg(
 
 -- import DateTime.Calendar as Calendar
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 
 
 type alias Model =
@@ -48,13 +48,13 @@ update model msg =
             )
 
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             , None
             )

@@ -1,7 +1,9 @@
 module Components.Calendar exposing (view2)
 
-import DateTime.Calendar as Calendar
-import DateTime.DateTime as DateTime exposing (DateTime)
+-- import DateTime.Calendar as Calendar
+
+import Clock
+import DateTime exposing (DateTime)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseOver)
@@ -140,7 +142,7 @@ view2 { today, primaryDate, disablePastDates } { dateSelectionHandler, selectedD
         dateRange =
             case ( rangeStart, rangeEnd ) of
                 ( Just start, Just end ) ->
-                    DateTime.getDateRange start end
+                    DateTime.getDateRange start end Clock.midnight
 
                 _ ->
                     []
@@ -171,9 +173,9 @@ view2 { today, primaryDate, disablePastDates } { dateSelectionHandler, selectedD
 
         firstDayOfTheMonth =
             DateTime.fromRawParts
-                { rawYear = DateTime.getYearInt primaryDate
-                , rawMonth = DateTime.getMonthInt primaryDate
-                , rawDay = 1
+                { day = 1
+                , month = DateTime.getMonth primaryDate
+                , year = DateTime.getYear primaryDate
                 }
                 { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 
@@ -217,7 +219,7 @@ dateHtml { today, date, dateRange, dateSelectionHandler, selectedDate, onHoverLi
     let
         date_ =
             -- Calendar.dayToInt (Calendar.getDay date)
-            DateTime.getDayInt date
+            DateTime.getDay date
 
         fullDateString =
             Time.toHumanReadableDate date

@@ -17,8 +17,8 @@ module Components.DateRangePicker.Update exposing
     , updatePrimaryDate
     )
 
-import DateTime.Clock as Clock
-import DateTime.DateTime as DateTime exposing (DateTime)
+import Clock as Clock
+import DateTime exposing (DateTime)
 import Models.Calendar exposing (DateLimit)
 import Time as Time
 
@@ -397,12 +397,12 @@ update msg model =
             )
 
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             )
 
@@ -471,12 +471,12 @@ update2 msg model =
             )
 
         PreviousMonth ->
-            ( updatePrimaryDate (DateTime.getPreviousMonth (getPrimaryDate model)) model
+            ( updatePrimaryDate (DateTime.decrementMonth (getPrimaryDate model)) model
             , Cmd.none
             )
 
         NextMonth ->
-            ( updatePrimaryDate (DateTime.getNextMonth (getPrimaryDate model)) model
+            ( updatePrimaryDate (DateTime.incrementMonth (getPrimaryDate model)) model
             , Cmd.none
             )
 

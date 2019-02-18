@@ -1,8 +1,10 @@
 module Components.DatePicker2.View exposing (view)
 
+-- import DateTime.DateTime as DateTime exposing (DateTime)
+
 import Components.DatePicker2.Update exposing (Model, Msg(..), ViewType(..))
 import Components.MonthPicker as MonthPicker
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
@@ -20,7 +22,7 @@ view model =
                 pickerConfig =
                     { date = model.primaryDate
                     , previousButtonHandler =
-                        if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+                        if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
                             Just PreviousMonth
 
                         else
@@ -41,7 +43,7 @@ view model =
         Double ->
             let
                 nextDate =
-                    DateTime.getNextMonth model.primaryDate
+                    DateTime.incrementMonth model.primaryDate
 
                 nextModel =
                     { model | primaryDate = nextDate }
@@ -49,7 +51,7 @@ view model =
                 pickerConfig =
                     { date = model.primaryDate
                     , previousButtonHandler =
-                        if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+                        if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
                             Just PreviousMonth
 
                         else
@@ -122,9 +124,9 @@ weekdaysHtml =
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth date =
     DateTime.fromRawParts
-        { rawYear = DateTime.getYearInt date
-        , rawMonth = DateTime.getMonthInt date
-        , rawDay = 1
+        { day = 1
+        , month = DateTime.getMonth date
+        , year = DateTime.getYear date
         }
         { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 
@@ -193,7 +195,7 @@ dateHtml { today, selectedDate, disablePastDates } date =
             [ classList dateClassList
             , title fullDateString
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -202,7 +204,7 @@ dateHtml { today, selectedDate, disablePastDates } date =
             , title fullDateString
             , onClick (SelectDate date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 

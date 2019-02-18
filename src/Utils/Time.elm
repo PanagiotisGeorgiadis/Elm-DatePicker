@@ -10,9 +10,7 @@ module Utils.Time exposing
     , zeroTime
     )
 
--- import DateTime.Calendar as Calendar
-
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Time exposing (Month(..), Posix, Weekday(..), Zone)
 
 
@@ -251,7 +249,7 @@ toHumanReadableDate : DateTime -> String
 toHumanReadableDate date =
     String.join " "
         [ weekdayToString (DateTime.getWeekday date)
-        , String.fromInt (DateTime.getDayInt date)
+        , String.fromInt (DateTime.getDay date)
         , monthToStringCondensed (DateTime.getMonth date)
-        , String.fromInt (DateTime.getYearInt date)
+        , String.fromInt (DateTime.getYear date)
         ]

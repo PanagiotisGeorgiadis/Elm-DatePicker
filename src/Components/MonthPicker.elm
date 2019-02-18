@@ -1,6 +1,8 @@
 module Components.MonthPicker exposing (DoubleMonthPickerConfig, SingleMonthPickerConfig, doubleMonthPickerView2, singleMonthPickerView2)
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+-- import DateTime.DateTime as DateTime exposing (DateTime)
+
+import DateTime exposing (DateTime)
 import Html exposing (Html, div, i, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -120,7 +122,7 @@ doubleMonthPickerView2 : DoubleMonthPickerConfig msg -> Html msg
 doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
     let
         nextMonthDate =
-            DateTime.getNextMonth date
+            DateTime.incrementMonth date
 
         previousButtonHtml =
             case previousButtonHandler of
@@ -170,7 +172,7 @@ monthPickerText date =
     let
         ( month, year ) =
             ( DateTime.getMonth date
-            , DateTime.getYearInt date
+            , DateTime.getYear date
             )
     in
     Time.monthToString month ++ " " ++ String.fromInt year

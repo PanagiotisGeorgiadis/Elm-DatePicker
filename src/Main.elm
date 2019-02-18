@@ -7,6 +7,7 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 -- import Components.DatePicker.Update as DatePicker
 --
 -- import Models.Calendar exposing (CalendarModel, initialCalendarModel)
+-- import DateTime.Calendar as Calendar
 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
@@ -21,8 +22,7 @@ import Components.DoubleDatePicker.Update as DoubleDatePicker
 import Components.DoubleDatePicker.View as DoubleDatePicker
 import Components.SingleDatePicker.Update as SingleDatePicker
 import Components.SingleDatePicker.View as SingleDatePicker
-import DateTime.Calendar as Calendar
-import DateTime.DateTime as DateTime
+import DateTime as DateTime
 import Html exposing (..)
 import Models.Calendar as Calendar exposing (DateLimit(..))
 import Task

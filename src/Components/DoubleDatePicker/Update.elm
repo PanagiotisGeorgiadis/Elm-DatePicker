@@ -1,6 +1,6 @@
 module Components.DoubleDatePicker.Update exposing (ExternalMsg(..), Model, Msg(..), initialise, update)
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Models.Calendar exposing (DateLimit)
 
 
@@ -68,13 +68,13 @@ update model msg =
             )
 
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             , None
             )

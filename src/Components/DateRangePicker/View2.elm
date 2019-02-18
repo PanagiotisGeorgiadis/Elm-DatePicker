@@ -14,11 +14,12 @@ import Components.DateRangePicker.Update
         , updatePrimaryDate
         )
 import Components.MonthPicker as MonthPicker
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Models.Calendar exposing (isBetweenFutureLimit, isBetweenPastLimit)
+import Utils.DateTime as DateTimeUtils
 import Utils.Html.Attributes as Attributes
 import Utils.Maybe as Maybe
 import Utils.Time as Time
@@ -48,7 +49,7 @@ view model =
         Double ->
             let
                 nextDate =
-                    DateTime.getNextMonth (getPrimaryDate model)
+                    DateTime.incrementMonth (getPrimaryDate model)
             in
             div
                 [ class "double-calendar-view"
@@ -66,14 +67,14 @@ getMonthPickerHtml m =
         Constrained_ { minDate, maxDate } { primaryDate, viewType } ->
             let
                 ( primaryDateMonthInt, nextDateMonthInt ) =
-                    ( DateTime.getMonthInt primaryDate
-                    , DateTime.getMonthInt (DateTime.getNextMonth primaryDate)
+                    ( DateTimeUtils.getMonthInt primaryDate
+                    , DateTimeUtils.getMonthInt (DateTime.incrementMonth primaryDate)
                     )
 
                 getPickerConfig futureMonthInt =
                     { date = primaryDate
-                    , nextButtonHandler = getNextMonthAction (DateTime.getMonthInt maxDate > futureMonthInt)
-                    , previousButtonHandler = getPreviousMonthAction (DateTime.getMonthInt minDate < primaryDateMonthInt)
+                    , nextButtonHandler = getNextMonthAction (DateTimeUtils.getMonthInt maxDate > futureMonthInt)
+                    , previousButtonHandler = getPreviousMonthAction (DateTimeUtils.getMonthInt minDate < primaryDateMonthInt)
                     }
             in
             case viewType of
@@ -88,7 +89,7 @@ getMonthPickerHtml m =
                 getPickerConfig nextButtonDate =
                     { date = primaryDate
                     , nextButtonHandler = getNextMonthAction (isBetweenFutureLimit today nextButtonDate futureDatesLimit)
-                    , previousButtonHandler = getPreviousMonthAction (isBetweenPastLimit today (DateTime.getPreviousMonth primaryDate) pastDatesLimit)
+                    , previousButtonHandler = getPreviousMonthAction (isBetweenPastLimit today (DateTime.decrementMonth primaryDate) pastDatesLimit)
                     }
             in
             case viewType of
@@ -96,7 +97,7 @@ getMonthPickerHtml m =
                     MonthPicker.singleMonthPickerView2 (getPickerConfig primaryDate)
 
                 Double ->
-                    MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.getNextMonth primaryDate))
+                    MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.incrementMonth primaryDate))
 
 
 calendarView : Model2 -> Html Msg
@@ -180,7 +181,7 @@ dateHtml123 model date =
             [ classList dateClassList
             , title (Time.toHumanReadableDate date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -190,7 +191,7 @@ dateHtml123 model date =
             , onClick (SelectDate date)
             , onMouseOver (DateHoverDetected date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 
@@ -285,9 +286,9 @@ sortMaybeDates lhs rhs =
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth date =
     DateTime.fromRawParts
-        { rawYear = DateTime.getYearInt date
-        , rawMonth = DateTime.getMonthInt date
-        , rawDay = 1
+        { day = 1
+        , month = DateTime.getMonth date
+        , year = DateTime.getYear date
         }
         { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 

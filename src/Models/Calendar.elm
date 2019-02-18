@@ -7,7 +7,11 @@ module Models.Calendar exposing
     , isBetweenPastLimit
     )
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+-- import DateTime.DateTime as DateTime exposing (DateTime)
+
+import Calendar
+import DateTime exposing (DateTime)
+import Utils.DateTime exposing (getMonthInt)
 
 
 
@@ -70,22 +74,22 @@ type DateLimit
 
 getYearDiff : DateTime -> DateTime -> Int
 getYearDiff lhs rhs =
-    DateTime.getYearInt rhs - DateTime.getYearInt lhs
+    DateTime.getYear rhs - DateTime.getYear lhs
 
 
 getMonthDiff : DateTime -> DateTime -> Int
 getMonthDiff lhs rhs =
-    (getYearDiff lhs rhs * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    (getYearDiff lhs rhs * 12) + (getMonthInt rhs - getMonthInt lhs)
 
 
 isBetweenFutureLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenFutureLimit lhs rhs dateLimit =
     -- let
     --     yearDiff =
-    --         DateTime.getYearInt rhs - DateTime.getYearInt lhs
+    --         DateTime.getYear rhs - DateTime.getYear lhs
     --
     --     monthDiff =
-    --         (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    --         (yearDiff * 12) + (DateTime.getMonth rhs - DateTime.getMonth lhs)
     -- in
     case dateLimit of
         NoLimit ->
@@ -102,10 +106,10 @@ isBetweenPastLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenPastLimit lhs rhs dateLimit =
     -- let
     --     yearDiff =
-    --         DateTime.getYearInt rhs - DateTime.getYearInt lhs
+    --         DateTime.getYear rhs - DateTime.getYear lhs
     --
     --     monthDiff =
-    --         (yearDiff * 12) + (DateTime.getMonthInt rhs - DateTime.getMonthInt lhs)
+    --         (yearDiff * 12) + (DateTime.getMonth rhs - DateTime.getMonth lhs)
     -- in
     case dateLimit of
         NoLimit ->
@@ -121,7 +125,7 @@ isBetweenPastLimit lhs rhs dateLimit =
 incrementDays : Int -> DateTime -> DateTime
 incrementDays days date =
     if days > 0 then
-        incrementDays (days - 1) (DateTime.getNextDay date)
+        incrementDays (days - 1) (DateTime.incrementDay date)
 
     else
         date
@@ -130,7 +134,7 @@ incrementDays days date =
 decrementDays : Int -> DateTime -> DateTime
 decrementDays days date =
     if days > 0 then
-        decrementDays (days - 1) (DateTime.getPreviousDay date)
+        decrementDays (days - 1) (DateTime.decrementDay date)
 
     else
         date

@@ -9,10 +9,11 @@ import Components.DateRangePicker2.Update
         , ViewType(..)
         )
 import Components.MonthPicker as MonthPicker
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
+import Utils.DateTime exposing (getMonthInt)
 import Utils.Maybe as Maybe
 import Utils.Time as Time
 
@@ -35,15 +36,15 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
                 DateLimit { minDate, maxDate } ->
                     let
                         primaryDateMonthInt =
-                            DateTime.getMonthInt primaryDate
+                            getMonthInt primaryDate
                     in
-                    ( DateTime.getMonthInt minDate < primaryDateMonthInt
-                    , DateTime.getMonthInt maxDate > primaryDateMonthInt
+                    ( getMonthInt minDate < primaryDateMonthInt
+                    , getMonthInt maxDate > primaryDateMonthInt
                     )
 
                 -- _ ->
                 --     -- FIXME: Fix that to work with the new DateLimit OR keep only the DateLimit ?
-                --     -- ( isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit
+                --     -- ( isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit
                 --     -- , isBetweenFutureLimit model.today model.primaryDate model.futureDatesLimit
                 --     -- )
                 --     ( True
@@ -73,22 +74,18 @@ doubleCalendarView : Model -> Html Msg
 doubleCalendarView ({ primaryDate, dateLimit } as model) =
     let
         nextDate =
-            DateTime.getNextMonth primaryDate
+            DateTime.incrementMonth primaryDate
 
         ( isPreviousButtonActive, isNextButtonActive ) =
             case dateLimit of
                 DateLimit { minDate, maxDate } ->
-                    let
-                        primaryDateMonthInt =
-                            DateTime.getMonthInt primaryDate
-                    in
-                    ( DateTime.getMonthInt minDate < primaryDateMonthInt
-                    , DateTime.getMonthInt maxDate > DateTime.getMonthInt nextDate
+                    ( getMonthInt minDate < getMonthInt primaryDate
+                    , getMonthInt maxDate > getMonthInt nextDate
                     )
 
                 -- _ ->
                 --     -- FIXME: Fix that to work with the new DateLimit OR keep only the DateLimit ?
-                --     -- ( isBetweenPastLimit model.today (DateTime.getPreviousMonth primaryDate) model.pastDatesLimit
+                --     -- ( isBetweenPastLimit model.today (DateTime.decrementMonth primaryDate) model.pastDatesLimit
                 --     -- , isBetweenFutureLimit model.today nextDate model.futureDatesLimit
                 --     -- )
                 --     ( True
@@ -186,7 +183,7 @@ dateHtml model date =
                 ]
             , title (Time.toHumanReadableDate date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -233,7 +230,7 @@ dateHtml model date =
             , onClick (SelectDate date)
             , onMouseOver (DateHoverDetected date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 
@@ -244,14 +241,14 @@ dateHtml model date =
 --         Constrained_ { minDate, maxDate } { primaryDate, viewType } ->
 --             let
 --                 ( primaryDateMonthInt, nextDateMonthInt ) =
---                     ( DateTime.getMonthInt primaryDate
---                     , DateTime.getMonthInt (DateTime.getNextMonth primaryDate)
+--                     ( DateTime.getMonth primaryDate
+--                     , DateTime.getMonth (DateTime.incrementMonth primaryDate)
 --                     )
 --
 --                 getPickerConfig futureMonthInt =
 --                     { date = primaryDate
---                     , nextButtonHandler = getNextButtonAction (DateTime.getMonthInt maxDate > futureMonthInt)
---                     , previousButtonHandler = getPreviousButtonAction (DateTime.getMonthInt minDate < primaryDateMonthInt)
+--                     , nextButtonHandler = getNextButtonAction (DateTime.getMonth maxDate > futureMonthInt)
+--                     , previousButtonHandler = getPreviousButtonAction (DateTime.getMonth minDate < primaryDateMonthInt)
 --                     }
 --             in
 --             case viewType of
@@ -266,7 +263,7 @@ dateHtml model date =
 --                 getPickerConfig nextButtonDate =
 --                     { date = primaryDate
 --                     , nextButtonHandler = getNextButtonAction (isBetweenFutureLimit today nextButtonDate futureDatesLimit)
---                     , previousButtonHandler = getPreviousButtonAction (isBetweenPastLimit today (DateTime.getPreviousMonth primaryDate) pastDatesLimit)
+--                     , previousButtonHandler = getPreviousButtonAction (isBetweenPastLimit today (DateTime.decrementMonth primaryDate) pastDatesLimit)
 --                     }
 --             in
 --             case viewType of
@@ -274,7 +271,7 @@ dateHtml model date =
 --                     MonthPicker.singleMonthPickerView2 (getPickerConfig primaryDate)
 --
 --                 Double ->
---                     MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.getNextMonth primaryDate))
+--                     MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.incrementMonth primaryDate))
 
 
 getNextButtonAction : Bool -> Maybe Msg
@@ -348,11 +345,14 @@ areDatesEqual lhs rhs =
 -}
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth date =
+    let
+        ( month, year ) =
+            ( DateTime.getMonth date
+            , DateTime.getYear date
+            )
+    in
     DateTime.fromRawParts
-        { rawYear = DateTime.getYearInt date
-        , rawMonth = DateTime.getMonthInt date
-        , rawDay = 1
-        }
+        { day = 1, month = month, year = year }
         { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 
 

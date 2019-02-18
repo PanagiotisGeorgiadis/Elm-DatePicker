@@ -13,11 +13,12 @@ import Components.DateRangePicker.Update
         , getViewType
         )
 import Components.MonthPicker as MonthPicker
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Models.Calendar exposing (isBetweenFutureLimit, isBetweenPastLimit)
+import Utils.DateTime as DateTimeUtils
 import Utils.Html.Attributes as Attributes
 import Utils.Maybe as Maybe
 import Utils.Time as Time
@@ -40,10 +41,10 @@ import Utils.Time as Time
 --                 Constrained { minDate, maxDate } ->
 --                     let
 --                         primaryDateMonthInt =
---                             DateTime.getMonthInt model.primaryDate
+--                             DateTimeUtils.getMonthInt model.primaryDate
 --
 --                         previousButtonHandler =
---                             if DateTime.getMonthInt minDate < primaryDateMonthInt then
+--                             if DateTimeUtils.getMonthInt minDate < primaryDateMonthInt then
 --                                 Just PreviousMonth
 --
 --                             else
@@ -54,7 +55,7 @@ import Utils.Time as Time
 --                             { date = model.primaryDate
 --                             , previousButtonHandler = previousButtonHandler
 --                             , nextButtonHandler =
---                                 if DateTime.getMonthInt maxDate > primaryDateMonthInt then
+--                                 if DateTimeUtils.getMonthInt maxDate > primaryDateMonthInt then
 --                                     Just NextMonth
 --
 --                                 else
@@ -64,12 +65,12 @@ import Utils.Time as Time
 --                         Double ->
 --                             let
 --                                 nextMonthInt =
---                                     DateTime.getMonthInt (DateTime.getNextMonth model.primaryDate)
+--                                     DateTimeUtils.getMonthInt (DateTime.incrementMonth model.primaryDate)
 --                             in
 --                             { date = model.primaryDate
 --                             , previousButtonHandler = previousButtonHandler
 --                             , nextButtonHandler =
---                                 if DateTime.getMonthInt maxDate > nextMonthInt then
+--                                 if DateTimeUtils.getMonthInt maxDate > nextMonthInt then
 --                                     Just NextMonth
 --
 --                                 else
@@ -81,7 +82,7 @@ import Utils.Time as Time
 --                         Single ->
 --                             { date = model.primaryDate
 --                             , previousButtonHandler =
---                                 if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+--                                 if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
 --                                     Just PreviousMonth
 --
 --                                 else
@@ -97,13 +98,13 @@ import Utils.Time as Time
 --                         Double ->
 --                             { date = model.primaryDate
 --                             , previousButtonHandler =
---                                 if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+--                                 if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
 --                                     Just PreviousMonth
 --
 --                                 else
 --                                     Nothing
 --                             , nextButtonHandler =
---                                 if isBetweenFutureLimit model.today (DateTime.getNextMonth model.primaryDate) model.futureDatesLimit then
+--                                 if isBetweenFutureLimit model.today (DateTime.incrementMonth model.primaryDate) model.futureDatesLimit then
 --                                     Just NextMonth
 --
 --                                 else
@@ -123,7 +124,7 @@ import Utils.Time as Time
 --         Double ->
 --             let
 --                 nextModel =
---                     { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+--                     { model | primaryDate = DateTime.incrementMonth model.primaryDate }
 --             in
 --             div
 --                 [ class "double-calendar-view"
@@ -141,10 +142,10 @@ import Utils.Time as Time
 --         Constrained { minDate, maxDate } ->
 --             let
 --                 primaryDateMonthInt =
---                     DateTime.getMonthInt model.primaryDate
+--                     DateTimeUtils.getMonthInt model.primaryDate
 --
 --                 previousButtonHandler =
---                     if DateTime.getMonthInt minDate < primaryDateMonthInt then
+--                     if DateTimeUtils.getMonthInt minDate < primaryDateMonthInt then
 --                         Just PreviousMonth
 --
 --                     else
@@ -157,7 +158,7 @@ import Utils.Time as Time
 --                             { date = model.primaryDate
 --                             , previousButtonHandler = previousButtonHandler
 --                             , nextButtonHandler =
---                                 if DateTime.getMonthInt maxDate > primaryDateMonthInt then
+--                                 if DateTimeUtils.getMonthInt maxDate > primaryDateMonthInt then
 --                                     Just NextMonth
 --
 --                                 else
@@ -175,7 +176,7 @@ import Utils.Time as Time
 --                 Double ->
 --                     let
 --                         nextDate =
---                             DateTime.getNextMonth model.primaryDate
+--                             DateTime.incrementMonth model.primaryDate
 --
 --                         nextModel =
 --                             { model | primaryDate = nextDate }
@@ -184,7 +185,7 @@ import Utils.Time as Time
 --                             { date = model.primaryDate
 --                             , previousButtonHandler = previousButtonHandler
 --                             , nextButtonHandler =
---                                 if DateTime.getMonthInt maxDate > DateTime.getMonthInt nextDate then
+--                                 if DateTimeUtils.getMonthInt maxDate > DateTimeUtils.getMonthInt nextDate then
 --                                     Just NextMonth
 --
 --                                 else
@@ -207,7 +208,7 @@ import Utils.Time as Time
 --                         pickerConfig =
 --                             { date = model.primaryDate
 --                             , previousButtonHandler =
---                                 if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+--                                 if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
 --                                     Just PreviousMonth
 --
 --                                 else
@@ -231,7 +232,7 @@ import Utils.Time as Time
 --                 Double ->
 --                     let
 --                         nextDate =
---                             DateTime.getNextMonth model.primaryDate
+--                             DateTime.incrementMonth model.primaryDate
 --
 --                         nextModel =
 --                             { model | primaryDate = nextDate }
@@ -239,7 +240,7 @@ import Utils.Time as Time
 --                         pickerConfig =
 --                             { date = model.primaryDate
 --                             , previousButtonHandler =
---                                 if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+--                                 if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
 --                                     Just PreviousMonth
 --
 --                                 else
@@ -289,14 +290,14 @@ getPreviousMonthAction isButtonActive =
 --                 Constrained { minDate, maxDate } ->
 --                     let
 --                         primaryDateMonthInt =
---                             DateTime.getMonthInt model.primaryDate
+--                             DateTimeUtils.getMonthInt model.primaryDate
 --                     in
---                     ( DateTime.getMonthInt minDate < primaryDateMonthInt
---                     , DateTime.getMonthInt maxDate > primaryDateMonthInt
+--                     ( DateTimeUtils.getMonthInt minDate < primaryDateMonthInt
+--                     , DateTimeUtils.getMonthInt maxDate > primaryDateMonthInt
 --                     )
 --
 --                 Unconstrained ->
---                     ( isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit
+--                     ( isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit
 --                     , isBetweenFutureLimit model.today model.primaryDate model.futureDatesLimit
 --                     )
 --
@@ -494,7 +495,7 @@ dateHtml123 model date =
             [ classList dateClassList
             , title (Time.toHumanReadableDate date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -504,7 +505,7 @@ dateHtml123 model date =
             , onClick (SelectDate date)
             , onMouseOver (DateHoverDetected date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 
@@ -514,14 +515,14 @@ getMonthPickerHtml m =
         Constrained_ { minDate, maxDate } { primaryDate, viewType } ->
             let
                 ( primaryDateMonthInt, nextDateMonthInt ) =
-                    ( DateTime.getMonthInt primaryDate
-                    , DateTime.getMonthInt (DateTime.getNextMonth primaryDate)
+                    ( DateTimeUtils.getMonthInt primaryDate
+                    , DateTimeUtils.getMonthInt (DateTime.incrementMonth primaryDate)
                     )
 
                 getPickerConfig futureMonthInt =
                     { date = primaryDate
-                    , nextButtonHandler = getNextMonthAction (DateTime.getMonthInt maxDate > futureMonthInt)
-                    , previousButtonHandler = getPreviousMonthAction (DateTime.getMonthInt minDate < primaryDateMonthInt)
+                    , nextButtonHandler = getNextMonthAction (DateTimeUtils.getMonthInt maxDate > futureMonthInt)
+                    , previousButtonHandler = getPreviousMonthAction (DateTimeUtils.getMonthInt minDate < primaryDateMonthInt)
                     }
             in
             case viewType of
@@ -536,7 +537,7 @@ getMonthPickerHtml m =
                 getPickerConfig nextButtonDate =
                     { date = primaryDate
                     , nextButtonHandler = getNextMonthAction (isBetweenFutureLimit today nextButtonDate futureDatesLimit)
-                    , previousButtonHandler = getPreviousMonthAction (isBetweenPastLimit today (DateTime.getPreviousMonth primaryDate) pastDatesLimit)
+                    , previousButtonHandler = getPreviousMonthAction (isBetweenPastLimit today (DateTime.decrementMonth primaryDate) pastDatesLimit)
                     }
             in
             case viewType of
@@ -544,7 +545,7 @@ getMonthPickerHtml m =
                     MonthPicker.singleMonthPickerView2 (getPickerConfig primaryDate)
 
                 Double ->
-                    MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.getNextMonth primaryDate))
+                    MonthPicker.doubleMonthPickerView2 (getPickerConfig (DateTime.incrementMonth primaryDate))
 
 
 view2 : Model2 -> Html Msg
@@ -587,19 +588,19 @@ view2 m =
 --     Constrained_ constraints model ->
 --         let
 --             primaryDateMonthInt =
---                 DateTime.getMonthInt model.primaryDate
+--                 DateTimeUtils.getMonthInt model.primaryDate
 --
 --             getPickerConfig isNextButtonActive =
 --                 { date = model.primaryDate
 --                 , nextButtonHandler = getNextMonthAction isNextButtonActive
---                 , previousButtonHandler = getPreviousMonthAction (DateTime.getMonthInt constraints.minDate < primaryDateMonthInt)
+--                 , previousButtonHandler = getPreviousMonthAction (DateTimeUtils.getMonthInt constraints.minDate < primaryDateMonthInt)
 --                 }
 --         in
 --         case model.viewType of
 --             Single ->
 --                 let
 --                     pickerConfig =
---                         getPickerConfig (DateTime.getMonthInt constraints.maxDate > primaryDateMonthInt)
+--                         getPickerConfig (DateTimeUtils.getMonthInt constraints.maxDate > primaryDateMonthInt)
 --                 in
 --                 div
 --                     [ class "single-calendar-view"
@@ -614,10 +615,10 @@ view2 m =
 --             Double ->
 --                 let
 --                     nextDate =
---                         DateTime.getNextMonth model.primaryDate
+--                         DateTime.incrementMonth model.primaryDate
 --
 --                     pickerConfig =
---                         getPickerConfig (DateTime.getMonthInt constraints.maxDate > DateTime.getMonthInt nextDate)
+--                         getPickerConfig (DateTimeUtils.getMonthInt constraints.maxDate > DateTimeUtils.getMonthInt nextDate)
 --                 in
 --                 div
 --                     [ class "double-calendar-view"
@@ -648,21 +649,21 @@ doubleCalendarView : Model -> Html Msg
 doubleCalendarView model =
     let
         nextDate =
-            DateTime.getNextMonth model.primaryDate
+            DateTime.incrementMonth model.primaryDate
 
         ( isPreviousButtonActive, isNextButtonActive ) =
             case model.constrainedDate of
                 Constrained { minDate, maxDate } ->
                     let
                         primaryDateMonthInt =
-                            DateTime.getMonthInt model.primaryDate
+                            DateTimeUtils.getMonthInt model.primaryDate
                     in
-                    ( DateTime.getMonthInt minDate < primaryDateMonthInt
-                    , DateTime.getMonthInt maxDate > DateTime.getMonthInt nextDate
+                    ( DateTimeUtils.getMonthInt minDate < primaryDateMonthInt
+                    , DateTimeUtils.getMonthInt maxDate > DateTimeUtils.getMonthInt nextDate
                     )
 
                 Unconstrained ->
-                    ( isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit
+                    ( isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit
                     , isBetweenFutureLimit model.today nextDate model.futureDatesLimit
                     )
 
@@ -703,14 +704,14 @@ singleCalendarView model =
                 Constrained { minDate, maxDate } ->
                     let
                         primaryDateMonthInt =
-                            DateTime.getMonthInt model.primaryDate
+                            DateTimeUtils.getMonthInt model.primaryDate
                     in
-                    ( DateTime.getMonthInt minDate < primaryDateMonthInt
-                    , DateTime.getMonthInt maxDate > primaryDateMonthInt
+                    ( DateTimeUtils.getMonthInt minDate < primaryDateMonthInt
+                    , DateTimeUtils.getMonthInt maxDate > primaryDateMonthInt
                     )
 
                 Unconstrained ->
-                    ( isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit
+                    ( isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit
                     , isBetweenFutureLimit model.today model.primaryDate model.futureDatesLimit
                     )
 
@@ -865,7 +866,7 @@ dateHtml_ { isToday, isStartOfTheDateRange, isEndOfTheDateRange, isPartOfTheDate
             [ classList dateClassList
             , title fullDateString
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -875,7 +876,7 @@ dateHtml_ { isToday, isStartOfTheDateRange, isEndOfTheDateRange, isPartOfTheDate
             , onClick (SelectDate date)
             , onMouseOver (DateHoverDetected date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 
@@ -961,7 +962,7 @@ dateHtml_old model date =
             [ classList dateClassList
             , title fullDateString
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
     else
@@ -977,7 +978,7 @@ dateHtml_old model date =
             , onClick (SelectDate date)
             , onMouseOver (DateHoverDetected date)
             ]
-            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDayInt date)) ]
+            [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
 
 
@@ -1006,9 +1007,9 @@ areDatesEqual lhs rhs =
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth date =
     DateTime.fromRawParts
-        { rawYear = DateTime.getYearInt date
-        , rawMonth = DateTime.getMonthInt date
-        , rawDay = 1
+        { day = 1
+        , month = DateTime.getMonth date
+        , year = DateTime.getYear date
         }
         { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 

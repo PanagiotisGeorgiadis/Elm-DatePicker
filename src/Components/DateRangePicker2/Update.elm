@@ -9,7 +9,8 @@ module Components.DateRangePicker2.Update exposing
     , update
     )
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+import Clock
+import DateTime exposing (DateTime)
 import Models.Calendar as Calendar
 
 
@@ -169,12 +170,12 @@ update msg model =
             )
 
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             )
 
@@ -246,13 +247,13 @@ updateDateRangeOffset ({ rangeStart, rangeEnd, dateRangeOffset } as model) =
                                 List.reverse <|
                                     List.drop 1 <|
                                         List.reverse <|
-                                            DateTime.getDateRange start (Calendar.incrementDays (minDateRangeLength - 1) start)
+                                            DateTime.getDateRange start (Calendar.incrementDays (minDateRangeLength - 1) start) Clock.midnight
 
                         invalidPastDates =
                             List.filter ((/=) start) <|
                                 List.reverse <|
                                     List.drop 1 <|
-                                        DateTime.getDateRange start (Calendar.decrementDays (minDateRangeLength - 1) start)
+                                        DateTime.getDateRange start (Calendar.decrementDays (minDateRangeLength - 1) start) Clock.midnight
 
                         invalidDates =
                             invalidFutureDates ++ invalidPastDates

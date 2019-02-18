@@ -3,7 +3,7 @@ module Components.DoubleDatePicker.View exposing (doubleDatePickerView, view)
 import Components.Calendar as Calendar
 import Components.DoubleDatePicker.Update exposing (..)
 import Components.MonthPicker as MonthPicker
-import DateTime.DateTime as DateTime
+import DateTime as DateTime
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseLeave)
@@ -19,7 +19,7 @@ doubleDatePickerView : Model -> Html Msg
 doubleDatePickerView model =
     let
         nextDate =
-            DateTime.getNextMonth model.primaryDate
+            DateTime.incrementMonth model.primaryDate
 
         nextModel =
             { model | primaryDate = nextDate }
@@ -27,7 +27,7 @@ doubleDatePickerView model =
         pickerConfig =
             { date = model.primaryDate
             , previousButtonHandler =
-                if isBetweenPastLimit model.today (DateTime.getPreviousMonth model.primaryDate) model.pastDatesLimit then
+                if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
                     Just PreviousMonth
 
                 else

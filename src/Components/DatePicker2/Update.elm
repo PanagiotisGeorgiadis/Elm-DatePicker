@@ -7,7 +7,7 @@ module Components.DatePicker2.Update exposing
     , update
     )
 
-import DateTime.DateTime as DateTime exposing (DateTime)
+import DateTime exposing (DateTime)
 import Models.Calendar exposing (DateLimit)
 
 
@@ -71,12 +71,12 @@ update msg model =
             )
 
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.getPreviousMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.getNextMonth model.primaryDate }
+            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             )
 
