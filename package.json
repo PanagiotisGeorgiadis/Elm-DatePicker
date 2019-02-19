@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "elm-make": "elm make ./src/Main.elm --output=./public/scripts/elm.bundle.js",
-    "compile-sass": "node nodeSass.js",
+    "compile-sass": "node ./private/nodeSass.js",
     "test-init": "elm-test init",
     "test-watch": "node app.test.js",
     "test": "elm-test"

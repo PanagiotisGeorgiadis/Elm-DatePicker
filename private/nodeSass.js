@@ -1,6 +1,7 @@
 const sass = require("node-sass");
 const path = require("path");
 const fs   = require("fs");
+const { printSuccessMsg, printErrorMsg, printWarningMsg } = require("./console-helpers.js");
 
 const sourceDir = path.join(__dirname, "public", "scss");
 const destDir   = path.join(__dirname, "public", "styles");
@@ -13,15 +14,15 @@ sass.render(
   , outFile: scss_dest
   }, (error, result) => {
       if (error) {
-          console.log("Node sass error\n", error);
+          printErrorMsg(`Node SASS error:\n${ error }`);
           return;
       }
 
       const compilationResultHandler = (err) => {
           if (err) {
-              console.log("FileSystem error\n", err);
+              printErrorMsg(`FileSystem error:\n${ err }`);
           } else {
-              console.log("SCSS compilation was successful");
+              printSuccessMsg("SCSS compilation was successful");
           }
       }
 
