@@ -1,8 +1,4 @@
-$primaryColor-Hex: #D71A21;
-// $primaryColor-RGB: rgb(215, 26, 33);
-@function primaryColorAlpha($percentage) {
-    @return rgba(215, 26, 33, $percentage);
-}
+@import "../Variables.scss";
 
 .calendar_ {
     width: 315px;
@@ -108,6 +104,9 @@ $primaryColor-Hex: #D71A21;
     width: 100%;
     padding: 6px 0;
     display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: $CalendarBackground;
 
     span {
         flex: 1;
@@ -123,9 +122,26 @@ $primaryColor-Hex: #D71A21;
 
 
 .double-calendar-view {
-    width: 680px;
+    width: 660px;
+    padding: 0 25px 10px 25px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+    position: relative;
+    background-color: $CalendarBackground;
+
+    .fa-chevron-left,
+    .fa-chevron-right {
+        width: 15px;
+        height: 20px;
+        position: absolute;
+        top: calc(50% - 10px);
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .fa-chevron-left { left: 5px; }
+    .fa-chevron-right { right: 5px; }
 
     .double-month-picker {
         flex: 1;
@@ -133,9 +149,7 @@ $primaryColor-Hex: #D71A21;
 
     .calendar {
         flex: 0.5;
-    }
-
-    .calendar:last-child {
-        margin-left: 50px;
+        max-width: 315px;
+        background: white;
     }
 }

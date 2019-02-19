@@ -1,0 +1,8 @@
+$primaryColor-Hex: #D71A21;
+$CalendarBackground: #F6F6F6;
+// $primaryColor-RGB: rgb(215, 26, 33);
+
+
+@function primaryColorAlpha($percentage) {
+    @return rgba(215, 26, 33, $percentage);
+}
