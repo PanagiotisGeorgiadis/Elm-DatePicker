@@ -3,8 +3,8 @@ const path = require("path");
 const fs   = require("fs");
 const { printSuccessMsg, printErrorMsg, printWarningMsg } = require("./console-helpers.js");
 
-const sourceDir = path.join(__dirname, "public", "scss");
-const destDir   = path.join(__dirname, "public", "styles");
+const sourceDir = path.join(process.cwd(), "public", "scss");
+const destDir   = path.join(process.cwd(), "public", "styles");
 
 const scss_entrypoint = path.join(sourceDir, "main.scss");
 const scss_dest       = path.join(destDir, "styles.css");
