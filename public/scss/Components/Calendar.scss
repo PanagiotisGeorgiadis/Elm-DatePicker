@@ -106,7 +106,8 @@
     display: flex;
     font-size: 14px;
     font-weight: 500;
-    background-color: $CalendarBackground;
+    color: $richGray;
+    background-color: $calendarBackground;
 
     span {
         flex: 1;
@@ -122,34 +123,38 @@
 
 
 .double-calendar-view {
-    width: 660px;
-    padding: 0 25px 10px 25px;
+    width: $doubleViewWidth;
+    height: $doubleViewHeight;
+    padding: $doubleViewPadding;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     position: relative;
-    background-color: $CalendarBackground;
+    background-color: $calendarBackground;
 
-    .fa-chevron-left,
     .fa-chevron-right {
         width: 15px;
         height: 20px;
         position: absolute;
         top: calc(50% - 10px);
+        right: 5px;
         font-size: 20px;
         cursor: pointer;
-    }
 
-    .fa-chevron-left { left: 5px; }
-    .fa-chevron-right { right: 5px; }
+        &.disabled {
+            color: #9B9B9B;
+            cursor: default;
+        }
+    }
 
     .double-month-picker {
         flex: 1;
     }
 
     .calendar {
-        flex: 0.5;
         max-width: 315px;
+        max-height: 270px;
+        flex: 0.5;
         background: white;
     }
 }
