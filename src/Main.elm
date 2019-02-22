@@ -22,6 +22,7 @@ import Components.DoubleDatePicker.Update as DoubleDatePicker
 import Components.DoubleDatePicker.View as DoubleDatePicker
 import Components.SingleDatePicker.Update as SingleDatePicker
 import Components.SingleDatePicker.View as SingleDatePicker
+import Components.TimePicker.Update as TimePicker
 import DateTime as DateTime
 import Html exposing (..)
 import Models.Calendar as Calendar exposing (DateLimit(..))
@@ -433,6 +434,8 @@ update msg model =
                     , viewType = DateRangePicker123.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker123.NoLimit { disablePastDates = True }
+                    , mirrorTimes = True
+                    , pickerType = TimePicker.HH_MM_SS
                     }
 
                 doubleDateRangePickerConfig123 =
@@ -440,6 +443,8 @@ update msg model =
                     , viewType = DateRangePicker123.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker123.NoLimit { disablePastDates = True }
+                    , mirrorTimes = True
+                    , pickerType = TimePicker.HH_MM
                     }
 
                 singleDateRangePickerConfig123_C =
@@ -451,6 +456,8 @@ update msg model =
                             { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
                             , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
                             }
+                    , mirrorTimes = True
+                    , pickerType = TimePicker.HH_MM_SS
                     }
 
                 doubleDateRangePickerConfig123_C =
@@ -462,6 +469,8 @@ update msg model =
                             { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
                             , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
                             }
+                    , mirrorTimes = True
+                    , pickerType = TimePicker.HH_MM
                     }
             in
             ( { model

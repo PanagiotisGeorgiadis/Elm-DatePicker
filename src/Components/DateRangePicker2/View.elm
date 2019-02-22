@@ -4,28 +4,39 @@ import Components.DateRangePicker2.Update
     exposing
         ( DateLimit(..)
         , DateRangeOffset(..)
+        , InternalViewType(..)
         , Model
         , Msg(..)
         , ViewType(..)
         )
 import Components.MonthPicker as MonthPicker
+import Components.TimePicker.View as TimePicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
+import Icons
 import Utils.DateTime exposing (getMonthInt)
 import Utils.Maybe as Maybe
 import Utils.Time as Time
 
 
 view : Model -> Html Msg
-view model =
-    case model.viewType of
-        Single ->
-            singleCalendarView model
+view ({ viewType, internalViewType } as model) =
+    div [ class "date-time-picker horizontal-layout" ]
+        [ case ( viewType, internalViewType ) of
+            ( Single, CalendarView ) ->
+                singleCalendarView model
 
-        Double ->
-            doubleCalendarView model
+            ( Single, ClockView ) ->
+                text "Single Clock view"
+
+            ( Double, CalendarView ) ->
+                doubleCalendarView model
+
+            ( Double, ClockView ) ->
+                doubleClockView model
+        ]
 
 
 singleCalendarView : Model -> Html Msg
@@ -112,6 +123,60 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         [ MonthPicker.doubleMonthPickerView2 pickerConfig
         , calendarView model
         , calendarView nextModel
+        , case ( model.rangeStart, model.rangeEnd ) of
+            ( Just start, Just end ) ->
+                div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevronRight (Icons.Size "20" "20") ]
+
+            _ ->
+                div [ class "switch-view-button disabled" ] [ Icons.chevronRight (Icons.Size "20" "20") ]
+        ]
+
+
+doubleClockView : Model -> Html Msg
+doubleClockView { rangeStart, rangeEnd, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes } =
+    let
+        selectedDateHtml date =
+            case date of
+                Just d ->
+                    span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
+
+                Nothing ->
+                    text ""
+
+        ( startTimePickerHtml, endTimePickerHtml ) =
+            ( case rangeStartTimePicker of
+                Just timePicker ->
+                    Html.map RangeStartPickerMsg (TimePicker.view timePicker)
+
+                Nothing ->
+                    text ""
+            , case rangeEndTimePicker of
+                Just timePicker ->
+                    Html.map RangeEndPickerMsg (TimePicker.view timePicker)
+
+                Nothing ->
+                    text ""
+            )
+    in
+    div [ class "double-clock-view" ]
+        [ div [ class "time-picker-container no-select" ]
+            [ span [ class "header" ] [ text "Pick-up Time" ]
+            , selectedDateHtml rangeStart
+            , startTimePickerHtml
+            , div [ class "checkbox", onClick ToggleTimeMirroring ]
+                [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
+                , span [ class "text" ] [ text "Same as drop-off time" ]
+                ]
+            ]
+        , div [ class "time-picker-container no-select" ]
+            [ span [ class "header" ] [ text "Drop-off Time" ]
+            , selectedDateHtml rangeEnd
+            , endTimePickerHtml
+            , div [ class "filler" ] []
+            ]
+
+        -- , i [ class "fa fa-chevron-left", onClick ShowCalendarView ] []
+        , div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevronLeft (Icons.Size "20" "20") ]
         ]
 
 
@@ -378,13 +443,12 @@ emptyDateHtml =
     span [ class "empty-date" ] []
 
 
+{-| Extract to another file as a common view fragment
 
-{- Extract to another file as a common view fragment -}
+6 rows in total on the calendar
+7 columns on the calendar
+6 \* 7 = 42 is the total count of cells.
 
-
-{-| 6 rows in total on the calendar
---- 7 columns on the calendar
---- 6 \* 7 = 42 is the total count of cells.
 -}
 totalCalendarCells : Int
 totalCalendarCells =

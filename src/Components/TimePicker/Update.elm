@@ -11,6 +11,15 @@ module Components.TimePicker.Update exposing
 import Clock
 
 
+
+{- TODO:
+
+   1) Add a steping flag ? Maybe something like, minuteStep, secondsStep, millisecondsStep etc
+   so that we increase minutes by 5 for example instead of by 1.
+
+-}
+
+
 {-| Describes different picker types.
 -}
 type PickerType
