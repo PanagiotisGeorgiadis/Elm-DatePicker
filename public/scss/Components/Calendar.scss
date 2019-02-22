@@ -2,8 +2,6 @@
 
 .calendar_ {
     width: 315px;
-    // background-color: pink;
-
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-row-gap: 10px;
@@ -105,7 +103,7 @@
     padding: 6px 0;
     display: flex;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: $mediumWeight;
     color: $richGray;
     background-color: $calendarBackground;
 
@@ -132,18 +130,20 @@
     position: relative;
     background-color: $calendarBackground;
 
-    .fa-chevron-right {
-        width: 15px;
-        height: 20px;
+    .switch-view-button {
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: absolute;
         top: calc(50% - 10px);
-        right: 5px;
-        font-size: 20px;
+        right: 0px;
         cursor: pointer;
 
         &.disabled {
-            color: #9B9B9B;
             cursor: default;
+            svg { fill: $concreteGray; }
         }
     }
 

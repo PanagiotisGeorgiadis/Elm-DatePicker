@@ -1,6 +1,7 @@
 $primaryColor-Hex: #D71A21;
 $calendarBackground: #F6F6F6;
 $richGray: #4A4A4A;
+$concreteGray: #9B9B9B;
 
 // $primaryColor-RGB: rgb(215, 26, 33);
 $doubleViewWidth: 650px;
@@ -10,3 +11,7 @@ $doubleViewPadding: 0 25px 10px 25px;
 @function primaryColorAlpha($percentage) {
     @return rgba(215, 26, 33, $percentage);
 }
+
+
+$mediumWeight: 500;
+$regularWeight: 400;
