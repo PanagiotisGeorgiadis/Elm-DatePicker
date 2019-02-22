@@ -1,21 +1,28 @@
 module Icons exposing
-    ( Size
+    ( Direction(..)
+    , Size
     , checkbox
-    , chevronDown
-    , chevronLeft
-    , chevronRight
-    , chevronUp
+    , chevron
+    , triangle
     )
 
 import Html exposing (Html)
 import Svg exposing (Svg, path, polygon, svg)
 import Svg.Attributes exposing (class, d, height, points, transform, viewBox, width)
+import Utils.Html.Attributes as Attributes
 
 
 type alias Size =
     { width : String
     , height : String
     }
+
+
+type Direction
+    = Up
+    | Down
+    | Left
+    | Right
 
 
 tickedCheckboxPath : Svg msg
@@ -39,41 +46,45 @@ checkbox size isChecked =
         ]
 
 
-chevronDown : Size -> Html msg
-chevronDown size =
-    svg [ width size.width, height size.height, viewBox "0 0 24 24" ]
-        [ polygon [ points "2.82 4.59 12 13.75 21.18 4.59 24 7.41 12 19.41 0 7.41" ] []
-        ]
-
-
-chevronUp : Size -> Html msg
-chevronUp size =
+chevron : Direction -> Size -> Html msg
+chevron direction size =
     svg [ width size.width, height size.height, viewBox "0 0 24 24" ]
         [ polygon
             [ points "2.82 4.59 12 13.75 21.18 4.59 24 7.41 12 19.41 0 7.41"
-            , transform "translate(12.000000, 12.410000) rotate(180.000000) translate(-12.000000, -12.410000)"
+            , case direction of
+                Up ->
+                    transform "translate(12.000000, 12.000000) rotate(180.000000) translate(-12.000000, -12.000000)"
+
+                Down ->
+                    Attributes.none
+
+                Left ->
+                    transform "translate(12.000000, 12.000000) rotate(90.000000) translate(-12.000000, -12.000000)"
+
+                Right ->
+                    transform "translate(12.000000, 12.000000) scale(-1, 1) rotate(90.000000) translate(-12.000000, -12.000000)"
             ]
             []
         ]
 
 
-chevronLeft : Size -> Html msg
-chevronLeft size =
+triangle : Direction -> Size -> Html msg
+triangle direction size =
     svg [ width size.width, height size.height, viewBox "0 0 24 24" ]
         [ polygon
-            [ points "2.82 5 12 14.16 21.18 5 24 7.82 12 19.82 0 7.82"
-            , transform "translate(12.000000, 12.410000) rotate(90.000000) translate(-12.000000, -12.410000)"
-            ]
-            []
-        ]
+            [ points "0 6 12 18 24 6"
+            , case direction of
+                Down ->
+                    Attributes.none
 
+                Up ->
+                    transform "translate(12.000000, 12.000000) rotate(180.000000) translate(-12.000000, -12.000000)"
 
-chevronRight : Size -> Html msg
-chevronRight size =
-    svg [ width size.width, height size.height, viewBox "0 0 24 24" ]
-        [ polygon
-            [ points "2.82 4.59 12 13.75 21.18 4.59 24 7.41 12 19.41 0 7.41"
-            , transform "translate(12.000000, 12.000000) scale(-1, 1) rotate(90.000000) translate(-12.000000, -12.000000)"
+                Left ->
+                    transform "translate(12.000000, 12.000000) rotate(90.000000) translate(-12.000000, -12.000000)"
+
+                Right ->
+                    transform "translate(12.000000, 12.000000) scale(-1, 1) rotate(90.000000) translate(-12.000000, -12.000000)"
             ]
             []
         ]

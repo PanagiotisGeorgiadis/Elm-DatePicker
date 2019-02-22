@@ -125,10 +125,10 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         , calendarView nextModel
         , case ( model.rangeStart, model.rangeEnd ) of
             ( Just start, Just end ) ->
-                div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevronRight (Icons.Size "20" "20") ]
+                div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
 
             _ ->
-                div [ class "switch-view-button disabled" ] [ Icons.chevronRight (Icons.Size "20" "20") ]
+                div [ class "switch-view-button disabled" ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
         ]
 
 
@@ -174,9 +174,7 @@ doubleClockView { rangeStart, rangeEnd, rangeStartTimePicker, rangeEndTimePicker
             , endTimePickerHtml
             , div [ class "filler" ] []
             ]
-
-        -- , i [ class "fa fa-chevron-left", onClick ShowCalendarView ] []
-        , div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevronLeft (Icons.Size "20" "20") ]
+        , div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
         ]
 
 

@@ -6,6 +6,7 @@ import DateTime exposing (DateTime)
 import Html exposing (Html, div, i, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Icons
 import Models.Calendar exposing (DateLimit(..))
 import Time exposing (Month(..))
 import Utils.Time as Time
@@ -57,18 +58,18 @@ singleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
         previousButtonHtml =
             case previousButtonHandler of
                 Just action ->
-                    i [ class "fa fa-caret-left action", onClick action ] []
+                    div [ class "action", onClick action ] [ Icons.triangle Icons.Left (Icons.Size "15" "15") ]
 
                 Nothing ->
-                    i [ class "fa fa-caret-left action disabled" ] []
+                    div [ class "action disabled" ] [ Icons.triangle Icons.Left (Icons.Size "15" "15") ]
 
         nextButtonHtml =
             case nextButtonHandler of
                 Just action ->
-                    i [ class "fa fa-caret-right action", onClick action ] []
+                    div [ class "action", onClick action ] [ Icons.triangle Icons.Right (Icons.Size "15" "15") ]
 
                 Nothing ->
-                    i [ class "fa fa-caret-right action disabled" ] []
+                    div [ class "action disabled" ] [ Icons.triangle Icons.Right (Icons.Size "15" "15") ]
     in
     div [ class "single-month-picker" ]
         [ previousButtonHtml
@@ -127,18 +128,18 @@ doubleMonthPickerView2 { date, previousButtonHandler, nextButtonHandler } =
         previousButtonHtml =
             case previousButtonHandler of
                 Just action ->
-                    i [ class "fa fa-caret-left action", onClick action ] []
+                    div [ class "action", onClick action ] [ Icons.triangle Icons.Left (Icons.Size "15" "15") ]
 
                 Nothing ->
-                    i [ class "fa fa-caret-left action disabled" ] []
+                    div [ class "action disabled" ] [ Icons.triangle Icons.Left (Icons.Size "15" "15") ]
 
         nextButtonHtml =
             case nextButtonHandler of
                 Just action ->
-                    i [ class "fa fa-caret-right action", onClick action ] []
+                    div [ class "action", onClick action ] [ Icons.triangle Icons.Right (Icons.Size "15" "15") ]
 
                 Nothing ->
-                    i [ class "fa fa-caret-right action disabled" ] []
+                    div [ class "action disabled" ] [ Icons.triangle Icons.Right (Icons.Size "15" "15") ]
     in
     div [ class "double-month-picker" ]
         [ div [ class "previous-month" ]

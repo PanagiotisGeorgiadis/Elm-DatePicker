@@ -46,7 +46,7 @@ view ({ pickerType } as model) =
 hourPicker : Model -> Html Msg
 hourPicker { hoursDisplayValue } =
     div [ class "hours-picker" ]
-        [ div [ class "button", onClick IncrementHours ] [ Icons.chevronUp (Icons.Size "24" "24") ]
+        [ div [ class "button", onClick IncrementHours ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput HoursInputHandler
@@ -55,14 +55,14 @@ hourPicker { hoursDisplayValue } =
             , maxlength 2
             ]
             []
-        , div [ class "button", onClick DecrementHours ] [ Icons.chevronDown (Icons.Size "24" "24") ]
+        , div [ class "button", onClick DecrementHours ] [ Icons.chevron Icons.Down (Icons.Size "24" "24") ]
         ]
 
 
 minutePicker : Model -> Html Msg
 minutePicker { minutesDisplayValue } =
     div [ class "minutes-picker" ]
-        [ div [ class "button", onClick IncrementMinutes ] [ Icons.chevronUp (Icons.Size "24" "24") ]
+        [ div [ class "button", onClick IncrementMinutes ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput MinutesInputHandler
@@ -71,14 +71,14 @@ minutePicker { minutesDisplayValue } =
             , maxlength 2
             ]
             []
-        , div [ class "button", onClick DecrementMinutes ] [ Icons.chevronDown (Icons.Size "24" "24") ]
+        , div [ class "button", onClick DecrementMinutes ] [ Icons.chevron Icons.Down (Icons.Size "24" "24") ]
         ]
 
 
 secondsPicker : Model -> Html Msg
 secondsPicker { secondsDisplayValue } =
     div [ class "seconds-picker" ]
-        [ div [ class "button", onClick IncrementSeconds ] [ Icons.chevronUp (Icons.Size "24" "24") ]
+        [ div [ class "button", onClick IncrementSeconds ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput SecondsInputHandler
@@ -87,14 +87,14 @@ secondsPicker { secondsDisplayValue } =
             , maxlength 2
             ]
             []
-        , div [ class "button", onClick DecrementSeconds ] [ Icons.chevronDown (Icons.Size "24" "24") ]
+        , div [ class "button", onClick DecrementSeconds ] [ Icons.chevron Icons.Down (Icons.Size "24" "24") ]
         ]
 
 
 millisecondsPicker : Model -> Html Msg
 millisecondsPicker { millisecondsDisplayValue } =
     div [ class "milliseconds-picker" ]
-        [ div [ class "button", onClick IncrementMilliseconds ] [ Icons.chevronUp (Icons.Size "24" "24") ]
+        [ div [ class "button", onClick IncrementMilliseconds ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput MillisecondsInputHandler
@@ -103,7 +103,7 @@ millisecondsPicker { millisecondsDisplayValue } =
             , maxlength 3
             ]
             []
-        , div [ class "button", onClick DecrementMilliseconds ] [ Icons.chevronDown (Icons.Size "24" "24") ]
+        , div [ class "button", onClick DecrementMilliseconds ] [ Icons.chevron Icons.Down (Icons.Size "24" "24") ]
         ]
 
 
