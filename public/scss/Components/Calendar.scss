@@ -139,11 +139,12 @@
         position: absolute;
         top: calc(50% - 10px);
         right: 0px;
+        fill: $richGray;
         cursor: pointer;
 
         &.disabled {
+            fill: $concreteGray;
             cursor: default;
-            svg { fill: $concreteGray; }
         }
     }
 
@@ -155,6 +156,6 @@
         max-width: 315px;
         max-height: 270px;
         flex: 0.5;
-        background: white;
+        background-color: white;
     }
 }
