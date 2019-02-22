@@ -121,31 +121,11 @@
 
 
 .double-calendar-view {
-    width: $doubleViewWidth;
-    height: $doubleViewHeight;
-    padding: $doubleViewPadding;
-    display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    position: relative;
-    background-color: $calendarBackground;
 
     .switch-view-button {
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: calc(50% - 10px);
         right: 0px;
-        fill: $richGray;
-        cursor: pointer;
-
-        &.disabled {
-            fill: $concreteGray;
-            cursor: default;
-        }
     }
 
     .double-month-picker {
