@@ -1,13 +1,10 @@
 module Components.MonthPicker exposing (DoubleMonthPickerConfig, SingleMonthPickerConfig, doubleMonthPickerView2, singleMonthPickerView2)
 
--- import DateTime.DateTime as DateTime exposing (DateTime)
-
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, i, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Icons
-import Models.Calendar exposing (DateLimit(..))
 import Time exposing (Month(..))
 import Utils.Time as Time
 
