@@ -435,7 +435,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker123.NoLimit { disablePastDates = True }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM_SS
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 1, secondsStep = 1 }
                     }
 
                 doubleDateRangePickerConfig123 =
@@ -444,7 +444,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker123.NoLimit { disablePastDates = True }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 1 }
                     }
 
                 singleDateRangePickerConfig123_C =
@@ -457,7 +457,7 @@ update msg model =
                             , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
                             }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM_SS
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 1, secondsStep = 1 }
                     }
 
                 doubleDateRangePickerConfig123_C =
@@ -470,7 +470,7 @@ update msg model =
                             , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
                             }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 10 }
                     }
             in
             ( { model

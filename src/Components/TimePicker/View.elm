@@ -10,19 +10,19 @@ import Icons
 view : Model -> Html Msg
 view ({ pickerType } as model) =
     case pickerType of
-        HH ->
+        HH _ ->
             div [ class "time-picker" ]
                 [ hourPicker model
                 ]
 
-        HH_MM ->
+        HH_MM _ ->
             div [ class "time-picker" ]
                 [ hourPicker model
                 , timeSegmentSeparator
                 , minutePicker model
                 ]
 
-        HH_MM_SS ->
+        HH_MM_SS _ ->
             div [ class "time-picker" ]
                 [ hourPicker model
                 , timeSegmentSeparator
@@ -31,7 +31,7 @@ view ({ pickerType } as model) =
                 , secondsPicker model
                 ]
 
-        HH_MM_SS_MMMM ->
+        HH_MM_SS_MMMM _ ->
             div [ class "time-picker" ]
                 [ hourPicker model
                 , timeSegmentSeparator

@@ -3,7 +3,6 @@ module Components.TimePicker.Update exposing
     , Model
     , Msg(..)
     , PickerType(..)
-    , StepFunction(..)
     , initialise
     , update
     , updateDisplayTime
@@ -15,23 +14,10 @@ import Clock
 {-| Describes different picker types.
 -}
 type PickerType
-    = HH
-    | HH_MM
-    | HH_MM_SS
-    | HH_MM_SS_MMMM
-
-
-type alias Stepping =
-    { hours : StepFunction
-    , minutes : StepFunction
-    , seconds : StepFunction
-    , milliseconds : StepFunction
-    }
-
-
-type StepFunction
-    = NoStep
-    | Step Int
+    = HH { hoursStep : Int }
+    | HH_MM { hoursStep : Int, minutesStep : Int }
+    | HH_MM_SS { hoursStep : Int, minutesStep : Int, secondsStep : Int }
+    | HH_MM_SS_MMMM { hoursStep : Int, minutesStep : Int, secondsStep : Int, millisecondsStep : Int }
 
 
 {-| The TimePicker Model
@@ -43,7 +29,6 @@ type alias Model =
     , minutesDisplayValue : String
     , secondsDisplayValue : String
     , millisecondsDisplayValue : String
-    , stepping : Stepping
     }
 
 
@@ -52,21 +37,19 @@ type alias Model =
 type alias Config =
     { time : Clock.Time
     , pickerType : PickerType
-    , stepping : Stepping
     }
 
 
 {-| Initialisation function
 -}
 initialise : Config -> Model
-initialise { pickerType, time, stepping } =
+initialise { pickerType, time } =
     { pickerType = pickerType
     , time = time
     , hoursDisplayValue = getHoursString time
     , minutesDisplayValue = getMinutesString time
     , secondsDisplayValue = getSecondsString time
     , millisecondsDisplayValue = getMillisecondsString time
-    , stepping = stepping
     }
 
 
@@ -206,12 +189,11 @@ update msg model =
                     Tuple.first << Clock.incrementHours
 
                 time =
-                    case model.stepping.hours of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getHoursStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -227,12 +209,11 @@ update msg model =
                     Tuple.first << Clock.incrementMinutes
 
                 time =
-                    case model.stepping.minutes of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getMinutesStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -248,12 +229,11 @@ update msg model =
                     Tuple.first << Clock.incrementSeconds
 
                 time =
-                    case model.stepping.seconds of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getSecondsStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -269,12 +249,11 @@ update msg model =
                     Tuple.first << Clock.incrementMilliseconds
 
                 time =
-                    case model.stepping.milliseconds of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getMillisecondsStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -290,12 +269,11 @@ update msg model =
                     Tuple.first << Clock.decrementHours
 
                 time =
-                    case model.stepping.hours of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getHoursStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -311,12 +289,11 @@ update msg model =
                     Tuple.first << Clock.decrementMinutes
 
                 time =
-                    case model.stepping.minutes of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getMinutesStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -332,12 +309,11 @@ update msg model =
                     Tuple.first << Clock.decrementSeconds
 
                 time =
-                    case model.stepping.seconds of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getSecondsStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -353,12 +329,11 @@ update msg model =
                     Tuple.first << Clock.decrementMilliseconds
 
                 time =
-                    case model.stepping.milliseconds of
-                        NoStep ->
-                            updateFn model.time
-
-                        Step n ->
-                            stepThrough { n = n, time = model.time, updateFn = updateFn }
+                    stepThrough
+                        { n = getMillisecondsStep model
+                        , time = model.time
+                        , updateFn = updateFn
+                        }
             in
             ( { model
                 | time = time
@@ -536,6 +511,78 @@ type alias SteppingParams =
     , updateFn : Clock.Time -> Clock.Time
     , time : Clock.Time
     }
+
+
+{-| Extracts the `hoursStep` from the Model
+-}
+getHoursStep : Model -> Int
+getHoursStep { pickerType } =
+    case pickerType of
+        HH { hoursStep } ->
+            hoursStep
+
+        HH_MM { hoursStep } ->
+            hoursStep
+
+        HH_MM_SS { hoursStep } ->
+            hoursStep
+
+        HH_MM_SS_MMMM { hoursStep } ->
+            hoursStep
+
+
+{-| Extracts the `minutesStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
+-}
+getMinutesStep : Model -> Int
+getMinutesStep { pickerType } =
+    case pickerType of
+        HH _ ->
+            1
+
+        HH_MM { minutesStep } ->
+            minutesStep
+
+        HH_MM_SS { minutesStep } ->
+            minutesStep
+
+        HH_MM_SS_MMMM { minutesStep } ->
+            minutesStep
+
+
+{-| Extracts the `secondsStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
+-}
+getSecondsStep : Model -> Int
+getSecondsStep { pickerType } =
+    case pickerType of
+        HH _ ->
+            1
+
+        HH_MM _ ->
+            1
+
+        HH_MM_SS { secondsStep } ->
+            secondsStep
+
+        HH_MM_SS_MMMM { secondsStep } ->
+            secondsStep
+
+
+{-| Extracts the `millisecondsStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
+-}
+getMillisecondsStep : Model -> Int
+getMillisecondsStep { pickerType } =
+    case pickerType of
+        HH _ ->
+            1
+
+        HH_MM _ ->
+            1
+
+        HH_MM_SS _ ->
+            1
+
+        HH_MM_SS_MMMM { millisecondsStep } ->
+            millisecondsStep
 
 
 stepThrough : SteppingParams -> Clock.Time

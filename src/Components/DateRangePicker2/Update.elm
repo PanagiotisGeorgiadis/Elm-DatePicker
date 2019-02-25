@@ -238,12 +238,6 @@ update msg model =
                             TimePicker.initialise
                                 { time = DateTime.getTime dateTime
                                 , pickerType = model.pickerType
-                                , stepping =
-                                    { hours = TimePicker.Step 1
-                                    , minutes = TimePicker.Step 5
-                                    , seconds = TimePicker.NoStep
-                                    , milliseconds = TimePicker.NoStep
-                                    }
                                 }
                     in
                     ( { model
