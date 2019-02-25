@@ -65,36 +65,48 @@ type Msg
     = NoOp
     | PreviousMonth
     | NextMonth
-      -- | DateHoverDetected DateTime
-      -- | ResetShadowDateRange
     | SelectDate DateTime
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+type ExtMsg
+    = None
+    | SelectedDate DateTime
+
+
+
+-- | SelectedDateAndTime
+
+
+update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
     case msg of
         NoOp ->
             ( model
             , Cmd.none
+            , None
             )
 
         PreviousMonth ->
             ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
+            , None
             )
 
         NextMonth ->
             ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
+            , None
             )
 
         SelectDate date ->
             if model.selectedDate == Just date then
                 ( { model | selectedDate = Nothing }
                 , Cmd.none
+                , None
                 )
 
             else
                 ( { model | selectedDate = Just date }
                 , Cmd.none
+                , SelectedDate date
                 )

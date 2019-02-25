@@ -36,18 +36,8 @@ view model =
 
                 pickerConfig =
                     { date = model.primaryDate
-                    , previousButtonHandler =
-                        if isPreviousButtonActive then
-                            Just PreviousMonth
-
-                        else
-                            Nothing
-                    , nextButtonHandler =
-                        if isNextButtonActive then
-                            Just NextMonth
-
-                        else
-                            Nothing
+                    , nextButtonHandler = getNextButtonAction isNextButtonActive
+                    , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
                     }
             in
             div [ class "single-calendar-view" ]
@@ -77,18 +67,8 @@ view model =
 
                 pickerConfig =
                     { date = model.primaryDate
-                    , previousButtonHandler =
-                        if isPreviousButtonActive then
-                            Just PreviousMonth
-
-                        else
-                            Nothing
-                    , nextButtonHandler =
-                        if isNextButtonActive then
-                            Just NextMonth
-
-                        else
-                            Nothing
+                    , nextButtonHandler = getNextButtonAction isNextButtonActive
+                    , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
                     }
             in
             div [ class "double-calendar-view" ]
@@ -160,62 +140,25 @@ getFirstDayOfTheMonth date =
 
 dateHtml : Model -> DateTime -> Html Msg
 dateHtml ({ today, selectedDate } as model) date =
-    -- dateHtml { today, selectedDate, disablePastDates } date =
     let
         fullDateString =
             Time.toHumanReadableDate date
 
-        isToday =
-            -- DateTime.compareDates today date == EQ
-            areDatesEqual today date
-
-        isPastDate =
-            DateTime.compareDates today date == GT
+        ( isToday, isPastDate ) =
+            ( areDatesEqual today date
+            , DateTime.compareDates today date == GT
+            )
 
         isSelected =
-            -- Maybe.mapWithDefault ((==) date) False selectedDate
             Maybe.mapWithDefault (areDatesEqual date) False selectedDate
 
-        -- isStartOfTheDateRange =
-        --     Maybe.mapWithDefault ((==) date) False (List.head dateRange)
-        --
-        -- isEndOfTheDateRange =
-        --     Maybe.mapWithDefault ((==) date) False (List.head <| List.reverse dateRange)
-        -- isPartOfTheDateRange =
-        --     if isStartOfTheDateRange || isEndOfTheDateRange then
-        --         False
-        --
-        --     else
-        --         List.any ((==) date) dateRange
         isDisabledDate =
-            -- disablePastDates && isPastDate
             checkIfDisabled model date
 
-        -- isInvalidSelection =
-        --     case selectedDate of
-        --         Just selectedDate_ ->
-        --             let
-        --                 dayDiff =
-        --                     abs (DateTime.getDayDiff selectedDate_ date)
-        --             in
-        --             dayDiff < minDateRangeOffset
-        --
-        --         Nothing ->
-        --             False
         dateClassList =
             [ ( "date", True )
             , ( "today", isToday )
-
-            -- , ( "selected", isSelected || isStartOfTheDateRange || isEndOfTheDateRange )
             , ( "selected", isSelected )
-
-            -- , ( "date-range", isPartOfTheDateRange )
-            -- -- The "not isEndOfTheDateRange" clause is added in order to fix a css bug.
-            -- , ( "date-range-start", isStartOfTheDateRange && not isEndOfTheDateRange )
-            --
-            -- -- The "not isStartOfTheDateRange" clause is added in order to fix a css bug.
-            -- , ( "date-range-end", not isStartOfTheDateRange && isEndOfTheDateRange )
-            -- , ( "invalid-selection", isInvalidSelection )
             , ( "disabled", isDisabledDate )
             ]
     in
@@ -268,6 +211,24 @@ checkIfDisabled { today, dateLimit } date =
                         && (DateTime.compareDates maxDate date == GT || areDatesEqual maxDate date)
             in
             not isPartOfTheConstraint
+
+
+getNextButtonAction : Bool -> Maybe Msg
+getNextButtonAction isButtonActive =
+    if isButtonActive then
+        Just NextMonth
+
+    else
+        Nothing
+
+
+getPreviousButtonAction : Bool -> Maybe Msg
+getPreviousButtonAction isButtonActive =
+    if isButtonActive then
+        Just PreviousMonth
+
+    else
+        Nothing
 
 
 {-| Extract to another file as a common view fragment

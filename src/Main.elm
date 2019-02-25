@@ -567,7 +567,7 @@ update msg model =
             case model.singleDatePicker of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DatePicker2.update subMsg datePickerModel
                     in
                     ( { model | singleDatePicker = Just subModel }
@@ -583,7 +583,7 @@ update msg model =
             case model.doubleDatePicker of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DatePicker2.update subMsg datePickerModel
                     in
                     ( { model | doubleDatePicker = Just subModel }
