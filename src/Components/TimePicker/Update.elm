@@ -3,21 +3,13 @@ module Components.TimePicker.Update exposing
     , Model
     , Msg(..)
     , PickerType(..)
+    , StepFunction(..)
     , initialise
     , update
     , updateDisplayTime
     )
 
 import Clock
-
-
-
-{- TODO:
-
-   1) Add a steping flag ? Maybe something like, minuteStep, secondsStep, millisecondsStep etc
-   so that we increase minutes by 5 for example instead of by 1.
-
--}
 
 
 {-| Describes different picker types.
@@ -29,6 +21,19 @@ type PickerType
     | HH_MM_SS_MMMM
 
 
+type alias Stepping =
+    { hours : StepFunction
+    , minutes : StepFunction
+    , seconds : StepFunction
+    , milliseconds : StepFunction
+    }
+
+
+type StepFunction
+    = NoStep
+    | Step Int
+
+
 {-| The TimePicker Model
 -}
 type alias Model =
@@ -38,6 +43,7 @@ type alias Model =
     , minutesDisplayValue : String
     , secondsDisplayValue : String
     , millisecondsDisplayValue : String
+    , stepping : Stepping
     }
 
 
@@ -46,19 +52,21 @@ type alias Model =
 type alias Config =
     { time : Clock.Time
     , pickerType : PickerType
+    , stepping : Stepping
     }
 
 
 {-| Initialisation function
 -}
 initialise : Config -> Model
-initialise { pickerType, time } =
+initialise { pickerType, time, stepping } =
     { pickerType = pickerType
     , time = time
     , hoursDisplayValue = getHoursString time
     , minutesDisplayValue = getMinutesString time
     , secondsDisplayValue = getSecondsString time
     , millisecondsDisplayValue = getMillisecondsString time
+    , stepping = stepping
     }
 
 
@@ -194,8 +202,16 @@ update msg model =
 
         IncrementHours ->
             let
-                ( time, _ ) =
-                    Clock.incrementHours model.time
+                updateFn =
+                    Tuple.first << Clock.incrementHours
+
+                time =
+                    case model.stepping.hours of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -207,8 +223,16 @@ update msg model =
 
         IncrementMinutes ->
             let
-                ( time, _ ) =
-                    Clock.incrementMinutes model.time
+                updateFn =
+                    Tuple.first << Clock.incrementMinutes
+
+                time =
+                    case model.stepping.minutes of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -220,8 +244,16 @@ update msg model =
 
         IncrementSeconds ->
             let
-                ( time, _ ) =
-                    Clock.incrementSeconds model.time
+                updateFn =
+                    Tuple.first << Clock.incrementSeconds
+
+                time =
+                    case model.stepping.seconds of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -233,8 +265,16 @@ update msg model =
 
         IncrementMilliseconds ->
             let
-                ( time, _ ) =
-                    Clock.incrementMilliseconds model.time
+                updateFn =
+                    Tuple.first << Clock.incrementMilliseconds
+
+                time =
+                    case model.stepping.milliseconds of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -246,8 +286,16 @@ update msg model =
 
         DecrementHours ->
             let
-                ( time, _ ) =
-                    Clock.decrementHours model.time
+                updateFn =
+                    Tuple.first << Clock.decrementHours
+
+                time =
+                    case model.stepping.hours of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -259,8 +307,16 @@ update msg model =
 
         DecrementMinutes ->
             let
-                ( time, _ ) =
-                    Clock.decrementMinutes model.time
+                updateFn =
+                    Tuple.first << Clock.decrementMinutes
+
+                time =
+                    case model.stepping.minutes of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -272,8 +328,16 @@ update msg model =
 
         DecrementSeconds ->
             let
-                ( time, _ ) =
-                    Clock.decrementSeconds model.time
+                updateFn =
+                    Tuple.first << Clock.decrementSeconds
+
+                time =
+                    case model.stepping.seconds of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -285,8 +349,16 @@ update msg model =
 
         DecrementMilliseconds ->
             let
-                ( time, _ ) =
-                    Clock.decrementMilliseconds model.time
+                updateFn =
+                    Tuple.first << Clock.decrementMilliseconds
+
+                time =
+                    case model.stepping.milliseconds of
+                        NoStep ->
+                            updateFn model.time
+
+                        Step n ->
+                            stepThrough { n = n, time = model.time, updateFn = updateFn }
             in
             ( { model
                 | time = time
@@ -457,3 +529,29 @@ millisToString millis =
 
     else
         String.fromInt millis
+
+
+type alias SteppingParams =
+    { n : Int
+    , updateFn : Clock.Time -> Clock.Time
+    , time : Clock.Time
+    }
+
+
+stepThrough : SteppingParams -> Clock.Time
+stepThrough { n, updateFn, time } =
+    let
+        ( time_, n_ ) =
+            ( updateFn time
+            , n - 1
+            )
+    in
+    if n_ <= 0 then
+        time_
+
+    else
+        stepThrough
+            { n = n_
+            , time = time_
+            , updateFn = updateFn
+            }

@@ -4,7 +4,6 @@ module Components.DateRangePicker2.Update exposing
     , InternalViewType(..)
     , Model
     , Msg(..)
-    , Shadowing(..)
     , ViewType(..)
     , initialise
     , update
@@ -50,9 +49,10 @@ type alias NoLimitConfig =
     }
 
 
-type Shadowing
-    = Enabled (Maybe DateTime)
-    | Disabled
+
+-- type Shadowing
+--     = Enabled (Maybe DateTime)
+--     | Disabled
 
 
 type InternalViewType
@@ -238,6 +238,12 @@ update msg model =
                             TimePicker.initialise
                                 { time = DateTime.getTime dateTime
                                 , pickerType = model.pickerType
+                                , stepping =
+                                    { hours = TimePicker.Step 1
+                                    , minutes = TimePicker.Step 5
+                                    , seconds = TimePicker.NoStep
+                                    , milliseconds = TimePicker.NoStep
+                                    }
                                 }
                     in
                     ( { model
