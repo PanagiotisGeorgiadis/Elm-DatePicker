@@ -1,5 +1,6 @@
 module Components.DatePicker2.Update exposing
-    ( DatePickerConfig
+    ( DateLimit(..)
+    , DatePickerConfig
     , Model
     , Msg(..)
     , ViewType(..)
@@ -8,16 +9,13 @@ module Components.DatePicker2.Update exposing
     )
 
 import DateTime exposing (DateTime)
-import Models.Calendar exposing (DateLimit)
 
 
 type alias Model =
     { today : DateTime
     , viewType : ViewType
     , primaryDate : DateTime
-    , disablePastDates : Bool
-    , pastDatesLimit : DateLimit
-    , futureDatesLimit : DateLimit
+    , dateLimit : DateLimit
     , selectedDate : Maybe DateTime
     }
 
@@ -26,30 +24,40 @@ type alias DatePickerConfig =
     { today : DateTime
     , viewType : ViewType
     , primaryDate : DateTime
-    , disablePastDates : Bool
-    , pastDatesLimit : DateLimit
-    , futureDatesLimit : DateLimit
+    , dateLimit : DateLimit
     }
 
 
-
-{- Extract to another file as a common type -}
-
-
+{-| Extract to another file as a common type
+-}
 type ViewType
     = Single
     | Double
 
 
+type DateLimit
+    = DateLimit DateLimitation
+    | NoLimit NoLimitConfig
+
+
+type alias DateLimitation =
+    { minDate : DateTime
+    , maxDate : DateTime
+    }
+
+
+type alias NoLimitConfig =
+    { disablePastDates : Bool
+    }
+
+
 initialise : DatePickerConfig -> Model
-initialise { today, viewType, primaryDate, pastDatesLimit, futureDatesLimit, disablePastDates } =
+initialise { today, viewType, primaryDate, dateLimit } =
     { today = today
     , viewType = viewType
     , primaryDate = primaryDate
     , selectedDate = Nothing
-    , pastDatesLimit = pastDatesLimit
-    , futureDatesLimit = futureDatesLimit
-    , disablePastDates = disablePastDates
+    , dateLimit = dateLimit
     }
 
 

@@ -1,15 +1,14 @@
 module Components.DatePicker2.View exposing (view)
 
--- import DateTime.DateTime as DateTime exposing (DateTime)
+-- import Utils.Html.Attributes as Attributes
 
-import Components.DatePicker2.Update exposing (Model, Msg(..), ViewType(..))
+import Components.DatePicker2.Update exposing (DateLimit(..), Model, Msg(..), ViewType(..))
 import Components.MonthPicker as MonthPicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
-import Models.Calendar exposing (isBetweenFutureLimit, isBetweenPastLimit)
-import Utils.Html.Attributes as Attributes
+import Utils.DateTime exposing (getMonthInt)
 import Utils.Maybe as Maybe
 import Utils.Time as Time
 
@@ -19,16 +18,32 @@ view model =
     case model.viewType of
         Single ->
             let
+                ( isPreviousButtonActive, isNextButtonActive ) =
+                    case model.dateLimit of
+                        DateLimit { minDate, maxDate } ->
+                            let
+                                primaryDateMonthInt =
+                                    getMonthInt model.primaryDate
+                            in
+                            ( getMonthInt minDate < primaryDateMonthInt
+                            , getMonthInt maxDate > primaryDateMonthInt
+                            )
+
+                        NoLimit _ ->
+                            ( True
+                            , True
+                            )
+
                 pickerConfig =
                     { date = model.primaryDate
                     , previousButtonHandler =
-                        if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
+                        if isPreviousButtonActive then
                             Just PreviousMonth
 
                         else
                             Nothing
                     , nextButtonHandler =
-                        if isBetweenFutureLimit model.today model.primaryDate model.futureDatesLimit then
+                        if isNextButtonActive then
                             Just NextMonth
 
                         else
@@ -48,16 +63,28 @@ view model =
                 nextModel =
                     { model | primaryDate = nextDate }
 
+                ( isPreviousButtonActive, isNextButtonActive ) =
+                    case model.dateLimit of
+                        DateLimit { minDate, maxDate } ->
+                            ( getMonthInt minDate < getMonthInt model.primaryDate
+                            , getMonthInt maxDate > getMonthInt nextDate
+                            )
+
+                        NoLimit _ ->
+                            ( True
+                            , True
+                            )
+
                 pickerConfig =
                     { date = model.primaryDate
                     , previousButtonHandler =
-                        if isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit then
+                        if isPreviousButtonActive then
                             Just PreviousMonth
 
                         else
                             Nothing
                     , nextButtonHandler =
-                        if isBetweenFutureLimit model.today nextDate model.futureDatesLimit then
+                        if isNextButtonActive then
                             Just NextMonth
 
                         else
@@ -132,7 +159,8 @@ getFirstDayOfTheMonth date =
 
 
 dateHtml : Model -> DateTime -> Html Msg
-dateHtml { today, selectedDate, disablePastDates } date =
+dateHtml ({ today, selectedDate } as model) date =
+    -- dateHtml { today, selectedDate, disablePastDates } date =
     let
         fullDateString =
             Time.toHumanReadableDate date
@@ -160,7 +188,8 @@ dateHtml { today, selectedDate, disablePastDates } date =
         --     else
         --         List.any ((==) date) dateRange
         isDisabledDate =
-            disablePastDates && isPastDate
+            -- disablePastDates && isPastDate
+            checkIfDisabled model date
 
         -- isInvalidSelection =
         --     case selectedDate of
@@ -220,13 +249,33 @@ emptyDateHtml =
     span [ class "empty-date" ] []
 
 
+{-| Checks if a Date on the DatePicker is a disabled one based on the specified date limitations.
+-}
+checkIfDisabled : Model -> DateTime -> Bool
+checkIfDisabled { today, dateLimit } date =
+    let
+        isPastDate =
+            DateTime.compareDates today date == GT
+    in
+    case dateLimit of
+        NoLimit { disablePastDates } ->
+            disablePastDates && isPastDate
 
-{- Extract to another file as a common view fragment -}
+        DateLimit { minDate, maxDate } ->
+            let
+                isPartOfTheConstraint =
+                    (DateTime.compareDates minDate date == LT || areDatesEqual minDate date)
+                        && (DateTime.compareDates maxDate date == GT || areDatesEqual maxDate date)
+            in
+            not isPartOfTheConstraint
 
 
-{-| 6 rows in total on the calendar
---- 7 columns on the calendar
---- 6 \* 7 = 42 is the total count of cells.
+{-| Extract to another file as a common view fragment
+
+    6 rows in total on the calendar
+    7 columns on the calendar
+    6 \* 7 = 42 is the total count of cells.
+
 -}
 totalCalendarCells : Int
 totalCalendarCells =

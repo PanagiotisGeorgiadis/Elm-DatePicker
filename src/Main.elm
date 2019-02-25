@@ -328,24 +328,6 @@ update msg model =
                     , futureDatesLimit = MonthLimit 24
                     }
 
-                singleDatePicker2Config =
-                    { today = todayDateTime
-                    , viewType = DatePicker2.Single
-                    , primaryDate = todayDateTime
-                    , pastDatesLimit = MonthLimit 12
-                    , futureDatesLimit = MonthLimit 12
-                    , disablePastDates = True
-                    }
-
-                doubleDatePicker2Config =
-                    { today = todayDateTime
-                    , viewType = DatePicker2.Double
-                    , primaryDate = todayDateTime
-                    , pastDatesLimit = MonthLimit 12
-                    , futureDatesLimit = MonthLimit 12
-                    , disablePastDates = True
-                    }
-
                 ( thirdOfFeb, eighthOfFeb ) =
                     ( 1549152000000
                     , 1549584000000
@@ -355,6 +337,24 @@ update msg model =
                     ( 1552694400000
                     , 1555372800000
                     )
+
+                singleDatePicker2Config =
+                    { today = todayDateTime
+                    , viewType = DatePicker2.Single
+                    , primaryDate = todayDateTime
+                    , dateLimit =
+                        DatePicker2.DateLimit
+                            { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
+                            , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
+                            }
+                    }
+
+                doubleDatePicker2Config =
+                    { today = todayDateTime
+                    , viewType = DatePicker2.Double
+                    , primaryDate = todayDateTime
+                    , dateLimit = DatePicker2.NoLimit { disablePastDates = True }
+                    }
 
                 singleDateRangeConfig =
                     { today = todayDateTime

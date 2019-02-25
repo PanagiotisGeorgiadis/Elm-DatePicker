@@ -66,6 +66,8 @@ type alias CalendarViewModel msg =
     }
 
 
+{-| Remove me later on
+-}
 type DateLimit
     = NoLimit
     | MonthLimit Int
@@ -82,6 +84,8 @@ getMonthDiff lhs rhs =
     (getYearDiff lhs rhs * 12) + (getMonthInt rhs - getMonthInt lhs)
 
 
+{-| Remove me later on
+-}
 isBetweenFutureLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenFutureLimit lhs rhs dateLimit =
     -- let
@@ -102,6 +106,8 @@ isBetweenFutureLimit lhs rhs dateLimit =
             getYearDiff lhs rhs < limit
 
 
+{-| Remove me later on
+-}
 isBetweenPastLimit : DateTime -> DateTime -> DateLimit -> Bool
 isBetweenPastLimit lhs rhs dateLimit =
     -- let
