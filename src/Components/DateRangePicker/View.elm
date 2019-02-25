@@ -1,6 +1,6 @@
-module Components.DateRangePicker2.View exposing (view)
+module Components.DateRangePicker.View exposing (view)
 
-import Components.DateRangePicker2.Update
+import Components.DateRangePicker.Update
     exposing
         ( DateLimit(..)
         , DateRangeOffset(..)

@@ -1,4 +1,4 @@
-module Components.DateRangePicker2.Update exposing
+module Components.DateRangePicker.Update exposing
     ( DateLimit(..)
     , DateRangeOffset(..)
     , InternalViewType(..)

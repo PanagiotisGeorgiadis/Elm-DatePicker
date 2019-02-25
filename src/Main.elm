@@ -4,8 +4,8 @@ import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Components.DatePicker.Update as DatePicker
 import Components.DatePicker.View as DatePicker
-import Components.DateRangePicker2.Update as DateRangePicker
-import Components.DateRangePicker2.View as DateRangePicker
+import Components.DateRangePicker.Update as DateRangePicker
+import Components.DateRangePicker.View as DateRangePicker
 import Components.TimePicker.Update as TimePicker
 import DateTime as DateTime
 import Html exposing (..)
