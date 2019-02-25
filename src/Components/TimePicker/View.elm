@@ -10,7 +10,7 @@ import Icons
 view : Model -> Html Msg
 view ({ pickerType } as model) =
     case pickerType of
-        HoursOnly ->
+        HH ->
             div [ class "time-picker" ]
                 [ hourPicker model
                 ]

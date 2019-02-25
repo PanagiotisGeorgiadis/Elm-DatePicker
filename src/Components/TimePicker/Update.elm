@@ -15,7 +15,7 @@ import Clock
 {-| Describes different picker types.
 -}
 type PickerType
-    = HoursOnly
+    = HH
     | HH_MM
     | HH_MM_SS
     | HH_MM_SS_MMMM
