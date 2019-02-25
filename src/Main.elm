@@ -11,8 +11,8 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
-import Components.DatePicker2.Update as DatePicker2
-import Components.DatePicker2.View as DatePicker2
+import Components.DatePicker.Update as DatePicker
+import Components.DatePicker.View as DatePicker
 import Components.DateRangePicker.Update as DateRangePicker
 import Components.DateRangePicker.View as DateRangePicker
 import Components.DateRangePicker.View2 as DateRangePickerView2
@@ -45,12 +45,12 @@ type alias Model =
     , doubleDatePickerModel : Maybe DoubleDatePicker.Model
 
     --
-    , singleDatePicker : Maybe DatePicker2.Model
+    , singleDatePicker : Maybe DatePicker.Model
     , singleDateRangePicker : Maybe DateRangePicker.Model
 
     -- , singleRangePickerModel : Maybe DateRangePicker.Model
     --
-    , doubleDatePicker : Maybe DatePicker2.Model
+    , doubleDatePicker : Maybe DatePicker.Model
     , doubleDateRangePicker : Maybe DateRangePicker.Model
 
     -- , doubleRangePickerModel : Maybe DateRangePicker.Model
@@ -81,10 +81,10 @@ type Msg
     | SingleDatePickerMsg SingleDatePicker.Msg
     | DoubleDatePickerMsg DoubleDatePicker.Msg
       --
-    | SingleDatePicker2Msg DatePicker2.Msg
+    | SingleDatePicker2Msg DatePicker.Msg
     | SingleDateRangeMsg DateRangePicker.Msg
       --
-    | DoubleDatePicker2Msg DatePicker2.Msg
+    | DoubleDatePicker2Msg DatePicker.Msg
     | DoubleDateRangeMsg DateRangePicker.Msg
       -------
       -------
@@ -187,7 +187,7 @@ view model =
             , text "Single Date Picker"
             , case model.singleDatePicker of
                 Just m ->
-                    Html.map SingleDatePicker2Msg (DatePicker2.view m)
+                    Html.map SingleDatePicker2Msg (DatePicker.view m)
 
                 Nothing ->
                     text "Error!"
@@ -196,7 +196,7 @@ view model =
             , text "Double Date Picker"
             , case model.doubleDatePicker of
                 Just m ->
-                    Html.map DoubleDatePicker2Msg (DatePicker2.view m)
+                    Html.map DoubleDatePicker2Msg (DatePicker.view m)
 
                 Nothing ->
                     text "Error!"
@@ -340,10 +340,10 @@ update msg model =
 
                 singleDatePicker2Config =
                     { today = todayDateTime
-                    , viewType = DatePicker2.Single
+                    , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit =
-                        DatePicker2.DateLimit
+                        DatePicker.DateLimit
                             { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
                             , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
                             }
@@ -351,9 +351,9 @@ update msg model =
 
                 doubleDatePicker2Config =
                     { today = todayDateTime
-                    , viewType = DatePicker2.Double
+                    , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
-                    , dateLimit = DatePicker2.NoLimit { disablePastDates = True }
+                    , dateLimit = DatePicker.NoLimit { disablePastDates = True }
                     }
 
                 singleDateRangeConfig =
@@ -479,11 +479,11 @@ update msg model =
                 , doubleDatePickerModel = Just (DoubleDatePicker.initialise doubleDatePickerConfig todayDateTime)
 
                 --
-                , singleDatePicker = Just (DatePicker2.initialise singleDatePicker2Config)
+                , singleDatePicker = Just (DatePicker.initialise singleDatePicker2Config)
                 , singleDateRangePicker = Just (DateRangePicker.initialise singleDateRangeConfig)
 
                 --
-                , doubleDatePicker = Just (DatePicker2.initialise doubleDatePicker2Config)
+                , doubleDatePicker = Just (DatePicker.initialise doubleDatePicker2Config)
                 , doubleDateRangePicker = Just (DateRangePicker.initialise doubleDateRangeConfig)
 
                 -------
@@ -568,7 +568,7 @@ update msg model =
                 Just datePickerModel ->
                     let
                         ( subModel, subCmd, extMsg ) =
-                            DatePicker2.update subMsg datePickerModel
+                            DatePicker.update subMsg datePickerModel
                     in
                     ( { model | singleDatePicker = Just subModel }
                     , Cmd.map SingleDatePicker2Msg subCmd
@@ -584,7 +584,7 @@ update msg model =
                 Just datePickerModel ->
                     let
                         ( subModel, subCmd, extMsg ) =
-                            DatePicker2.update subMsg datePickerModel
+                            DatePicker.update subMsg datePickerModel
                     in
                     ( { model | doubleDatePicker = Just subModel }
                     , Cmd.map DoubleDatePicker2Msg subCmd

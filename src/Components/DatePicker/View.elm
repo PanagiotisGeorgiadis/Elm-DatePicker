@@ -1,8 +1,8 @@
-module Components.DatePicker2.View exposing (view)
+module Components.DatePicker.View exposing (view)
 
 -- import Utils.Html.Attributes as Attributes
 
-import Components.DatePicker2.Update exposing (DateLimit(..), Model, Msg(..), ViewType(..))
+import Components.DatePicker.Update exposing (DateLimit(..), Model, Msg(..), ViewType(..))
 import Components.MonthPicker as MonthPicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)

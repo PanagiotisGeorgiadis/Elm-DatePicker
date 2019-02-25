@@ -1,4 +1,4 @@
-module Components.DatePicker2.Update exposing
+module Components.DatePicker.Update exposing
     ( DateLimit(..)
     , DatePickerConfig
     , Model
