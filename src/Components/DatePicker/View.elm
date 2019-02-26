@@ -14,70 +14,82 @@ import Utils.Time as Time
 
 
 view : Model -> Html Msg
-view model =
-    case model.viewType of
-        Single ->
-            let
-                ( isPreviousButtonActive, isNextButtonActive ) =
-                    case model.dateLimit of
-                        DateLimit { minDate, maxDate } ->
-                            let
-                                primaryDateMonthInt =
-                                    getMonthInt model.primaryDate
-                            in
-                            ( getMonthInt minDate < primaryDateMonthInt
-                            , getMonthInt maxDate > primaryDateMonthInt
-                            )
+view ({ viewType } as model) =
+    div [ class "date-time-picker" ]
+        [ case viewType of
+            Single ->
+                singleCalendarView model
 
-                        NoLimit _ ->
-                            ( True
-                            , True
-                            )
+            Double ->
+                doubleCalendarView model
+        ]
 
-                pickerConfig =
-                    { date = model.primaryDate
-                    , nextButtonHandler = getNextButtonAction isNextButtonActive
-                    , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
-                    }
-            in
-            div [ class "single-calendar-view no-select" ]
-                [ MonthPicker.singleMonthPickerView2 pickerConfig
-                , calendarView model
-                , todayButtonHtml model
-                ]
 
-        Double ->
-            let
-                nextDate =
-                    DateTime.incrementMonth model.primaryDate
+singleCalendarView : Model -> Html Msg
+singleCalendarView ({ dateLimit, primaryDate } as model) =
+    let
+        ( isPreviousButtonActive, isNextButtonActive ) =
+            case dateLimit of
+                DateLimit { minDate, maxDate } ->
+                    let
+                        primaryDateMonthInt =
+                            getMonthInt primaryDate
+                    in
+                    ( getMonthInt minDate < primaryDateMonthInt
+                    , getMonthInt maxDate > primaryDateMonthInt
+                    )
 
-                nextModel =
-                    { model | primaryDate = nextDate }
+                NoLimit _ ->
+                    ( True
+                    , True
+                    )
 
-                ( isPreviousButtonActive, isNextButtonActive ) =
-                    case model.dateLimit of
-                        DateLimit { minDate, maxDate } ->
-                            ( getMonthInt minDate < getMonthInt model.primaryDate
-                            , getMonthInt maxDate > getMonthInt nextDate
-                            )
+        pickerConfig =
+            { date = primaryDate
+            , nextButtonHandler = getNextButtonAction isNextButtonActive
+            , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            }
+    in
+    div [ class "single-calendar-view no-select" ]
+        [ MonthPicker.singleMonthPickerView2 pickerConfig
+        , calendarView model
+        , todayButtonHtml model
+        ]
 
-                        NoLimit _ ->
-                            ( True
-                            , True
-                            )
 
-                pickerConfig =
-                    { date = model.primaryDate
-                    , nextButtonHandler = getNextButtonAction isNextButtonActive
-                    , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
-                    }
-            in
-            div [ class "double-calendar-view no-select" ]
-                [ MonthPicker.doubleMonthPickerView2 pickerConfig
-                , calendarView model
-                , calendarView nextModel
-                , todayButtonHtml model
-                ]
+doubleCalendarView : Model -> Html Msg
+doubleCalendarView ({ dateLimit, primaryDate } as model) =
+    let
+        nextDate =
+            DateTime.incrementMonth primaryDate
+
+        nextModel =
+            { model | primaryDate = nextDate }
+
+        ( isPreviousButtonActive, isNextButtonActive ) =
+            case dateLimit of
+                DateLimit { minDate, maxDate } ->
+                    ( getMonthInt minDate < getMonthInt primaryDate
+                    , getMonthInt maxDate > getMonthInt nextDate
+                    )
+
+                NoLimit _ ->
+                    ( True
+                    , True
+                    )
+
+        pickerConfig =
+            { date = primaryDate
+            , nextButtonHandler = getNextButtonAction isNextButtonActive
+            , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            }
+    in
+    div [ class "double-calendar-view no-select" ]
+        [ MonthPicker.doubleMonthPickerView2 pickerConfig
+        , calendarView model
+        , calendarView nextModel
+        , todayButtonHtml model
+        ]
 
 
 calendarView : Model -> Html Msg

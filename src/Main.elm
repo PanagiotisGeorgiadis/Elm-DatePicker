@@ -8,7 +8,7 @@ import Components.DateRangePicker.Update as DateRangePicker
 import Components.DateRangePicker.View as DateRangePicker
 import Components.TimePicker.Update as TimePicker
 import DateTime as DateTime
-import Html exposing (..)
+import Html exposing (Html, br, div, hr, text)
 import Task
 import Time
 import Url exposing (Url)
@@ -54,23 +54,23 @@ type Msg
    1) disablePastDates :: Bool    -- DONE.
    2) showOnHover selection       -- DONE.
    3) useKeyboardListeners ( Only on single date picker ? ) -- Think about that.
-   4) minDateRangeOffset :: Int -- Think about how to implement that.
+   4) minDateRangeOffset :: Int -- Think about how to implement that. ( DONE )
    5) futureDatesLimit :: DateLimit -- DONE
    6) pastDatesLimit :: DateLimit   -- DONE
    7) showHumanReadableDateString ?
    8) humanReadableDateFormat ?
         Example:
             type DateFormat = US | EU
-   9) minAvailableDate.
-   10) maxAvailableDate.
+   9) minAvailableDate.     ( DONE )
+   10) maxAvailableDate.    ( DONE )
    11) availableDateRange -- We could combine the two properties above into a date range list.
 
 
    Check the contenteditable if it can be implemented as a single line
-   only for the time picker.
+   only for the time picker.  ( NOPE )
 
    Also check the start and end dates to always be sorted even if the user
-   selects the start date after the end date.
+   selects the start date after the end date. ( DONE )
 
 -}
 
@@ -80,7 +80,9 @@ view model =
     { title = "My DatePicker"
     , body =
         [ div []
-            [ text "Single Date Picker"
+            [ br [] []
+            , text "Single Date Picker"
+            , br [] []
             , case model.singleDatePicker of
                 Just m ->
                     Html.map SingleDatePickerMsg (DatePicker.view m)
@@ -89,7 +91,9 @@ view model =
                     text "Error!"
             , br [] []
             , br [] []
+            , br [] []
             , text "Double Date Picker"
+            , br [] []
             , case model.doubleDatePicker of
                 Just m ->
                     Html.map DoubleDatePickerMsg (DatePicker.view m)
@@ -98,7 +102,9 @@ view model =
                     text "Error!"
             , br [] []
             , br [] []
+            , br [] []
             , text "Single Date Picker Constrained"
+            , br [] []
             , case model.singleDatePicker_C of
                 Just m ->
                     Html.map SingleDatePickerMsg_C (DatePicker.view m)
@@ -107,7 +113,9 @@ view model =
                     text "Error!"
             , br [] []
             , br [] []
+            , br [] []
             , text "Double Date Picker Constrained"
+            , br [] []
             , case model.doubleDatePicker_C of
                 Just m ->
                     Html.map DoubleDatePickerMsg_C (DatePicker.view m)
@@ -117,11 +125,10 @@ view model =
             , br [] []
             , br [] []
             , br [] []
-            , text "======================================================================================"
-            , br [] []
-            , text "======================================================================================"
+            , hr [] []
             , br [] []
             , text "Single Date Range Picker"
+            , br [] []
             , case model.singleDateRangePicker of
                 Just datePickerModel ->
                     Html.map SingleDateRangeMsg (DateRangePicker.view datePickerModel)
@@ -129,7 +136,10 @@ view model =
                 Nothing ->
                     text "Error!"
             , br [] []
+            , br [] []
+            , br [] []
             , text "Double Date Range Picker"
+            , br [] []
             , case model.doubleDateRangePicker of
                 Just datePickerModel ->
                     Html.map DoubleDateRangeMsg (DateRangePicker.view datePickerModel)
@@ -137,7 +147,10 @@ view model =
                 Nothing ->
                     text "Error!"
             , br [] []
+            , br [] []
+            , br [] []
             , text "Single Date Range Picker Constrained"
+            , br [] []
             , case model.singleDateRangePicker_C of
                 Just datePickerModel ->
                     Html.map SingleDateRangeMsg_C (DateRangePicker.view datePickerModel)
@@ -145,7 +158,10 @@ view model =
                 Nothing ->
                     text "Error!"
             , br [] []
+            , br [] []
+            , br [] []
             , text "Double Date Range Picker Constrained"
+            , br [] []
             , case model.doubleDateRangePicker_C of
                 Just datePickerModel ->
                     Html.map DoubleDateRangeMsg_C (DateRangePicker.view datePickerModel)
@@ -219,7 +235,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 1, secondsStep = 1 }
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                     }
 
                 doubleDateRangePickerConfig =
@@ -228,7 +244,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 1 }
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                     }
 
                 singleDateRangePickerConfig_C =
@@ -237,7 +253,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 1, secondsStep = 1 }
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                     }
 
                 doubleDateRangePickerConfig_C =
@@ -246,7 +262,7 @@ update msg model =
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
                     , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 10 }
+                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                     }
             in
             ( { model
@@ -339,7 +355,7 @@ update msg model =
                             DateRangePicker.update subMsg datePickerModel
                     in
                     ( { model | singleDateRangePicker = Just subModel }
-                    , Cmd.none
+                    , Cmd.map SingleDateRangeMsg subCmd
                     )
 
                 Nothing ->
@@ -355,7 +371,7 @@ update msg model =
                             DateRangePicker.update subMsg datePickerModel
                     in
                     ( { model | doubleDateRangePicker = Just subModel }
-                    , Cmd.none
+                    , Cmd.map DoubleDateRangeMsg subCmd
                     )
 
                 Nothing ->
@@ -371,7 +387,7 @@ update msg model =
                             DateRangePicker.update subMsg datePickerModel
                     in
                     ( { model | singleDateRangePicker_C = Just subModel }
-                    , Cmd.none
+                    , Cmd.map SingleDateRangeMsg_C subCmd
                     )
 
                 Nothing ->

@@ -1,0 +1,20 @@
+.date-range-picker {
+    display: inline-block;
+    // &.horizontal-layout {
+    //     display: flex;
+    // }
+    //
+    // &.vertical-layout {
+    //     display: flex;
+    //     flex-direction: column;
+    // }
+}
+
+
+.date-time-picker {
+    display: inline-block;
+
+    .single-calendar-view {
+        flex-direction: column;
+    }
+}

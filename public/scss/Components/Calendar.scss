@@ -136,10 +136,10 @@
 
 
 .single-calendar-view {
-    width: 315px;
     height: $calendarViewHeight;
     padding: 0 12px 12px 12px;
     position: relative;
+    display: flex;
     background-color: $calendarBackground;
 
     .calendar {
@@ -147,6 +147,20 @@
         max-height: 270px;
         flex: 0.5;
         background-color: white;
+    }
+
+    .double-clock-view {
+        &.hh_mm {
+            width: 400px;
+        }
+
+        &.hh_mm_ss {
+            width: 450px;
+        }
+
+        &.hh_mm_ss_mmmm {
+            width: 600px;
+        }
     }
 }
 

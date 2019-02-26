@@ -1,5 +1,6 @@
 module Components.DateRangePicker.View exposing (view)
 
+import Clock
 import Components.DateRangePicker.Update
     exposing
         ( DateLimit(..)
@@ -11,6 +12,7 @@ import Components.DateRangePicker.Update
         , ViewType(..)
         )
 import Components.MonthPicker as MonthPicker
+import Components.TimePicker.Update as TimePicker
 import Components.TimePicker.View as TimePicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
@@ -24,13 +26,13 @@ import Utils.Time as Time
 
 view : Model -> Html Msg
 view ({ viewType, internalViewType } as model) =
-    div [ class "date-time-picker horizontal-layout" ]
+    div [ class "date-range-picker" ]
         [ case ( viewType, internalViewType ) of
             ( Single, CalendarView ) ->
                 singleCalendarView model
 
             ( Single, ClockView ) ->
-                text "Single Clock view"
+                text "Single Clock View"
 
             ( Double, CalendarView ) ->
                 doubleCalendarView model
@@ -77,9 +79,17 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
         [ class "single-calendar-view no-select"
         , onMouseLeave ResetShadowDateRange
         ]
-        [ MonthPicker.singleMonthPickerView2 pickerConfig
-        , calendarView model
-        , todayButtonHtml model
+        [ div []
+            [ MonthPicker.singleMonthPickerView2 pickerConfig
+            , calendarView model
+            , todayButtonHtml model
+            ]
+        , case model.range of
+            BothSelected _ _ ->
+                doubleClockView model
+
+            _ ->
+                text ""
         ]
 
 
@@ -136,9 +146,9 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleClockView : Model -> Html Msg
-doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes } =
+doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, pickerType, viewType } =
     let
-        selectedDateHtml date =
+        displayDateHtml date =
             case date of
                 Just d ->
                     span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
@@ -168,11 +178,25 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes }
                 Nothing ->
                     text ""
             )
+
+        className =
+            case pickerType of
+                TimePicker.HH _ ->
+                    "double-clock-view"
+
+                TimePicker.HH_MM _ ->
+                    "double-clock-view hh_mm"
+
+                TimePicker.HH_MM_SS _ ->
+                    "double-clock-view hh_mm_ss"
+
+                TimePicker.HH_MM_SS_MMMM _ ->
+                    "double-clock-view hh_mm_ss_mmmm"
     in
-    div [ class "double-clock-view" ]
+    div [ class className ]
         [ div [ class "time-picker-container no-select" ]
             [ span [ class "header" ] [ text "Pick-up Time" ]
-            , selectedDateHtml rangeStart
+            , displayDateHtml rangeStart
             , startTimePickerHtml
             , div [ class "checkbox", onClick ToggleTimeMirroring ]
                 [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
@@ -181,11 +205,16 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes }
             ]
         , div [ class "time-picker-container no-select" ]
             [ span [ class "header" ] [ text "Drop-off Time" ]
-            , selectedDateHtml rangeEnd
+            , displayDateHtml rangeEnd
             , endTimePickerHtml
             , div [ class "filler" ] []
             ]
-        , div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
+        , case viewType of
+            Single ->
+                text ""
+
+            Double ->
+                div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
         ]
 
 
@@ -193,7 +222,7 @@ calendarView : Model -> Html Msg
 calendarView ({ primaryDate } as model) =
     let
         monthDates =
-            DateTime.getDatesInMonth primaryDate
+            List.map (DateTime.setTime Clock.midnight) (DateTime.getDatesInMonth primaryDate)
 
         datesHtml =
             List.map (dateHtml model) monthDates
@@ -427,7 +456,11 @@ getFirstDayOfTheMonth date =
         , month = DateTime.getMonth date
         , year = DateTime.getYear date
         }
-        { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
+        { hours = 0
+        , minutes = 0
+        , seconds = 0
+        , milliseconds = 0
+        }
 
 
 {-| Extract to another file as a common view fragment
