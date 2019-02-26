@@ -195,7 +195,7 @@ update msg model =
                                     )
 
                         BothSelected _ _ ->
-                            ( { model | range = NoneSelected }
+                            ( { model | range = StartDateSelected date }
                             , Cmd.none
                             )
             in
