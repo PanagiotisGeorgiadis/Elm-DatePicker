@@ -9,6 +9,18 @@ const destDir   = path.join(process.cwd(), "public", "styles");
 const scss_entrypoint = path.join(sourceDir, "main.scss");
 const scss_dest       = path.join(destDir, "styles.css");
 
+const destDirExists = () => fs.existsSync(destDir);
+const entryPointExists = () => fs.existsSync(scss_entrypoint);
+
+if (!entryPointExists()) {
+    printWarningMsg("Souce file not found. Please make sure you've configured it correctly and re-run the script.\n");
+    return;
+}
+
+if (!destDirExists()) {
+    fs.mkdirSync(destDir);
+}
+
 sass.render(
   { file: scss_entrypoint
   , outFile: scss_dest
