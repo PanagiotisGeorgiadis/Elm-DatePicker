@@ -127,7 +127,7 @@
         cursor: pointer;
 
         &.align-left {
-            left: 12px;
+            left: 24px;
         }
     }
 
@@ -136,7 +136,17 @@
 
 .single-calendar-view {
     width: 315px;
+    height: $calendarViewHeight;
+    padding: 0 12px 12px 12px;
     position: relative;
+    background-color: $calendarBackground;
+
+    .calendar {
+        max-width: 315px;
+        max-height: 270px;
+        flex: 0.5;
+        background-color: white;
+    }
 }
 
 

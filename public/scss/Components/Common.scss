@@ -4,7 +4,7 @@
 .double-clock-view,
 .double-calendar-view {
     width: $doubleViewWidth;
-    height: $doubleViewHeight;
+    height: $calendarViewHeight;
     padding: $doubleViewPadding;
     position: relative;
     display: flex;
