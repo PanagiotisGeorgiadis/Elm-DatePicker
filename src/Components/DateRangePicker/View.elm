@@ -3,6 +3,7 @@ module Components.DateRangePicker.View exposing (view)
 import Components.DateRangePicker.Update
     exposing
         ( DateLimit(..)
+        , DateRange(..)
         , DateRangeOffset(..)
         , InternalViewType(..)
         , Model
@@ -123,8 +124,8 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         [ MonthPicker.doubleMonthPickerView2 pickerConfig
         , calendarView model
         , calendarView nextModel
-        , case ( model.rangeStart, model.rangeEnd ) of
-            ( Just start, Just end ) ->
+        , case model.range of
+            BothSelected _ _ ->
                 div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
 
             _ ->
@@ -133,7 +134,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleClockView : Model -> Html Msg
-doubleClockView { rangeStart, rangeEnd, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes } =
+doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes } =
     let
         selectedDateHtml date =
             case date of
@@ -142,6 +143,14 @@ doubleClockView { rangeStart, rangeEnd, rangeStartTimePicker, rangeEndTimePicker
 
                 Nothing ->
                     text ""
+
+        ( rangeStart, rangeEnd ) =
+            case range of
+                BothSelected start end ->
+                    ( Just start, Just end )
+
+                _ ->
+                    ( Nothing, Nothing )
 
         ( startTimePickerHtml, endTimePickerHtml ) =
             ( case rangeStartTimePicker of
@@ -356,13 +365,16 @@ getPreviousButtonAction isButtonActive =
 
 
 getVisualRangeEdges : Model -> ( Maybe DateTime, Maybe DateTime )
-getVisualRangeEdges { rangeStart, rangeEnd, shadowRangeEnd } =
-    case shadowRangeEnd of
-        Just end ->
-            sortMaybeDates rangeStart (Just end)
+getVisualRangeEdges { range, shadowRangeEnd } =
+    case range of
+        NoneSelected ->
+            ( Nothing, Nothing )
 
-        Nothing ->
-            sortMaybeDates rangeStart rangeEnd
+        StartDateSelected start ->
+            sortMaybeDates (Just start) shadowRangeEnd
+
+        BothSelected start end ->
+            sortMaybeDates (Just start) (Just end)
 
 
 checkIfDisabled : Model -> DateTime -> Bool
@@ -408,14 +420,11 @@ areDatesEqual lhs rhs =
 -}
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth date =
-    let
-        ( month, year ) =
-            ( DateTime.getMonth date
-            , DateTime.getYear date
-            )
-    in
     DateTime.fromRawParts
-        { day = 1, month = month, year = year }
+        { day = 1
+        , month = DateTime.getMonth date
+        , year = DateTime.getYear date
+        }
         { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
 
 

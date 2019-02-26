@@ -1,5 +1,6 @@
 module Components.DateRangePicker.Update exposing
     ( DateLimit(..)
+    , DateRange(..)
     , DateRangeOffset(..)
     , InternalViewType(..)
     , Model
@@ -55,6 +56,12 @@ type alias NoLimitConfig =
 --     | Disabled
 
 
+type DateRange
+    = NoneSelected
+    | StartDateSelected DateTime
+    | BothSelected DateTime DateTime
+
+
 type InternalViewType
     = CalendarView
     | ClockView
@@ -64,8 +71,7 @@ type alias Model =
     { today : DateTime
     , viewType : ViewType
     , primaryDate : DateTime
-    , rangeStart : Maybe DateTime
-    , rangeEnd : Maybe DateTime
+    , range : DateRange
     , shadowRangeEnd : Maybe DateTime
 
     -- , showOnHover : Shadowing -- TODO: Think about that ?
@@ -109,8 +115,7 @@ initialise { today, viewType, primaryDate, dateLimit, mirrorTimes, pickerType } 
     { today = today
     , viewType = viewType
     , primaryDate = primaryDate_
-    , rangeStart = Nothing
-    , rangeEnd = Nothing
+    , range = NoneSelected
     , shadowRangeEnd = Nothing
     , dateLimit = dateLimit
     , dateRangeOffset = Offset { minDateRangeLength = 4, invalidDates = [] }
@@ -137,7 +142,7 @@ type Msg
     | ShowCalendarView
     | InitialiseTimePickers
     | ToggleTimeMirroring
-    | SyncTimePickers (Maybe DateTime)
+    | SyncTimePickers DateTime
     | RangeStartPickerMsg TimePicker.Msg
     | RangeEndPickerMsg TimePicker.Msg
 
@@ -165,47 +170,42 @@ update msg model =
                 model_ =
                     { model | shadowRangeEnd = Nothing }
 
-                updatedModel =
-                    case ( model.rangeStart, model.rangeEnd ) of
-                        ( Just start, Nothing ) ->
-                            -- Date Range Complete
-                            case DateTime.compareDates start date of
-                                LT ->
-                                    -- Normal case.
-                                    { model_ | rangeEnd = Just date }
+                ( updatedModel, cmd ) =
+                    case model.range of
+                        NoneSelected ->
+                            ( { model | range = StartDateSelected date }
+                            , Cmd.none
+                            )
 
+                        StartDateSelected startDate ->
+                            case DateTime.compareDates startDate date of
                                 EQ ->
-                                    -- Cancels out the selected date.
-                                    { model_ | rangeStart = Nothing, rangeEnd = Nothing }
+                                    ( { model | range = NoneSelected }
+                                    , Cmd.none
+                                    )
+
+                                LT ->
+                                    ( { model | range = BothSelected startDate date }
+                                    , Task.perform (\_ -> InitialiseTimePickers) (Task.succeed ())
+                                    )
 
                                 GT ->
-                                    -- Reversed case. ie. the user selected the rangeEnd first.
-                                    { model_ | rangeStart = Just date, rangeEnd = Just start }
+                                    ( { model | range = BothSelected date startDate }
+                                    , Task.perform (\_ -> InitialiseTimePickers) (Task.succeed ())
+                                    )
 
-                        ( Nothing, Just end ) ->
-                            -- Fixing some imposible state
-                            { model_ | rangeStart = Just date, rangeEnd = Nothing }
-
-                        ( Just start, Just end ) ->
-                            -- Resetting the date range here
-                            { model_ | rangeStart = Just date, rangeEnd = Nothing }
-
-                        ( Nothing, Nothing ) ->
-                            -- Starting the date range process.
-                            { model_ | rangeStart = Just date }
+                        BothSelected _ _ ->
+                            ( { model | range = NoneSelected }
+                            , Cmd.none
+                            )
             in
             ( updateDateRangeOffset updatedModel
-            , case ( updatedModel.rangeStart, updatedModel.rangeEnd ) of
-                ( Just start, Just end ) ->
-                    Task.perform (\_ -> InitialiseTimePickers) (Task.succeed ())
-
-                _ ->
-                    Cmd.none
+            , cmd
             )
 
         DateHoverDetected date ->
-            case ( model.rangeStart, model.rangeEnd ) of
-                ( Just start, Nothing ) ->
+            case model.range of
+                StartDateSelected start ->
                     ( { model | shadowRangeEnd = Just date }
                     , Cmd.none
                     )
@@ -231,8 +231,8 @@ update msg model =
             )
 
         InitialiseTimePickers ->
-            case ( model.rangeStart, model.rangeEnd ) of
-                ( Just start, Just end ) ->
+            case model.range of
+                BothSelected start end ->
                     let
                         initialiseTimePicker dateTime =
                             TimePicker.initialise
@@ -254,25 +254,29 @@ update msg model =
 
         ToggleTimeMirroring ->
             ( { model | mirrorTimes = not model.mirrorTimes }
-            , Task.perform (\_ -> SyncTimePickers model.rangeStart) (Task.succeed ())
+            , case model.range of
+                BothSelected start end ->
+                    Task.perform (\_ -> SyncTimePickers start) (Task.succeed ())
+
+                _ ->
+                    Cmd.none
             )
 
-        SyncTimePickers dt ->
-            case ( dt, model.mirrorTimes ) of
-                ( Just dateTime, True ) ->
+        SyncTimePickers dateTime ->
+            case ( model.range, model.mirrorTimes ) of
+                ( BothSelected start end, True ) ->
                     let
                         time =
                             DateTime.getTime dateTime
 
                         ( updateFn, timePickerUpdateFn ) =
-                            ( Maybe.map (DateTime.setTime time)
+                            ( DateTime.setTime time
                             , Maybe.map (TimePicker.updateDisplayTime time)
                             )
                     in
                     ( { model
-                        | rangeStart = updateFn model.rangeStart
+                        | range = BothSelected (updateFn start) (updateFn end)
                         , rangeStartTimePicker = timePickerUpdateFn model.rangeStartTimePicker
-                        , rangeEnd = updateFn model.rangeEnd
                         , rangeEndTimePicker = timePickerUpdateFn model.rangeEndTimePicker
                       }
                     , Cmd.none
@@ -290,24 +294,24 @@ update msg model =
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg timePickerModel
 
-                        ( rangeStart, cmd ) =
-                            case extMsg of
-                                TimePicker.UpdatedTime time ->
+                        ( range, cmd ) =
+                            case ( extMsg, model.range ) of
+                                ( TimePicker.UpdatedTime time, BothSelected start end ) ->
                                     let
-                                        updatedValue =
-                                            Maybe.map (DateTime.setTime time) model.rangeStart
+                                        updatedStart =
+                                            DateTime.setTime time start
                                     in
-                                    ( updatedValue
-                                    , Task.perform (\_ -> SyncTimePickers updatedValue) (Task.succeed ())
+                                    ( BothSelected updatedStart end
+                                    , Task.perform (\_ -> SyncTimePickers updatedStart) (Task.succeed ())
                                     )
 
-                                TimePicker.None ->
-                                    ( model.rangeStart
+                                _ ->
+                                    ( model.range
                                     , Cmd.none
                                     )
                     in
                     ( { model
-                        | rangeStart = rangeStart
+                        | range = range
                         , rangeStartTimePicker = Just subModel
                       }
                     , Cmd.batch
@@ -328,24 +332,24 @@ update msg model =
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg timePickerModel
 
-                        ( rangeEnd, cmd ) =
-                            case extMsg of
-                                TimePicker.UpdatedTime time ->
+                        ( range, cmd ) =
+                            case ( extMsg, model.range ) of
+                                ( TimePicker.UpdatedTime time, BothSelected start end ) ->
                                     let
-                                        updatedValue =
-                                            Maybe.map (DateTime.setTime time) model.rangeEnd
+                                        updatedEnd =
+                                            DateTime.setTime time end
                                     in
-                                    ( updatedValue
-                                    , Task.perform (\_ -> SyncTimePickers updatedValue) (Task.succeed ())
+                                    ( BothSelected start updatedEnd
+                                    , Task.perform (\_ -> SyncTimePickers updatedEnd) (Task.succeed ())
                                     )
 
-                                TimePicker.None ->
-                                    ( model.rangeEnd
+                                _ ->
+                                    ( model.range
                                     , Cmd.none
                                     )
                     in
                     ( { model
-                        | rangeEnd = rangeEnd
+                        | range = range
                         , rangeEndTimePicker = Just subModel
                       }
                     , Cmd.batch
@@ -361,14 +365,14 @@ update msg model =
 
 
 updateDateRangeOffset : Model -> Model
-updateDateRangeOffset ({ rangeStart, rangeEnd, dateRangeOffset } as model) =
+updateDateRangeOffset ({ range, dateRangeOffset } as model) =
     case dateRangeOffset of
         Offset { minDateRangeLength } ->
-            case ( rangeStart, rangeEnd ) of
-                ( Just start, Nothing ) ->
+            case range of
+                StartDateSelected start ->
                     let
                         -- Get all the future dates that are too close to the range start date.
-                        -- Example for minDateRangeLength == 4 and rangeStart == 26 Aug 2019
+                        -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
                         -- [ 27 Aug 2019, 28 Aug 2019 ] will be the disabled dates because
                         -- we want a minimum length of 4 days which will be [ 26, 27, 28, 29 ]
                         -- Note that 29 Aug 2019 will be the first available date to choose ( from the future dates ).
@@ -380,7 +384,7 @@ updateDateRangeOffset ({ rangeStart, rangeEnd, dateRangeOffset } as model) =
                                             DateTime.getDateRange start (Calendar.incrementDays (minDateRangeLength - 1) start) Clock.midnight
 
                         -- Get all the past dates that are too close to the range start date.
-                        -- Example for minDateRangeLength == 4 and rangeStart == 26 Aug 2019
+                        -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
                         -- [ 24 Aug 2019, 25 Aug 2019 ] will be the disabled dates because
                         -- we want a minimum length of 4 days which will be [ 23, 24, 25, 26 ]
                         -- Note that 23 Aug 2019 will be the first available date to choose ( from the past dates ).
