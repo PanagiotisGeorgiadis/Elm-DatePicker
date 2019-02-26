@@ -40,7 +40,7 @@ view model =
                     , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
                     }
             in
-            div [ class "single-calendar-view" ]
+            div [ class "single-calendar-view no-select" ]
                 [ MonthPicker.singleMonthPickerView2 pickerConfig
                 , calendarView model
                 ]
@@ -71,7 +71,7 @@ view model =
                     , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
                     }
             in
-            div [ class "double-calendar-view" ]
+            div [ class "double-calendar-view no-select" ]
                 [ MonthPicker.doubleMonthPickerView2 pickerConfig
                 , calendarView model
                 , calendarView nextModel

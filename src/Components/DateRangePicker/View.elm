@@ -74,7 +74,7 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
             }
     in
     div
-        [ class "single-calendar-view"
+        [ class "single-calendar-view no-select"
         , onMouseLeave ResetShadowDateRange
         ]
         [ MonthPicker.singleMonthPickerView2 pickerConfig
@@ -118,7 +118,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
             { model | primaryDate = nextDate }
     in
     div
-        [ class "double-calendar-view"
+        [ class "double-calendar-view no-select"
         , onMouseLeave ResetShadowDateRange
         ]
         [ MonthPicker.doubleMonthPickerView2 pickerConfig

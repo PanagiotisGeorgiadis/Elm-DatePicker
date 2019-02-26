@@ -25,8 +25,8 @@ type alias Model =
     , doubleDatePicker : Maybe DatePicker.Model
 
     -- TODO: Implement those to just for completion
-    -- , singleDatePicker_C : Maybe DatePicker.Model
-    -- , doubleDatePicker_C : Maybe DatePicker.Model
+    , singleDatePicker_C : Maybe DatePicker.Model
+    , doubleDatePicker_C : Maybe DatePicker.Model
     , singleDateRangePicker : Maybe DateRangePicker.Model
     , doubleDateRangePicker : Maybe DateRangePicker.Model
     , singleDateRangePicker_C : Maybe DateRangePicker.Model
@@ -40,8 +40,8 @@ type Msg
     | SingleDatePickerMsg DatePicker.Msg
     | DoubleDatePickerMsg DatePicker.Msg
       -- TODO: Implement those two just for completion
-      -- | SingleDatePickerMsg_C DatePicker.Msg
-      -- | DoubleDatePickerMsg_C DatePicker.Msg
+    | SingleDatePickerMsg_C DatePicker.Msg
+    | DoubleDatePickerMsg_C DatePicker.Msg
     | SingleDateRangeMsg DateRangePicker.Msg
     | DoubleDateRangeMsg DateRangePicker.Msg
     | SingleDateRangeMsg_C DateRangePicker.Msg
@@ -80,13 +80,7 @@ view model =
     { title = "My DatePicker"
     , body =
         [ div []
-            [ br [] []
-            , br [] []
-            , br [] []
-            , text "New Implementation as components."
-            , br [] []
-            , br [] []
-            , text "Single Date Picker"
+            [ text "Single Date Picker"
             , case model.singleDatePicker of
                 Just m ->
                     Html.map SingleDatePickerMsg (DatePicker.view m)
@@ -104,10 +98,24 @@ view model =
                     text "Error!"
             , br [] []
             , br [] []
+            , text "Single Date Picker Constrained"
+            , case model.singleDatePicker_C of
+                Just m ->
+                    Html.map SingleDatePickerMsg_C (DatePicker.view m)
+
+                Nothing ->
+                    text "Error!"
             , br [] []
             , br [] []
+            , text "Double Date Picker Constrained"
+            , case model.doubleDatePicker_C of
+                Just m ->
+                    Html.map DoubleDatePickerMsg_C (DatePicker.view m)
+
+                Nothing ->
+                    text "Error!"
             , br [] []
-            , text "NEW IMPLEMENTATION Version 24.56.95 >_<"
+            , br [] []
             , br [] []
             , text "======================================================================================"
             , br [] []
@@ -129,7 +137,7 @@ view model =
                 Nothing ->
                     text "Error!"
             , br [] []
-            , text "Single Constrained Date Range Picker"
+            , text "Single Date Range Picker Constrained"
             , case model.singleDateRangePicker_C of
                 Just datePickerModel ->
                     Html.map SingleDateRangeMsg_C (DateRangePicker.view datePickerModel)
@@ -137,7 +145,7 @@ view model =
                 Nothing ->
                     text "Error!"
             , br [] []
-            , text "Double Constrained Date Range Picker"
+            , text "Double Date Range Picker Constrained"
             , case model.doubleDateRangePicker_C of
                 Just datePickerModel ->
                     Html.map DoubleDateRangeMsg_C (DateRangePicker.view datePickerModel)
@@ -167,37 +175,42 @@ update msg model =
                 todayDateTime =
                     DateTime.fromPosix todayPosix
 
-                ( thirdOfFeb, eighthOfFeb ) =
-                    ( 1549152000000
-                    , 1549584000000
+                ( thirdOfFeb, sixteenOfApr ) =
+                    ( Time.millisToPosix 1549152000000
+                    , Time.millisToPosix 1555372800000
                     )
 
-                ( sixteenOfMar, sixteenOfApr ) =
-                    ( 1552694400000
-                    , 1555372800000
-                    )
+                constrains =
+                    { minDate = DateTime.fromPosix thirdOfFeb
+                    , maxDate = DateTime.fromPosix sixteenOfApr
+                    }
 
-                singleDatePicker2Config =
+                singleDatePickerConfig =
                     { today = todayDateTime
                     , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
-                    , dateLimit =
-                        DatePicker.DateLimit
-                            { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
-                            , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
-                            }
+                    , dateLimit = DatePicker.NoLimit { disablePastDates = True }
                     }
 
-                doubleDatePicker2Config =
+                doubleDatePickerConfig =
                     { today = todayDateTime
                     , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.NoLimit { disablePastDates = True }
                     }
 
-                constrains =
-                    { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
-                    , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfMar)
+                singleDatePickerConfig_C =
+                    { today = todayDateTime
+                    , viewType = DatePicker.Single
+                    , primaryDate = todayDateTime
+                    , dateLimit = DatePicker.DateLimit constrains
+                    }
+
+                doubleDatePickerConfig_C =
+                    { today = todayDateTime
+                    , viewType = DatePicker.Double
+                    , primaryDate = todayDateTime
+                    , dateLimit = DatePicker.DateLimit constrains
                     }
 
                 singleDateRangePickerConfig =
@@ -222,11 +235,7 @@ update msg model =
                     { today = todayDateTime
                     , viewType = DateRangePicker.Single
                     , primaryDate = todayDateTime
-                    , dateLimit =
-                        DateRangePicker.DateLimit
-                            { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
-                            , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
-                            }
+                    , dateLimit = DateRangePicker.DateLimit constrains
                     , mirrorTimes = True
                     , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 1, secondsStep = 1 }
                     }
@@ -235,19 +244,21 @@ update msg model =
                     { today = todayDateTime
                     , viewType = DateRangePicker.Double
                     , primaryDate = todayDateTime
-                    , dateLimit =
-                        DateRangePicker.DateLimit
-                            { minDate = DateTime.fromPosix (Time.millisToPosix thirdOfFeb)
-                            , maxDate = DateTime.fromPosix (Time.millisToPosix sixteenOfApr)
-                            }
+                    , dateLimit = DateRangePicker.DateLimit constrains
                     , mirrorTimes = True
                     , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 10 }
                     }
             in
             ( { model
                 | today = Just todayPosix
-                , singleDatePicker = Just (DatePicker.initialise singleDatePicker2Config)
-                , doubleDatePicker = Just (DatePicker.initialise doubleDatePicker2Config)
+
+                --
+                , singleDatePicker = Just (DatePicker.initialise singleDatePickerConfig)
+                , doubleDatePicker = Just (DatePicker.initialise doubleDatePickerConfig)
+                , singleDatePicker_C = Just (DatePicker.initialise singleDatePickerConfig_C)
+                , doubleDatePicker_C = Just (DatePicker.initialise doubleDatePickerConfig_C)
+
+                --
                 , singleDateRangePicker = Just (DateRangePicker.initialise singleDateRangePickerConfig)
                 , doubleDateRangePicker = Just (DateRangePicker.initialise doubleDateRangePickerConfig)
                 , singleDateRangePicker_C = Just (DateRangePicker.initialise singleDateRangePickerConfig_C)
@@ -281,6 +292,38 @@ update msg model =
                     in
                     ( { model | doubleDatePicker = Just subModel }
                     , Cmd.map DoubleDatePickerMsg subCmd
+                    )
+
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    )
+
+        SingleDatePickerMsg_C subMsg ->
+            case model.singleDatePicker_C of
+                Just datePickerModel ->
+                    let
+                        ( subModel, subCmd, extMsg ) =
+                            DatePicker.update subMsg datePickerModel
+                    in
+                    ( { model | singleDatePicker_C = Just subModel }
+                    , Cmd.map SingleDatePickerMsg_C subCmd
+                    )
+
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    )
+
+        DoubleDatePickerMsg_C subMsg ->
+            case model.doubleDatePicker_C of
+                Just datePickerModel ->
+                    let
+                        ( subModel, subCmd, extMsg ) =
+                            DatePicker.update subMsg datePickerModel
+                    in
+                    ( { model | doubleDatePicker_C = Just subModel }
+                    , Cmd.map DoubleDatePickerMsg_C subCmd
                     )
 
                 Nothing ->
@@ -356,8 +399,14 @@ update msg model =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { today = Nothing
+
+      --
       , singleDatePicker = Nothing
       , doubleDatePicker = Nothing
+      , singleDatePicker_C = Nothing
+      , doubleDatePicker_C = Nothing
+
+      --
       , singleDateRangePicker = Nothing
       , doubleDateRangePicker = Nothing
       , singleDateRangePicker_C = Nothing
