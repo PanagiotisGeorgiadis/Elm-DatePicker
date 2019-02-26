@@ -43,6 +43,7 @@ view model =
             div [ class "single-calendar-view no-select" ]
                 [ MonthPicker.singleMonthPickerView2 pickerConfig
                 , calendarView model
+                , todayButtonHtml model
                 ]
 
         Double ->
@@ -75,6 +76,7 @@ view model =
                 [ MonthPicker.doubleMonthPickerView2 pickerConfig
                 , calendarView model
                 , calendarView nextModel
+                , todayButtonHtml model
                 ]
 
 
@@ -241,3 +243,16 @@ getPreviousButtonAction isButtonActive =
 totalCalendarCells : Int
 totalCalendarCells =
     6 * 7
+
+
+todayButtonHtml : Model -> Html Msg
+todayButtonHtml { viewType } =
+    div
+        [ classList
+            [ ( "today-button", True )
+            , ( "align-left", viewType == Single )
+            ]
+        , onClick MoveToToday
+        ]
+        [ text "Today"
+        ]

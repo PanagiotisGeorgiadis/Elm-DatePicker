@@ -114,9 +114,29 @@
 }
 
 
-/* Real Deal */
+.single-calendar-view,
+.double-calendar-view {
+
+    .today-button {
+        position: absolute;
+        top: 8px;
+        left: calc(50% - 20px);
+        font-size: 14px;
+        font-weight: 500;
+        color: $brandPrimary;
+        cursor: pointer;
+
+        &.align-left {
+            left: 12px;
+        }
+    }
+
+}
+
+
 .single-calendar-view {
     width: 315px;
+    position: relative;
 }
 
 

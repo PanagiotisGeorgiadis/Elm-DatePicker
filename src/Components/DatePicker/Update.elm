@@ -66,6 +66,7 @@ type Msg
     | PreviousMonth
     | NextMonth
     | SelectDate DateTime
+    | MoveToToday
 
 
 type ExtMsg
@@ -110,3 +111,9 @@ update msg model =
                 , Cmd.none
                 , SelectedDate date
                 )
+
+        MoveToToday ->
+            ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
+            , Cmd.none
+            , None
+            )

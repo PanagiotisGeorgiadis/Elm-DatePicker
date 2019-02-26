@@ -79,6 +79,7 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
         ]
         [ MonthPicker.singleMonthPickerView2 pickerConfig
         , calendarView model
+        , todayButtonHtml model
         ]
 
 
@@ -124,6 +125,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         [ MonthPicker.doubleMonthPickerView2 pickerConfig
         , calendarView model
         , calendarView nextModel
+        , todayButtonHtml model
         , case model.range of
             BothSelected _ _ ->
                 div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
@@ -475,3 +477,16 @@ sortMaybeDates lhs rhs =
 
         _ ->
             ( lhs, rhs )
+
+
+todayButtonHtml : Model -> Html Msg
+todayButtonHtml { viewType } =
+    div
+        [ classList
+            [ ( "today-button", True )
+            , ( "align-left", viewType == Single )
+            ]
+        , onClick MoveToToday
+        ]
+        [ text "Today"
+        ]

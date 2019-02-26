@@ -59,6 +59,7 @@ type alias NoLimitConfig =
 type DateRange
     = NoneSelected
     | StartDateSelected DateTime
+      -- | BothSelectedTemp
     | BothSelected DateTime DateTime
 
 
@@ -145,6 +146,7 @@ type Msg
     | SyncTimePickers DateTime
     | RangeStartPickerMsg TimePicker.Msg
     | RangeEndPickerMsg TimePicker.Msg
+    | MoveToToday
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -362,6 +364,11 @@ update msg model =
                     ( model
                     , Cmd.none
                     )
+
+        MoveToToday ->
+            ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
+            , Cmd.none
+            )
 
 
 updateDateRangeOffset : Model -> Model
