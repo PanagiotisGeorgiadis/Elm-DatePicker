@@ -120,7 +120,8 @@
     .today-button {
         position: absolute;
         top: 8px;
-        left: calc(50% - 20px);
+        // left: calc(50% - 20px);
+        left: 24px;
         font-size: 14px;
         font-weight: 500;
         color: $brandPrimary;
