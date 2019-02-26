@@ -46,10 +46,10 @@ initialise : Config -> Model
 initialise { pickerType, time } =
     { pickerType = pickerType
     , time = time
-    , hoursDisplayValue = getHoursString time
-    , minutesDisplayValue = getMinutesString time
-    , secondsDisplayValue = getSecondsString time
-    , millisecondsDisplayValue = getMillisecondsString time
+    , hoursDisplayValue = toHoursString time
+    , minutesDisplayValue = toMinutesString time
+    , secondsDisplayValue = toSecondsString time
+    , millisecondsDisplayValue = toMillisecondsString time
     }
 
 
@@ -118,13 +118,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, hoursDisplayValue = getHoursString time }
+                    ( { model | time = time, hoursDisplayValue = toHoursString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | hoursDisplayValue = getHoursString model.time }
+                    ( { model | hoursDisplayValue = toHoursString model.time }
                     , Cmd.none
                     , None
                     )
@@ -136,13 +136,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, minutesDisplayValue = getMinutesString time }
+                    ( { model | time = time, minutesDisplayValue = toMinutesString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | minutesDisplayValue = getMinutesString model.time }
+                    ( { model | minutesDisplayValue = toMinutesString model.time }
                     , Cmd.none
                     , None
                     )
@@ -154,13 +154,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, secondsDisplayValue = getSecondsString time }
+                    ( { model | time = time, secondsDisplayValue = toSecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | secondsDisplayValue = getSecondsString model.time }
+                    ( { model | secondsDisplayValue = toSecondsString model.time }
                     , Cmd.none
                     , None
                     )
@@ -172,13 +172,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, millisecondsDisplayValue = getMillisecondsString time }
+                    ( { model | time = time, millisecondsDisplayValue = toMillisecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | millisecondsDisplayValue = getMillisecondsString model.time }
+                    ( { model | millisecondsDisplayValue = toMillisecondsString model.time }
                     , Cmd.none
                     , None
                     )
@@ -197,7 +197,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , hoursDisplayValue = getHoursString time
+                , hoursDisplayValue = toHoursString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -217,7 +217,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , minutesDisplayValue = getMinutesString time
+                , minutesDisplayValue = toMinutesString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -237,7 +237,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , secondsDisplayValue = getSecondsString time
+                , secondsDisplayValue = toSecondsString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -257,7 +257,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , millisecondsDisplayValue = getMillisecondsString time
+                , millisecondsDisplayValue = toMillisecondsString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -277,7 +277,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , hoursDisplayValue = getHoursString time
+                , hoursDisplayValue = toHoursString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -297,7 +297,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , minutesDisplayValue = getMinutesString time
+                , minutesDisplayValue = toMinutesString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -317,7 +317,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , secondsDisplayValue = getSecondsString time
+                , secondsDisplayValue = toSecondsString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -337,7 +337,7 @@ update msg model =
             in
             ( { model
                 | time = time
-                , millisecondsDisplayValue = getMillisecondsString time
+                , millisecondsDisplayValue = toMillisecondsString time
               }
             , Cmd.none
             , UpdatedTime time
@@ -446,38 +446,38 @@ updateDisplayTime : Clock.Time -> Model -> Model
 updateDisplayTime time model =
     { model
         | time = time
-        , hoursDisplayValue = getHoursString time
-        , minutesDisplayValue = getMinutesString time
-        , secondsDisplayValue = getSecondsString time
-        , millisecondsDisplayValue = getMillisecondsString time
+        , hoursDisplayValue = toHoursString time
+        , minutesDisplayValue = toMinutesString time
+        , secondsDisplayValue = toSecondsString time
+        , millisecondsDisplayValue = toMillisecondsString time
     }
 
 
 {-| Returns the formatted `Hour` string from a Clock.Time
 -}
-getHoursString : Clock.Time -> String
-getHoursString =
+toHoursString : Clock.Time -> String
+toHoursString =
     timeToString << Clock.getHours
 
 
 {-| Returns the formatted `Minute` string from a Clock.Time
 -}
-getMinutesString : Clock.Time -> String
-getMinutesString =
+toMinutesString : Clock.Time -> String
+toMinutesString =
     timeToString << Clock.getMinutes
 
 
 {-| Returns the formatted `Second` string from a Clock.Time
 -}
-getSecondsString : Clock.Time -> String
-getSecondsString =
+toSecondsString : Clock.Time -> String
+toSecondsString =
     timeToString << Clock.getSeconds
 
 
 {-| Returns the formatted `Millisecond` string from a Clock.Time
 -}
-getMillisecondsString : Clock.Time -> String
-getMillisecondsString =
+toMillisecondsString : Clock.Time -> String
+toMillisecondsString =
     millisToString << Clock.getMilliseconds
 
 
