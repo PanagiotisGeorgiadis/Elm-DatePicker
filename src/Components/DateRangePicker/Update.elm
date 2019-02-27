@@ -136,8 +136,7 @@ initialise { today, viewType, primaryDate, dateLimit, mirrorTimes, pickerType } 
 
 
 type Msg
-    = NoOp
-    | PreviousMonth
+    = PreviousMonth
     | NextMonth
     | SelectDate DateTime
     | UpdateVisualSelection DateTime
@@ -155,11 +154,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model
-            , Cmd.none
-            )
-
         PreviousMonth ->
             ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none

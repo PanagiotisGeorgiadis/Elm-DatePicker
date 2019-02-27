@@ -54,8 +54,7 @@ initialise { pickerType, time } =
 
 
 type Msg
-    = NoOp
-    | HoursInputHandler String
+    = HoursInputHandler String
     | MinutesInputHandler String
     | SecondsInputHandler String
     | MillisecondsInputHandler String
@@ -81,12 +80,6 @@ type ExtMsg
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model
-            , Cmd.none
-            , None
-            )
-
         HoursInputHandler value ->
             ( { model | hoursDisplayValue = validateHours model value }
             , Cmd.none
