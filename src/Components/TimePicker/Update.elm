@@ -195,10 +195,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , hoursDisplayValue = toHoursString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -215,10 +212,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , minutesDisplayValue = toMinutesString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -235,10 +229,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , secondsDisplayValue = toSecondsString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -255,10 +246,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , millisecondsDisplayValue = toMillisecondsString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -275,10 +263,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , hoursDisplayValue = toHoursString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -295,10 +280,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , minutesDisplayValue = toMinutesString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -315,10 +297,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , secondsDisplayValue = toSecondsString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
@@ -335,10 +314,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( { model
-                | time = time
-                , millisecondsDisplayValue = toMillisecondsString time
-              }
+            ( updateDisplayTime time model
             , Cmd.none
             , UpdatedTime time
             )
