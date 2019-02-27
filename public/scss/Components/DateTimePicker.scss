@@ -1,5 +1,5 @@
 .date-range-picker {
-    display: inline-block;
+    display: flex;
     // &.horizontal-layout {
     //     display: flex;
     // }
@@ -12,9 +12,9 @@
 
 
 .date-time-picker {
-    display: inline-block;
+    display: flex;
 
-    .single-calendar-view {
-        flex-direction: column;
-    }
+    // .single-calendar-view {
+    //     flex-direction: column;
+    // }
 }

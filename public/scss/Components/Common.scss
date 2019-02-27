@@ -3,12 +3,6 @@
 
 .double-clock-view,
 .double-calendar-view {
-    width: $doubleViewWidth;
-    height: $calendarViewHeight;
-    padding: $doubleViewPadding;
-    position: relative;
-    display: flex;
-    background-color: var(--off-white);
 
     .switch-view-button {
         width: 25px;

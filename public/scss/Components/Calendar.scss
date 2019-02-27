@@ -120,7 +120,6 @@
     .today-button {
         position: absolute;
         top: 8px;
-        // left: calc(50% - 20px);
         left: 24px;
         font-size: 14px;
         font-weight: 500;
@@ -139,35 +138,27 @@
     height: $calendarViewHeight;
     padding: 0 12px 12px 12px;
     position: relative;
-    display: flex;
     background-color: var(--off-white);
 
     .calendar {
         max-width: 315px;
-        // max-height: 270px;
         flex: 0.5;
         background-color: var(--white);
     }
 
-    .double-clock-view {
-        &.hh_mm {
-            width: 400px;
-        }
 
-        &.hh_mm_ss {
-            width: 450px;
-        }
-
-        &.hh_mm_ss_mmmm {
-            width: 600px;
-        }
-    }
 }
 
 
 .double-calendar-view {
+    width: $doubleViewWidth;
+    height: $calendarViewHeight;
+    padding: $doubleViewPadding;
+    position: relative;
+    display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    background-color: var(--off-white);
 
     .switch-view-button {
         right: 0px;
@@ -179,7 +170,6 @@
 
     .calendar {
         max-width: 315px;
-        // max-height: 270px;
         flex: 0.5;
         background-color: var(--white);
     }

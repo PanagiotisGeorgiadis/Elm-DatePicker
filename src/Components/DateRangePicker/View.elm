@@ -27,19 +27,25 @@ import Utils.Time as Time
 view : Model -> Html Msg
 view ({ viewType, internalViewType } as model) =
     div [ class "date-range-picker" ]
-        [ case ( viewType, internalViewType ) of
-            ( Single, CalendarView ) ->
-                singleCalendarView model
+        (case ( viewType, internalViewType ) of
+            ( Single, _ ) ->
+                [ singleCalendarView model
+                , case model.range of
+                    BothSelected _ _ ->
+                        doubleClockView model
 
-            ( Single, ClockView ) ->
-                text "Single Clock View"
+                    _ ->
+                        text ""
+                ]
 
             ( Double, CalendarView ) ->
-                doubleCalendarView model
+                [ doubleCalendarView model
+                ]
 
             ( Double, ClockView ) ->
-                doubleClockView model
-        ]
+                [ doubleClockView model
+                ]
+        )
 
 
 singleCalendarView : Model -> Html Msg
@@ -56,14 +62,6 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
                     , getMonthInt maxDate > primaryDateMonthInt
                     )
 
-                -- _ ->
-                --     -- FIXME: Fix that to work with the new DateLimit OR keep only the DateLimit ?
-                --     -- ( isBetweenPastLimit model.today (DateTime.decrementMonth model.primaryDate) model.pastDatesLimit
-                --     -- , isBetweenFutureLimit model.today model.primaryDate model.futureDatesLimit
-                --     -- )
-                --     ( True
-                --     , True
-                --     )
                 NoLimit _ ->
                     ( True
                     , True
@@ -79,17 +77,9 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
         [ class "single-calendar-view no-select"
         , onMouseLeave ResetShadowDateRange
         ]
-        [ div []
-            [ MonthPicker.singleMonthPickerView2 pickerConfig
-            , calendarView model
-            , todayButtonHtml model
-            ]
-        , case model.range of
-            BothSelected _ _ ->
-                doubleClockView model
-
-            _ ->
-                text ""
+        [ MonthPicker.singleMonthPickerView2 pickerConfig
+        , calendarView model
+        , todayButtonHtml model
         ]
 
 
@@ -106,14 +96,6 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
                     , getMonthInt maxDate > getMonthInt nextDate
                     )
 
-                -- _ ->
-                --     -- FIXME: Fix that to work with the new DateLimit OR keep only the DateLimit ?
-                --     -- ( isBetweenPastLimit model.today (DateTime.decrementMonth primaryDate) model.pastDatesLimit
-                --     -- , isBetweenFutureLimit model.today nextDate model.futureDatesLimit
-                --     -- )
-                --     ( True
-                --     , True
-                --     )
                 NoLimit _ ->
                     ( True
                     , True
@@ -180,17 +162,20 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, 
             )
 
         className =
-            case pickerType of
-                TimePicker.HH _ ->
+            case ( viewType, pickerType ) of
+                ( Double, _ ) ->
                     "double-clock-view"
 
-                TimePicker.HH_MM _ ->
+                ( Single, TimePicker.HH _ ) ->
+                    "double-clock-view"
+
+                ( Single, TimePicker.HH_MM _ ) ->
                     "double-clock-view hh_mm"
 
-                TimePicker.HH_MM_SS _ ->
+                ( Single, TimePicker.HH_MM_SS _ ) ->
                     "double-clock-view hh_mm_ss"
 
-                TimePicker.HH_MM_SS_MMMM _ ->
+                ( Single, TimePicker.HH_MM_SS_MMMM _ ) ->
                     "double-clock-view hh_mm_ss_mmmm"
     in
     div [ class className ]
