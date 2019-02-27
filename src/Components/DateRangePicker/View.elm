@@ -9,6 +9,7 @@ import Components.DateRangePicker.Update
         , InternalViewType(..)
         , Model
         , Msg(..)
+        , SelectionType(..)
         , ViewType(..)
         )
 import Components.MonthPicker as MonthPicker
@@ -31,7 +32,7 @@ view ({ viewType, internalViewType } as model) =
             ( Single, _ ) ->
                 [ singleCalendarView model
                 , case model.range of
-                    BothSelected _ _ ->
+                    BothSelected (Chosen _ _) ->
                         doubleClockView model
 
                     _ ->
@@ -75,7 +76,7 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
     in
     div
         [ class "single-calendar-view no-select"
-        , onMouseLeave ResetShadowDateRange
+        , onMouseLeave ResetVisualSelection
         ]
         [ MonthPicker.singleMonthPickerView2 pickerConfig
         , calendarView model
@@ -112,14 +113,14 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
     in
     div
         [ class "double-calendar-view no-select"
-        , onMouseLeave ResetShadowDateRange
+        , onMouseLeave ResetVisualSelection
         ]
         [ MonthPicker.doubleMonthPickerView2 pickerConfig
         , calendarView model
         , calendarView nextModel
         , todayButtonHtml model
         , case model.range of
-            BothSelected _ _ ->
+            BothSelected (Chosen _ _) ->
                 div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
 
             _ ->
@@ -140,7 +141,7 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, 
 
         ( rangeStart, rangeEnd ) =
             case range of
-                BothSelected start end ->
+                BothSelected (Chosen start end) ->
                     ( Just start, Just end )
 
                 _ ->
@@ -163,12 +164,6 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, 
 
         className =
             case ( viewType, pickerType ) of
-                ( Double, _ ) ->
-                    "double-clock-view"
-
-                ( Single, TimePicker.HH _ ) ->
-                    "double-clock-view"
-
                 ( Single, TimePicker.HH_MM _ ) ->
                     "double-clock-view hh_mm"
 
@@ -177,6 +172,9 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, 
 
                 ( Single, TimePicker.HH_MM_SS_MMMM _ ) ->
                     "double-clock-view hh_mm_ss_mmmm"
+
+                _ ->
+                    "double-clock-view"
     in
     div [ class className ]
         [ div [ class "time-picker-container no-select" ]
@@ -245,17 +243,30 @@ dateHtml model date =
         isInvalid =
             checkIfInvalid model date
 
-        isToday =
-            areDatesEqual model.today date
+        isEqualToDate date_ =
+            DateTime.compareDates date date_ == EQ
 
-        ( visualRangeStart, visualRangeEnd ) =
-            getVisualRangeEdges model
+        isGreaterThanDate date_ =
+            DateTime.compareDates date date_ == GT
+
+        isLesserThanDate date_ =
+            DateTime.compareDates date date_ == LT
+
+        isToday =
+            isEqualToDate model.today
 
         isPartOfTheDateRange =
-            case ( visualRangeStart, visualRangeEnd ) of
-                ( Just start, Just end ) ->
-                    (DateTime.compareDates start date == LT)
-                        && (DateTime.compareDates end date == GT)
+            let
+                isDateBetween start end =
+                    (isGreaterThanDate start && isLesserThanDate end)
+                        || (isLesserThanDate start && isGreaterThanDate end)
+            in
+            case model.range of
+                BothSelected (Visually start shadowEnd) ->
+                    isDateBetween start shadowEnd
+
+                BothSelected (Chosen start end) ->
+                    isDateBetween start end
 
                 _ ->
                     False
@@ -276,47 +287,57 @@ dateHtml model date =
 
     else
         let
-            -- ( visualRangeStart, visualRangeEnd ) =
-            --     getVisualRangeEdges model
-            --
-            -- isPartOfTheDateRange =
-            --     case ( visualRangeStart, visualRangeEnd ) of
-            --         ( Just start, Just end ) ->
-            --             (DateTime.compareDates start date == LT)
-            --                 && (DateTime.compareDates end date == GT)
-            --
-            --         _ ->
-            --             False
-            ( isStartOfTheDateRange, isEndOfTheDateRange ) =
-                ( Maybe.mapWithDefault (areDatesEqual date) False visualRangeStart
-                , Maybe.mapWithDefault (areDatesEqual date) False visualRangeEnd
-                )
+            ( isStart, isEnd ) =
+                case model.range of
+                    BothSelected (Visually start end) ->
+                        let
+                            -- The visual dates are not always sorted.
+                            -- This is the reason why we have to do this "sort" here.
+                            ( start_, end_ ) =
+                                case DateTime.compareDates start end of
+                                    LT ->
+                                        ( start, end )
 
-            -- isDisabled =
-            --     checkIfDisabled model date
-            -- isToday =
-            --     areDatesEqual model.today date
+                                    _ ->
+                                        ( end, start )
+                        in
+                        if isEqualToDate start_ then
+                            ( True, False )
+
+                        else if isEqualToDate end_ then
+                            ( False, True )
+
+                        else
+                            ( False, False )
+
+                    BothSelected (Chosen start end) ->
+                        ( isEqualToDate start, isEqualToDate end )
+
+                    _ ->
+                        ( False, False )
+
+            isSelected =
+                case model.range of
+                    StartDateSelected start ->
+                        isEqualToDate start
+
+                    _ ->
+                        False
+
             dateClassList =
                 [ ( "date", True )
                 , ( "today", isToday )
-                , ( "selected", isStartOfTheDateRange || isEndOfTheDateRange )
+                , ( "selected", isSelected || isStart || isEnd )
                 , ( "date-range", isPartOfTheDateRange )
-
-                -- The "not isEndOfTheDateRange && visualRangeEnd /= Nothing" clause is added in order to fix a css bug.
-                , ( "date-range-start", isStartOfTheDateRange && not isEndOfTheDateRange && visualRangeEnd /= Nothing )
-
-                -- The "not isStartOfTheDateRange" clause is added in order to fix a css bug.
-                , ( "date-range-end", not isStartOfTheDateRange && isEndOfTheDateRange )
-
-                -- , ( "invalid-selection", isInvalidSelection )
-                -- , ( "disabled", isDisabled )
+                , ( "date-range-start", isStart )
+                , ( "date-range-end", isEnd )
                 ]
         in
         span
             [ classList dateClassList
             , title (Time.toHumanReadableDate date)
             , onClick (SelectDate date)
-            , onMouseOver (DateHoverDetected date)
+            , onMouseOver (UpdateVisualSelection date)
             ]
             [ span [ class "date-inner" ] [ text (String.fromInt (DateTime.getDay date)) ]
             ]
@@ -380,41 +401,28 @@ getPreviousButtonAction isButtonActive =
         Nothing
 
 
-getVisualRangeEdges : Model -> ( Maybe DateTime, Maybe DateTime )
-getVisualRangeEdges { range, shadowRangeEnd } =
-    case range of
-        NoneSelected ->
-            ( Nothing, Nothing )
-
-        StartDateSelected start ->
-            sortMaybeDates (Just start) shadowRangeEnd
-
-        BothSelected start end ->
-            sortMaybeDates (Just start) (Just end)
-
-
 checkIfDisabled : Model -> DateTime -> Bool
 checkIfDisabled { today, dateLimit } date =
     let
-        isPastDate =
-            DateTime.compareDates today date == GT
+        isGreaterThanDate date_ =
+            DateTime.compareDates date date_ == GT
+
+        isLesserThanDate date_ =
+            DateTime.compareDates date date_ == LT
+
+        isEqualToDate date_ =
+            DateTime.compareDates date date_ == EQ
     in
     case dateLimit of
-        -- MonthLimit { disablePastDates } ->
-        --     disablePastDates && isPastDate
-        --
-        -- YearLimit { disablePastDates } ->
-        --     disablePastDates && isPastDate
         NoLimit { disablePastDates } ->
+            let
+                isPastDate =
+                    isLesserThanDate today
+            in
             disablePastDates && isPastDate
 
         DateLimit { minDate, maxDate } ->
-            let
-                isPartOfTheConstraint =
-                    (DateTime.compareDates minDate date == LT || areDatesEqual minDate date)
-                        && (DateTime.compareDates maxDate date == GT || areDatesEqual maxDate date)
-            in
-            not isPartOfTheConstraint
+            isLesserThanDate minDate || isGreaterThanDate maxDate
 
 
 checkIfInvalid : Model -> DateTime -> Bool
@@ -425,11 +433,6 @@ checkIfInvalid { dateRangeOffset } date =
 
         NoOffset ->
             False
-
-
-areDatesEqual : DateTime -> DateTime -> Bool
-areDatesEqual lhs rhs =
-    DateTime.compareDates lhs rhs == EQ
 
 
 {-| Extract to another file as a common view fragment
@@ -480,21 +483,6 @@ emptyDateHtml =
 totalCalendarCells : Int
 totalCalendarCells =
     6 * 7
-
-
-sortMaybeDates : Maybe DateTime -> Maybe DateTime -> ( Maybe DateTime, Maybe DateTime )
-sortMaybeDates lhs rhs =
-    case ( lhs, rhs ) of
-        ( Just start, Just end ) ->
-            case DateTime.compareDates start end of
-                GT ->
-                    ( Just end, Just start )
-
-                _ ->
-                    ( Just start, Just end )
-
-        _ ->
-            ( lhs, rhs )
 
 
 todayButtonHtml : Model -> Html Msg
