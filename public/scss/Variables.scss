@@ -3,7 +3,8 @@ $calendarViewHeight: 300px;
 $doubleViewPadding: 0 25px 10px 25px;
 
 
-:root {
+.date-time-picker,
+.date-range-picker {
     --white: #FFFFFF;
     --black: #000000;
 
