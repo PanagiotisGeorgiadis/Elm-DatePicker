@@ -8,7 +8,7 @@
     padding: $doubleViewPadding;
     position: relative;
     display: flex;
-    background-color: $calendarBackground;
+    background-color: var(--off-white);
 
     .switch-view-button {
         width: 25px;
@@ -19,11 +19,11 @@
         position: absolute;
         top: calc(50% - 10px);
         right: 0px;
-        fill: $richGray;
+        fill: var(--rich-grey);
         cursor: pointer;
 
         &.disabled {
-            fill: $concreteGray;
+            fill: var(--concrete-grey);
             cursor: default;
         }
     } // End of .switch-view-button

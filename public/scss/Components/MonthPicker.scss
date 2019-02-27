@@ -7,13 +7,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $calendarBackground;
+    background-color: var(--off-white);
 
     .month-name {
         width: 140px;
         font-size: 16px;
-        font-weight: $mediumWeight;
-        color: $richGray;
+        font-weight: var(--medium-weight);
+        color: var(--rich-grey);
         text-align: center;
         line-height: 30px;
     }
@@ -24,11 +24,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        fill: $richGray;
+        fill: var(--rich-grey);
         cursor: pointer;
 
         &.disabled {
-            fill: $concreteGray;
+            fill: var(--concrete-grey);
             cursor: default;
         }
     }

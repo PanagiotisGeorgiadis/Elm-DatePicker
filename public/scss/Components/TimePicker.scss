@@ -18,14 +18,14 @@
 
         .header {
             font-size: 16px;
-            font-weight: $mediumWeight;
-            color: $richGray;
+            font-weight: var(--medium-weight);
+            color: var(--rich-grey);
         }
 
         .date {
             font-size: 14px;
-            font-weight: $regularWeight;
-            color: $richGray;
+            font-weight: var(--regular-weight);
+            color: var(--rich-grey);
         }
 
         .time-picker {
@@ -34,7 +34,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: white;
+            background-color: var(--white);
 
             .hours-picker,
             .minutes-picker,
@@ -64,7 +64,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    fill: $primaryColor-Hex;
+                    fill: var(--brand-accent);
                     cursor: pointer;
                 } // End of .button
             } // End of .*-picker
@@ -77,7 +77,7 @@
 
             .time-separator {
                 font-size: 34px;
-                font-weight: $mediumWeight;
+                font-weight: var(--medium-weight);
                 margin: 0 8px;
             }
         } // End of .time-picker
@@ -93,12 +93,12 @@
             justify-content: center;
             cursor: pointer;
 
-            svg { fill: $richGray; }
+            svg { fill: var(--rich-grey); }
 
             .text {
                 margin-left: 8px;
                 font-size: 14px;
-                color: $richGray
+                color: var(--rich-grey);
             }
         }
     }

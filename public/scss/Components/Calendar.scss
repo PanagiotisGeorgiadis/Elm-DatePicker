@@ -29,9 +29,9 @@
         }
 
         &.selected {
-            color: white;
+            color: var(--white);
             .date-inner {
-                background-color: $primaryColor-Hex;
+                background-color: var(--brand-accent);
             }
         }
 
@@ -63,7 +63,7 @@
         }
 
         &.date-range {
-            background-color: primaryColorAlpha(0.2);
+            background-color: var(--brand-accent-light);
         }
 
         &.date-range-start {
@@ -75,7 +75,7 @@
                 right: 0;
                 border-top-left-radius: 50%;
                 border-bottom-left-radius: 50%;
-                background-color: primaryColorAlpha(0.2);
+                background-color: var(--brand-accent-light);
             }
         }
 
@@ -88,7 +88,7 @@
                 left: 0;
                 border-top-right-radius: 50%;
                 border-bottom-right-radius: 50%;
-                background-color: primaryColorAlpha(0.2);
+                background-color: var(--brand-accent-light);
             }
         }
     }
@@ -103,9 +103,9 @@
     padding: 6px 0;
     display: flex;
     font-size: 14px;
-    font-weight: $mediumWeight;
-    color: $richGray;
-    background-color: $calendarBackground;
+    font-weight: var(--medium-weight);
+    color: var(--rich-grey);
+    background-color: var(--off-white);
 
     span {
         flex: 1;
@@ -124,7 +124,7 @@
         left: 24px;
         font-size: 14px;
         font-weight: 500;
-        color: $brandPrimary;
+        color: var(--brand-primary);
         cursor: pointer;
 
         &.align-left {
@@ -140,13 +140,13 @@
     padding: 0 12px 12px 12px;
     position: relative;
     display: flex;
-    background-color: $calendarBackground;
+    background-color: var(--off-white);
 
     .calendar {
         max-width: 315px;
-        max-height: 270px;
+        // max-height: 270px;
         flex: 0.5;
-        background-color: white;
+        background-color: var(--white);
     }
 
     .double-clock-view {
@@ -179,8 +179,8 @@
 
     .calendar {
         max-width: 315px;
-        max-height: 270px;
+        // max-height: 270px;
         flex: 0.5;
-        background-color: white;
+        background-color: var(--white);
     }
 }
