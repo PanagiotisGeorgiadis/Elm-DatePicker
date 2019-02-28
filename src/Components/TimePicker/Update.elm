@@ -3,6 +3,7 @@ module Components.TimePicker.Update exposing
     , Model
     , Msg(..)
     , PickerType(..)
+    , getPickerTypeString
     , initialise
     , update
     , updateDisplayTime
@@ -571,3 +572,19 @@ stepThrough { n, updateFn, time } =
             , time = time_
             , updateFn = updateFn
             }
+
+
+getPickerTypeString : Model -> String
+getPickerTypeString { pickerType } =
+    case pickerType of
+        HH _ ->
+            "hh"
+
+        HH_MM _ ->
+            "hh_mm"
+
+        HH_MM_SS _ ->
+            "hh_mm_ss"
+
+        HH_MM_SS_MMMM _ ->
+            "hh_mm_ss_mmmm"

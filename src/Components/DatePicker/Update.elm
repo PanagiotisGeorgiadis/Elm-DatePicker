@@ -8,7 +8,9 @@ module Components.DatePicker.Update exposing
     , update
     )
 
+import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
+import Task
 
 
 type alias Model =
@@ -17,6 +19,7 @@ type alias Model =
     , primaryDate : DateTime
     , dateLimit : DateLimit
     , selectedDate : Maybe DateTime
+    , timePicker : Maybe TimePicker.Model
     }
 
 
@@ -58,6 +61,7 @@ initialise { today, viewType, primaryDate, dateLimit } =
     , primaryDate = primaryDate
     , selectedDate = Nothing
     , dateLimit = dateLimit
+    , timePicker = Nothing
     }
 
 
@@ -67,6 +71,8 @@ type Msg
     | NextMonth
     | SelectDate DateTime
     | MoveToToday
+    | InitialiseTimePicker
+    | TimePickerMsg TimePicker.Msg
 
 
 type ExtMsg
@@ -100,20 +106,99 @@ update msg model =
             )
 
         SelectDate date ->
-            if model.selectedDate == Just date then
-                ( { model | selectedDate = Nothing }
-                , Cmd.none
-                , None
-                )
+            let
+                ( time, cmd ) =
+                    case model.timePicker of
+                        Just picker ->
+                            ( picker.time
+                            , Cmd.none
+                            )
 
-            else
-                ( { model | selectedDate = Just date }
-                , Cmd.none
-                , SelectedDate date
-                )
+                        Nothing ->
+                            ( DateTime.getTime date
+                            , Task.perform (\_ -> InitialiseTimePicker) (Task.succeed ())
+                            )
+
+                updatedDate =
+                    DateTime.setTime time date
+            in
+            case model.selectedDate of
+                Just selected ->
+                    if DateTime.getDate updatedDate == DateTime.getDate selected then
+                        ( { model | selectedDate = Nothing }
+                        , Cmd.none
+                        , SelectedDate date
+                        )
+
+                    else
+                        ( { model | selectedDate = Just updatedDate }
+                        , cmd
+                        , SelectedDate date
+                        )
+
+                Nothing ->
+                    ( { model | selectedDate = Just updatedDate }
+                    , cmd
+                    , SelectedDate date
+                    )
 
         MoveToToday ->
             ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
             , Cmd.none
             , None
             )
+
+        InitialiseTimePicker ->
+            case model.selectedDate of
+                Just dateTime ->
+                    let
+                        timePicker =
+                            TimePicker.initialise
+                                { time = DateTime.getTime dateTime
+                                , pickerType =
+                                    -- TimePicker.HH_MM_SS_MMMM { hoursStep = 1, minutesStep = 5, secondsStep = 10, millisecondsStep = 100 }
+                                    TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+
+                                -- TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+                                -- TimePicker.HH { hoursStep = 1 }
+                                }
+                    in
+                    ( { model | timePicker = Just timePicker }
+                    , Cmd.none
+                    , None
+                    )
+
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    , None
+                    )
+
+        TimePickerMsg subMsg ->
+            case model.timePicker of
+                Just timePicker ->
+                    let
+                        ( subModel, subCmd, extMsg ) =
+                            TimePicker.update subMsg timePicker
+
+                        updatedDate =
+                            case ( model.selectedDate, extMsg ) of
+                                ( Just date, TimePicker.UpdatedTime newTime ) ->
+                                    Just (DateTime.setTime newTime date)
+
+                                _ ->
+                                    model.selectedDate
+                    in
+                    ( { model
+                        | selectedDate = updatedDate
+                        , timePicker = Just subModel
+                      }
+                    , Cmd.map TimePickerMsg subCmd
+                    , None
+                    )
+
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    , None
+                    )

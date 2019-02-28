@@ -4,6 +4,8 @@ module Components.DatePicker.View exposing (view)
 
 import Components.DatePicker.Update exposing (DateLimit(..), Model, Msg(..), ViewType(..))
 import Components.MonthPicker as MonthPicker
+import Components.TimePicker.Update as TimePicker
+import Components.TimePicker.View as TimePicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
@@ -14,7 +16,7 @@ import Utils.Time as Time
 
 
 view : Model -> Html Msg
-view ({ viewType } as model) =
+view ({ viewType, selectedDate } as model) =
     div [ class "date-time-picker" ]
         [ case viewType of
             Single ->
@@ -22,6 +24,12 @@ view ({ viewType } as model) =
 
             Double ->
                 doubleCalendarView model
+        , case selectedDate of
+            Just date ->
+                singleClockView model
+
+            Nothing ->
+                text ""
         ]
 
 
@@ -89,6 +97,37 @@ doubleCalendarView ({ dateLimit, primaryDate } as model) =
         , calendarView model
         , calendarView nextModel
         , todayButtonHtml model
+        ]
+
+
+singleClockView : Model -> Html Msg
+singleClockView { timePicker, selectedDate } =
+    let
+        displayDateHtml date =
+            case date of
+                Just d ->
+                    span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
+
+                Nothing ->
+                    text ""
+
+        timePickerHtml =
+            case timePicker of
+                Just tp ->
+                    Html.map TimePickerMsg (TimePicker.view tp)
+
+                Nothing ->
+                    text ""
+
+        pickerTypeString =
+            Maybe.mapWithDefault TimePicker.getPickerTypeString "" timePicker
+    in
+    div [ class ("single-clock-view " ++ pickerTypeString) ]
+        [ div [ class "time-picker-container no-select" ]
+            [ span [ class "header" ] [ text "Pick-up Time" ]
+            , displayDateHtml selectedDate
+            , timePickerHtml
+            ]
         ]
 
 
