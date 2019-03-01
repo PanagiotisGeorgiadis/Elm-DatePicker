@@ -103,29 +103,30 @@ doubleCalendarView ({ dateLimit, primaryDate } as model) =
 singleClockView : Model -> Html Msg
 singleClockView { timePicker, selectedDate } =
     let
-        displayDateHtml date =
-            case date of
-                Just d ->
-                    span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
+        displayDateHtml =
+            case selectedDate of
+                Just date ->
+                    span [ class "date" ] [ text (Time.toHumanReadableDateTime date) ]
 
                 Nothing ->
                     text ""
 
-        timePickerHtml =
+        ( timePickerHtml, pickerTypeString ) =
             case timePicker of
                 Just tp ->
-                    Html.map TimePickerMsg (TimePicker.view tp)
+                    ( Html.map TimePickerMsg (TimePicker.view tp)
+                    , TimePicker.getPickerTypeString tp
+                    )
 
                 Nothing ->
-                    text ""
-
-        pickerTypeString =
-            Maybe.mapWithDefault TimePicker.getPickerTypeString "" timePicker
+                    ( text ""
+                    , ""
+                    )
     in
     div [ class ("single-clock-view " ++ pickerTypeString) ]
         [ div [ class "time-picker-container no-select" ]
             [ span [ class "header" ] [ text "Pick-up Time" ]
-            , displayDateHtml selectedDate
+            , displayDateHtml
             , timePickerHtml
             ]
         ]

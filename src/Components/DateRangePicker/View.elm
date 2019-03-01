@@ -129,7 +129,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleClockView : Model -> Html Msg
-doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, pickerType, viewType } =
+doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, viewType } =
     let
         displayDateHtml date =
             case date of
@@ -147,36 +147,26 @@ doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, 
                 _ ->
                     ( Nothing, Nothing )
 
-        ( startTimePickerHtml, endTimePickerHtml ) =
-            ( case rangeStartTimePicker of
-                Just timePicker ->
-                    Html.map RangeStartPickerMsg (TimePicker.view timePicker)
+        ( startTimePickerHtml, endTimePickerHtml, pickerTypeString ) =
+            case ( rangeStartTimePicker, rangeEndTimePicker ) of
+                ( Just startTimePicker, Just endTimePicker ) ->
+                    ( Html.map RangeStartPickerMsg (TimePicker.view startTimePicker)
+                    , Html.map RangeEndPickerMsg (TimePicker.view endTimePicker)
+                    , case viewType of
+                        Single ->
+                            TimePicker.getPickerTypeString startTimePicker
 
-                Nothing ->
-                    text ""
-            , case rangeEndTimePicker of
-                Just timePicker ->
-                    Html.map RangeEndPickerMsg (TimePicker.view timePicker)
-
-                Nothing ->
-                    text ""
-            )
-
-        className =
-            case ( viewType, pickerType ) of
-                ( Single, TimePicker.HH_MM _ ) ->
-                    "double-clock-view hh_mm"
-
-                ( Single, TimePicker.HH_MM_SS _ ) ->
-                    "double-clock-view hh_mm_ss"
-
-                ( Single, TimePicker.HH_MM_SS_MMMM _ ) ->
-                    "double-clock-view hh_mm_ss_mmmm"
+                        Double ->
+                            ""
+                    )
 
                 _ ->
-                    "double-clock-view"
+                    ( text ""
+                    , text ""
+                    , ""
+                    )
     in
-    div [ class className ]
+    div [ class ("double-clock-view " ++ pickerTypeString) ]
         [ div [ class "time-picker-container no-select" ]
             [ span [ class "header" ] [ text "Pick-up Time" ]
             , displayDateHtml rangeStart

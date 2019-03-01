@@ -36,19 +36,8 @@ type alias OffsetConfig =
 
 
 type DateLimit
-    = DateLimit DateLimitation
-    | NoLimit NoLimitConfig
-
-
-type alias DateLimitation =
-    { minDate : DateTime
-    , maxDate : DateTime
-    }
-
-
-type alias NoLimitConfig =
-    { disablePastDates : Bool
-    }
+    = DateLimit { minDate : DateTime, maxDate : DateTime }
+    | NoLimit { disablePastDates : Bool }
 
 
 
