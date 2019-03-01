@@ -1,6 +1,5 @@
 module Components.DatePicker.Update exposing
     ( DateLimit(..)
-    , DatePickerConfig
     , Model
     , Msg(..)
     , ViewType(..)
@@ -20,14 +19,16 @@ type alias Model =
     , dateLimit : DateLimit
     , selectedDate : Maybe DateTime
     , timePicker : Maybe TimePicker.Model
+    , pickerType : TimePicker.PickerType
     }
 
 
-type alias DatePickerConfig =
+type alias Config =
     { today : DateTime
     , viewType : ViewType
     , primaryDate : DateTime
     , dateLimit : DateLimit
+    , pickerType : TimePicker.PickerType
     }
 
 
@@ -39,29 +40,19 @@ type ViewType
 
 
 type DateLimit
-    = DateLimit DateLimitation
-    | NoLimit NoLimitConfig
+    = DateLimit { minDate : DateTime, maxDate : DateTime }
+    | NoLimit { disablePastDates : Bool }
 
 
-type alias DateLimitation =
-    { minDate : DateTime
-    , maxDate : DateTime
-    }
-
-
-type alias NoLimitConfig =
-    { disablePastDates : Bool
-    }
-
-
-initialise : DatePickerConfig -> Model
-initialise { today, viewType, primaryDate, dateLimit } =
+initialise : Config -> Model
+initialise { today, viewType, primaryDate, dateLimit, pickerType } =
     { today = today
     , viewType = viewType
     , primaryDate = primaryDate
     , selectedDate = Nothing
     , dateLimit = dateLimit
     , timePicker = Nothing
+    , pickerType = pickerType
     }
 
 
@@ -155,10 +146,10 @@ update msg model =
                         timePicker =
                             TimePicker.initialise
                                 { time = DateTime.getTime dateTime
-                                , pickerType =
-                                    -- TimePicker.HH_MM_SS_MMMM { hoursStep = 1, minutesStep = 5, secondsStep = 10, millisecondsStep = 100 }
-                                    TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                                , pickerType = model.pickerType
 
+                                -- TimePicker.HH_MM_SS_MMMM { hoursStep = 1, minutesStep = 5, secondsStep = 10, millisecondsStep = 100 }
+                                -- TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                                 -- TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                                 -- TimePicker.HH { hoursStep = 1 }
                                 }

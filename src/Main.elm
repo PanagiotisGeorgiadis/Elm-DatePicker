@@ -206,6 +206,7 @@ update msg model =
                     , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.NoLimit { disablePastDates = True }
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                     }
 
                 doubleDatePickerConfig =
@@ -213,6 +214,7 @@ update msg model =
                     , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.NoLimit { disablePastDates = True }
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                     }
 
                 singleDatePickerConfig_C =
@@ -220,6 +222,7 @@ update msg model =
                     , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.DateLimit constrains
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                     }
 
                 doubleDatePickerConfig_C =
@@ -227,6 +230,7 @@ update msg model =
                     , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.DateLimit constrains
+                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                     }
 
                 singleDateRangePickerConfig =
