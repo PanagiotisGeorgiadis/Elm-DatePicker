@@ -242,13 +242,18 @@ update msg model =
                     , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
+                dateRangePickerConfig =
+                    TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+
                 singleDateRangePickerConfig =
                     { today = todayDateTime
                     , viewType = DateRangePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-                    , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+
+                    --
+                    , timePickerConfig =
+                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
                     }
 
                 doubleDateRangePickerConfig =
@@ -256,8 +261,10 @@ update msg model =
                     , viewType = DateRangePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-                    , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+
+                    --
+                    , timePickerConfig =
+                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
                     }
 
                 singleDateRangePickerConfig_C =
@@ -265,8 +272,10 @@ update msg model =
                     , viewType = DateRangePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
-                    , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+
+                    --
+                    , timePickerConfig =
+                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
                     }
 
                 doubleDateRangePickerConfig_C =
@@ -274,8 +283,10 @@ update msg model =
                     , viewType = DateRangePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
-                    , mirrorTimes = True
-                    , pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+
+                    --
+                    , timePickerConfig =
+                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
                     }
             in
             ( { model

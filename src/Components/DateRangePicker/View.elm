@@ -10,6 +10,7 @@ import Components.DateRangePicker.Update
         , Model
         , Msg(..)
         , SelectionType(..)
+        , TimePickerState(..)
         , ViewType(..)
         )
 import Components.MonthPicker as MonthPicker
@@ -129,66 +130,60 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleClockView : Model -> Html Msg
-doubleClockView { range, rangeStartTimePicker, rangeEndTimePicker, mirrorTimes, viewType } =
-    let
-        displayDateHtml date =
-            case date of
-                Just d ->
-                    span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
+doubleClockView { range, timePickers, viewType } =
+    case timePickers of
+        TimePickers { startPicker, endPicker, mirrorTimes } ->
+            let
+                displayDateHtml date =
+                    case date of
+                        Just d ->
+                            span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
 
-                Nothing ->
-                    text ""
+                        Nothing ->
+                            text ""
 
-        ( rangeStart, rangeEnd ) =
-            case range of
-                BothSelected (Chosen start end) ->
-                    ( Just start, Just end )
+                ( rangeStart, rangeEnd ) =
+                    case range of
+                        BothSelected (Chosen start end) ->
+                            ( Just start, Just end )
 
-                _ ->
-                    ( Nothing, Nothing )
+                        _ ->
+                            ( Nothing, Nothing )
 
-        ( startTimePickerHtml, endTimePickerHtml, pickerTypeString ) =
-            case ( rangeStartTimePicker, rangeEndTimePicker ) of
-                ( Just startTimePicker, Just endTimePicker ) ->
-                    ( Html.map RangeStartPickerMsg (TimePicker.view startTimePicker)
-                    , Html.map RangeEndPickerMsg (TimePicker.view endTimePicker)
-                    , case viewType of
+                pickerTypeString =
+                    case viewType of
                         Single ->
-                            TimePicker.getPickerTypeString startTimePicker
+                            TimePicker.getPickerTypeString startPicker
 
                         Double ->
                             ""
-                    )
+            in
+            div [ class ("double-clock-view " ++ pickerTypeString) ]
+                [ div [ class "time-picker-container no-select" ]
+                    [ span [ class "header" ] [ text "Pick-up Time" ]
+                    , displayDateHtml rangeStart
+                    , Html.map RangeStartPickerMsg (TimePicker.view startPicker)
+                    , div [ class "checkbox", onClick ToggleTimeMirroring ]
+                        [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
+                        , span [ class "text" ] [ text "Same as drop-off time" ]
+                        ]
+                    ]
+                , div [ class "time-picker-container no-select" ]
+                    [ span [ class "header" ] [ text "Drop-off Time" ]
+                    , displayDateHtml rangeEnd
+                    , Html.map RangeEndPickerMsg (TimePicker.view endPicker)
+                    , div [ class "filler" ] []
+                    ]
+                , case viewType of
+                    Single ->
+                        text ""
 
-                _ ->
-                    ( text ""
-                    , text ""
-                    , ""
-                    )
-    in
-    div [ class ("double-clock-view " ++ pickerTypeString) ]
-        [ div [ class "time-picker-container no-select" ]
-            [ span [ class "header" ] [ text "Pick-up Time" ]
-            , displayDateHtml rangeStart
-            , startTimePickerHtml
-            , div [ class "checkbox", onClick ToggleTimeMirroring ]
-                [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
-                , span [ class "text" ] [ text "Same as drop-off time" ]
+                    Double ->
+                        div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
                 ]
-            ]
-        , div [ class "time-picker-container no-select" ]
-            [ span [ class "header" ] [ text "Drop-off Time" ]
-            , displayDateHtml rangeEnd
-            , endTimePickerHtml
-            , div [ class "filler" ] []
-            ]
-        , case viewType of
-            Single ->
-                text ""
 
-            Double ->
-                div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
-        ]
+        _ ->
+            text ""
 
 
 calendarView : Model -> Html Msg
