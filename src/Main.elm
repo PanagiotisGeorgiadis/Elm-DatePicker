@@ -2,6 +2,7 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
+import Clock
 import Components.DatePicker.Update as DatePicker
 import Components.DatePicker.View as DatePicker
 import Components.DateRangePicker.Update as DateRangePicker
@@ -201,12 +202,20 @@ update msg model =
                     , maxDate = DateTime.fromPosix sixteenOfApr
                     }
 
+                pickerType =
+                    TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+
+                defaultTime =
+                    Maybe.withDefault
+                        Clock.midnight
+                        (Clock.fromRawParts { hours = 11, minutes = 11, seconds = 11, milliseconds = 0 })
+
                 singleDatePickerConfig =
                     { today = todayDateTime
                     , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.NoLimit { disablePastDates = True }
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
                 doubleDatePickerConfig =
@@ -214,7 +223,7 @@ update msg model =
                     , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.NoLimit { disablePastDates = True }
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
                 singleDatePickerConfig_C =
@@ -222,7 +231,7 @@ update msg model =
                     , viewType = DatePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.DateLimit constrains
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
                 doubleDatePickerConfig_C =
@@ -230,7 +239,7 @@ update msg model =
                     , viewType = DatePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DatePicker.DateLimit constrains
-                    , pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
                 singleDateRangePickerConfig =

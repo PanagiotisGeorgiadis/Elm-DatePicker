@@ -4,6 +4,7 @@ module Components.TimePicker.Update exposing
     , Msg(..)
     , PickerType(..)
     , getPickerTypeString
+    , getTime
     , initialise
     , update
     , updateDisplayTime
@@ -572,6 +573,11 @@ stepThrough { n, updateFn, time } =
             , time = time_
             , updateFn = updateFn
             }
+
+
+getTime : Model -> Clock.Time
+getTime { time } =
+    time
 
 
 getPickerTypeString : Model -> String

@@ -2,11 +2,14 @@ module Components.DatePicker.Update exposing
     ( DateLimit(..)
     , Model
     , Msg(..)
+    , TimePickerConfig(..)
+    , TimePickerState(..)
     , ViewType(..)
     , initialise
     , update
     )
 
+import Clock
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
 import Task
@@ -18,8 +21,7 @@ type alias Model =
     , primaryDate : DateTime
     , dateLimit : DateLimit
     , selectedDate : Maybe DateTime
-    , timePicker : Maybe TimePicker.Model
-    , pickerType : TimePicker.PickerType
+    , timePicker : TimePickerState
     }
 
 
@@ -28,8 +30,13 @@ type alias Config =
     , viewType : ViewType
     , primaryDate : DateTime
     , dateLimit : DateLimit
-    , pickerType : TimePicker.PickerType
+    , timePickerConfig : TimePickerConfig
     }
+
+
+type TimePickerConfig
+    = NoPicker
+    | TimePickerConfig { pickerType : TimePicker.PickerType, defaultTime : Clock.Time }
 
 
 {-| Extract to another file as a common type
@@ -44,15 +51,26 @@ type DateLimit
     | NoLimit { disablePastDates : Bool }
 
 
+type TimePickerState
+    = NoTimePicker
+    | NotInitialised { pickerType : TimePicker.PickerType, defaultTime : Clock.Time }
+    | TimePicker TimePicker.Model
+
+
 initialise : Config -> Model
-initialise { today, viewType, primaryDate, dateLimit, pickerType } =
+initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
     { today = today
     , viewType = viewType
     , primaryDate = primaryDate
     , selectedDate = Nothing
     , dateLimit = dateLimit
-    , timePicker = Nothing
-    , pickerType = pickerType
+    , timePicker =
+        case timePickerConfig of
+            NoPicker ->
+                NoTimePicker
+
+            TimePickerConfig config ->
+                NotInitialised config
     }
 
 
@@ -100,12 +118,12 @@ update msg model =
             let
                 ( time, cmd ) =
                     case model.timePicker of
-                        Just picker ->
-                            ( picker.time
+                        TimePicker timePicker ->
+                            ( TimePicker.getTime timePicker
                             , Cmd.none
                             )
 
-                        Nothing ->
+                        _ ->
                             ( DateTime.getTime date
                             , Task.perform (\_ -> InitialiseTimePicker) (Task.succeed ())
                             )
@@ -144,17 +162,19 @@ update msg model =
                 Just dateTime ->
                     let
                         timePicker =
-                            TimePicker.initialise
-                                { time = DateTime.getTime dateTime
-                                , pickerType = model.pickerType
+                            case model.timePicker of
+                                NotInitialised { pickerType, defaultTime } ->
+                                    TimePicker
+                                        (TimePicker.initialise
+                                            { time = defaultTime
+                                            , pickerType = pickerType
+                                            }
+                                        )
 
-                                -- TimePicker.HH_MM_SS_MMMM { hoursStep = 1, minutesStep = 5, secondsStep = 10, millisecondsStep = 100 }
-                                -- TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
-                                -- TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
-                                -- TimePicker.HH { hoursStep = 1 }
-                                }
+                                _ ->
+                                    model.timePicker
                     in
-                    ( { model | timePicker = Just timePicker }
+                    ( { model | timePicker = timePicker }
                     , Cmd.none
                     , None
                     )
@@ -166,15 +186,15 @@ update msg model =
                     )
 
         TimePickerMsg subMsg ->
-            case model.timePicker of
-                Just timePicker ->
+            case ( model.selectedDate, model.timePicker ) of
+                ( Just date, TimePicker timePicker ) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg timePicker
 
                         updatedDate =
-                            case ( model.selectedDate, extMsg ) of
-                                ( Just date, TimePicker.UpdatedTime newTime ) ->
+                            case extMsg of
+                                TimePicker.UpdatedTime newTime ->
                                     Just (DateTime.setTime newTime date)
 
                                 _ ->
@@ -182,13 +202,13 @@ update msg model =
                     in
                     ( { model
                         | selectedDate = updatedDate
-                        , timePicker = Just subModel
+                        , timePicker = TimePicker subModel
                       }
                     , Cmd.map TimePickerMsg subCmd
                     , None
                     )
 
-                Nothing ->
+                _ ->
                     ( model
                     , Cmd.none
                     , None

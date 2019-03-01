@@ -1,8 +1,6 @@
 module Components.DatePicker.View exposing (view)
 
--- import Utils.Html.Attributes as Attributes
-
-import Components.DatePicker.Update exposing (DateLimit(..), Model, Msg(..), ViewType(..))
+import Components.DatePicker.Update exposing (DateLimit(..), Model, Msg(..), TimePickerState(..), ViewType(..))
 import Components.MonthPicker as MonthPicker
 import Components.TimePicker.Update as TimePicker
 import Components.TimePicker.View as TimePicker
@@ -102,34 +100,30 @@ doubleCalendarView ({ dateLimit, primaryDate } as model) =
 
 singleClockView : Model -> Html Msg
 singleClockView { timePicker, selectedDate } =
-    let
-        displayDateHtml =
-            case selectedDate of
-                Just date ->
-                    span [ class "date" ] [ text (Time.toHumanReadableDateTime date) ]
+    case timePicker of
+        TimePicker tp ->
+            let
+                displayDateHtml =
+                    case selectedDate of
+                        Just date ->
+                            span [ class "date" ] [ text (Time.toHumanReadableDateTime date) ]
 
-                Nothing ->
-                    text ""
+                        Nothing ->
+                            text ""
 
-        ( timePickerHtml, pickerTypeString ) =
-            case timePicker of
-                Just tp ->
-                    ( Html.map TimePickerMsg (TimePicker.view tp)
-                    , TimePicker.getPickerTypeString tp
-                    )
+                pickerTypeString =
+                    TimePicker.getPickerTypeString tp
+            in
+            div [ class ("single-clock-view " ++ pickerTypeString) ]
+                [ div [ class "time-picker-container no-select" ]
+                    [ span [ class "header" ] [ text "Pick-up Time" ]
+                    , displayDateHtml
+                    , Html.map TimePickerMsg (TimePicker.view tp)
+                    ]
+                ]
 
-                Nothing ->
-                    ( text ""
-                    , ""
-                    )
-    in
-    div [ class ("single-clock-view " ++ pickerTypeString) ]
-        [ div [ class "time-picker-container no-select" ]
-            [ span [ class "header" ] [ text "Pick-up Time" ]
-            , displayDateHtml
-            , timePickerHtml
-            ]
-        ]
+        _ ->
+            text ""
 
 
 calendarView : Model -> Html Msg
