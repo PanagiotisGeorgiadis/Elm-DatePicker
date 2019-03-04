@@ -16,9 +16,9 @@ module Components.DateRangePicker.Update exposing
 import Clock
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
-import Models.Calendar as Calendar
 import Time
 import Utils.Actions exposing (fireAction)
+import Utils.DateTime as DateTime
 
 
 {-| To be exposed
@@ -470,7 +470,7 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
                                 List.reverse <|
                                     List.drop 1 <|
                                         List.reverse <|
-                                            DateTime.getDateRange start (Calendar.incrementDays (minDateRangeLength - 1) start) Clock.midnight
+                                            DateTime.getDateRange start (DateTime.incrementDays (minDateRangeLength - 1) start) Clock.midnight
 
                         -- Get all the past dates that are too close to the range start date.
                         -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
@@ -481,7 +481,7 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
                             List.filter ((/=) start) <|
                                 List.reverse <|
                                     List.drop 1 <|
-                                        DateTime.getDateRange start (Calendar.decrementDays (minDateRangeLength - 1) start) Clock.midnight
+                                        DateTime.getDateRange start (DateTime.decrementDays (minDateRangeLength - 1) start) Clock.midnight
 
                         invalidDates =
                             invalidFutureDates ++ invalidPastDates
