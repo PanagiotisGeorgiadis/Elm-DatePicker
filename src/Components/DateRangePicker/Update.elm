@@ -17,8 +17,8 @@ import Clock
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
 import Models.Calendar as Calendar
-import Task
 import Time
+import Utils.Actions exposing (fireAction)
 
 
 {-| To be exposed
@@ -94,8 +94,7 @@ type InternalViewType
 
 -}
 type TimePickerConfig
-    = NoPickers
-    | TimePickerConfig { pickerType : TimePicker.PickerType, defaultTime : Clock.Time, mirrorTimes : Bool }
+    = TimePickerConfig { pickerType : TimePicker.PickerType, defaultTime : Clock.Time, mirrorTimes : Bool }
 
 
 {-| Internal
@@ -131,7 +130,7 @@ type alias DateRangeConfig =
     , dateLimit : DateLimit
 
     --
-    , timePickerConfig : TimePickerConfig
+    , timePickerConfig : Maybe TimePickerConfig
 
     -- , showOnHover : Shadowing
     }
@@ -161,11 +160,11 @@ initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
     --
     , timePickers =
         case timePickerConfig of
-            NoPickers ->
-                NoTimePickers
-
-            TimePickerConfig config ->
+            Just (TimePickerConfig config) ->
                 NotInitialised config
+
+            Nothing ->
+                NoTimePickers
     }
 
 
@@ -209,12 +208,12 @@ update msg model =
 
                         LT ->
                             ( { model | range = BothSelected (Chosen start date) }
-                            , Task.perform (\_ -> InitialiseTimePickers) (Task.succeed ())
+                            , fireAction InitialiseTimePickers
                             )
 
                         GT ->
                             ( { model | range = BothSelected (Chosen date start) }
-                            , Task.perform (\_ -> InitialiseTimePickers) (Task.succeed ())
+                            , fireAction InitialiseTimePickers
                             )
 
                 ( model_, cmd ) =
@@ -319,7 +318,7 @@ update msg model =
                         | timePickers =
                             TimePickers { startPicker = startPicker, endPicker = endPicker, mirrorTimes = not mirrorTimes }
                       }
-                    , Task.perform (\_ -> SyncTimePickers start) (Task.succeed ())
+                    , fireAction (SyncTimePickers start)
                     )
 
                 _ ->
@@ -377,7 +376,7 @@ update msg model =
                                             DateTime.setTime time start
                                     in
                                     ( BothSelected (Chosen updatedStart end)
-                                    , Task.perform (\_ -> SyncTimePickers updatedStart) (Task.succeed ())
+                                    , fireAction (SyncTimePickers updatedStart)
                                     )
 
                                 _ ->
@@ -420,7 +419,7 @@ update msg model =
                                             DateTime.setTime time end
                                     in
                                     ( BothSelected (Chosen start updatedEnd)
-                                    , Task.perform (\_ -> SyncTimePickers updatedEnd) (Task.succeed ())
+                                    , fireAction (SyncTimePickers updatedEnd)
                                     )
 
                                 _ ->

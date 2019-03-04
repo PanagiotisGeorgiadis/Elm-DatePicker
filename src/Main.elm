@@ -253,7 +253,7 @@ update msg model =
 
                     --
                     , timePickerConfig =
-                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
+                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
                     }
 
                 doubleDateRangePickerConfig =
@@ -264,7 +264,7 @@ update msg model =
 
                     --
                     , timePickerConfig =
-                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
+                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
                     }
 
                 singleDateRangePickerConfig_C =
@@ -275,7 +275,7 @@ update msg model =
 
                     --
                     , timePickerConfig =
-                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
+                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
                     }
 
                 doubleDateRangePickerConfig_C =
@@ -286,7 +286,7 @@ update msg model =
 
                     --
                     , timePickerConfig =
-                        DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True }
+                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
                     }
             in
             ( { model

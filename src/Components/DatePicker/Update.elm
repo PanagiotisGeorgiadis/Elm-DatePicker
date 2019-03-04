@@ -12,7 +12,7 @@ module Components.DatePicker.Update exposing
 import Clock
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
-import Task
+import Utils.Actions exposing (fireAction)
 
 
 type alias Model =
@@ -125,7 +125,7 @@ update msg model =
 
                         _ ->
                             ( DateTime.getTime date
-                            , Task.perform (\_ -> InitialiseTimePicker) (Task.succeed ())
+                            , fireAction InitialiseTimePicker
                             )
 
                 updatedDate =
