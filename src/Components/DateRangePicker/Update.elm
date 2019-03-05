@@ -1,19 +1,22 @@
 module Components.DateRangePicker.Update exposing
     ( DateLimit(..)
-    , DateRange(..)
-    , DateRangeOffset(..)
-    , InternalViewType(..)
     , Model
     , Msg(..)
-    , SelectionType(..)
     , TimePickerConfig
-    , TimePickerState(..)
     , ViewType(..)
     , initialise
     , update
     )
 
 import Clock
+import Components.DateRangePicker.Internal.Update as Internal
+    exposing
+        ( DateRange(..)
+        , DateRangeOffset(..)
+        , InternalViewType(..)
+        , SelectionType(..)
+        , TimePickerState(..)
+        )
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
 import Time
@@ -21,84 +24,28 @@ import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
-{-| To be exposed
+{-| Expose
 -}
 type ViewType
     = Single
     | Double
 
 
-{-| Internal
--}
-type DateRangeOffset
-    = Offset { invalidDates : List DateTime, minDateRangeLength : Int }
-    | NoOffset
-
-
-{-| Exposed
+{-| Expose
 -}
 type alias OffsetConfig =
     { minDateRangeLength : Int }
 
 
-{-| To be exposed
+{-| Expose
 -}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
     | NoLimit { disablePastDates : Bool }
 
 
-{-| Internal
+{-| Expose
 -}
-type DateRange
-    = NoneSelected
-    | StartDateSelected DateTime
-    | BothSelected SelectionType
-
-
-{-| Internal
--}
-type SelectionType
-    = Visually DateTime DateTime
-    | Chosen DateTime DateTime
-
-
-{-| Internal
--}
-type InternalViewType
-    = CalendarView
-    | ClockView
-
-
-{-| Exposed
--}
-type alias TimePickerConfig =
-    { pickerType : TimePicker.PickerType
-    , defaultTime : Clock.Time
-    , mirrorTimes : Bool
-    }
-
-
-{-| Internal
--}
-type TimePickerState
-    = NoTimePickers
-    | NotInitialised TimePickerConfig
-    | TimePickers { mirrorTimes : Bool, startPicker : TimePicker.Model, endPicker : TimePicker.Model }
-
-
-type alias Model =
-    { today : DateTime
-    , viewType : ViewType
-    , primaryDate : DateTime
-    , range : DateRange
-    , dateLimit : DateLimit
-    , dateRangeOffset : DateRangeOffset
-    , internalViewType : InternalViewType
-    , timePickers : TimePickerState
-    }
-
-
 type alias CalendarConfig =
     { today : DateTime
     , primaryDate : DateTime
@@ -107,6 +54,28 @@ type alias CalendarConfig =
     }
 
 
+{-| Expose
+-}
+type alias TimePickerConfig =
+    Internal.TimePickerConfig
+
+
+{-| Expose
+-}
+type alias Model =
+    { viewType : ViewType
+    , internalViewType : InternalViewType
+    , today : DateTime
+    , primaryDate : DateTime
+    , range : DateRange
+    , dateLimit : DateLimit
+    , dateRangeOffset : DateRangeOffset
+    , timePickers : TimePickerState
+    }
+
+
+{-| Expose
+-}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
     let
@@ -117,34 +86,36 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
 
                 _ ->
                     primaryDate
+
+        dateRangeOffset_ =
+            case dateRangeOffset of
+                Just { minDateRangeLength } ->
+                    Offset { minDateRangeLength = minDateRangeLength, invalidDates = [] }
+
+                Nothing ->
+                    NoOffset
+
+        timePickers =
+            case timePickerConfig of
+                Just config ->
+                    NotInitialised config
+
+                Nothing ->
+                    NoTimePickers
     in
     { viewType = viewType
     , internalViewType = CalendarView
-
-    --
     , today = today
     , primaryDate = primaryDate_
     , range = NoneSelected
     , dateLimit = dateLimit
-    , dateRangeOffset =
-        case dateRangeOffset of
-            Just { minDateRangeLength } ->
-                Offset { minDateRangeLength = minDateRangeLength, invalidDates = [] }
-
-            Nothing ->
-                NoOffset
-
-    --
-    , timePickers =
-        case timePickerConfig of
-            Just config ->
-                NotInitialised config
-
-            Nothing ->
-                NoTimePickers
+    , dateRangeOffset = dateRangeOffset_
+    , timePickers = timePickers
     }
 
 
+{-| Expose
+-}
 type Msg
     = PreviousMonth
     | NextMonth
@@ -161,6 +132,8 @@ type Msg
     | MoveToToday
 
 
+{-| Expose
+-}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -430,6 +403,8 @@ update msg model =
             )
 
 
+{-| Internal
+-}
 updateDateRangeOffset : Model -> Model
 updateDateRangeOffset ({ range, dateRangeOffset } as model) =
     case dateRangeOffset of
