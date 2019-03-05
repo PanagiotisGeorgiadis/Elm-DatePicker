@@ -242,52 +242,40 @@ update msg model =
                     , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
                     }
 
-                dateRangePickerConfig =
-                    TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
-
                 singleDateRangePickerConfig =
                     { today = todayDateTime
-                    , viewType = DateRangePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-
-                    --
-                    , timePickerConfig =
-                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
+                    , dateRangeOffset = Just { minDateRangeLength = 7 }
                     }
 
                 doubleDateRangePickerConfig =
                     { today = todayDateTime
-                    , viewType = DateRangePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-
-                    --
-                    , timePickerConfig =
-                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
+                    , dateRangeOffset = Just { minDateRangeLength = 7 }
                     }
 
                 singleDateRangePickerConfig_C =
                     { today = todayDateTime
-                    , viewType = DateRangePicker.Single
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
-
-                    --
-                    , timePickerConfig =
-                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
+                    , dateRangeOffset = Just { minDateRangeLength = 4 }
                     }
 
                 doubleDateRangePickerConfig_C =
                     { today = todayDateTime
-                    , viewType = DateRangePicker.Double
                     , primaryDate = todayDateTime
                     , dateLimit = DateRangePicker.DateLimit constrains
-
-                    --
-                    , timePickerConfig =
-                        Just (DateRangePicker.TimePickerConfig { pickerType = dateRangePickerConfig, defaultTime = defaultTime, mirrorTimes = True })
+                    , dateRangeOffset = Just { minDateRangeLength = 4 }
                     }
+
+                timePickerConfig =
+                    Just
+                        { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+                        , defaultTime = defaultTime
+                        , mirrorTimes = True
+                        }
             in
             ( { model
                 | today = Just todayPosix
@@ -299,10 +287,10 @@ update msg model =
                 , doubleDatePicker_C = Just (DatePicker.initialise doubleDatePickerConfig_C)
 
                 --
-                , singleDateRangePicker = Just (DateRangePicker.initialise singleDateRangePickerConfig)
-                , doubleDateRangePicker = Just (DateRangePicker.initialise doubleDateRangePickerConfig)
-                , singleDateRangePicker_C = Just (DateRangePicker.initialise singleDateRangePickerConfig_C)
-                , doubleDateRangePicker_C = Just (DateRangePicker.initialise doubleDateRangePickerConfig_C)
+                , singleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Single singleDateRangePickerConfig timePickerConfig)
+                , doubleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Double doubleDateRangePickerConfig timePickerConfig)
+                , singleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Single singleDateRangePickerConfig_C timePickerConfig)
+                , doubleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Double doubleDateRangePickerConfig_C timePickerConfig)
               }
             , Cmd.none
             )

@@ -6,7 +6,7 @@ module Components.DateRangePicker.Update exposing
     , Model
     , Msg(..)
     , SelectionType(..)
-    , TimePickerConfig(..)
+    , TimePickerConfig
     , TimePickerState(..)
     , ViewType(..)
     , initialise
@@ -28,26 +28,17 @@ type ViewType
     | Double
 
 
-
--- TODO: Implement this
--- type DateRangeOffsetConfig
---     = NoOffset
---     | Offset { minDateRangeLength : Int }
-
-
 {-| Internal
 -}
 type DateRangeOffset
-    = Offset OffsetConfig
+    = Offset { invalidDates : List DateTime, minDateRangeLength : Int }
     | NoOffset
 
 
-{-| Internal
+{-| Exposed
 -}
 type alias OffsetConfig =
-    { invalidDates : List DateTime
-    , minDateRangeLength : Int
-    }
+    { minDateRangeLength : Int }
 
 
 {-| To be exposed
@@ -57,16 +48,7 @@ type DateLimit
     | NoLimit { disablePastDates : Bool }
 
 
-
--- type Shadowing
---     = Enabled (Maybe DateTime)
---     | Disabled
-
-
 {-| Internal
-
--- Replace the DateRange.NoneSelected with a Maybe DateRange
-
 -}
 type DateRange
     = NoneSelected
@@ -88,20 +70,20 @@ type InternalViewType
     | ClockView
 
 
-{-| To be exposed
-
--- Replace NoPickers with a Maybe TimePickerConfig. If the user provides us with a Nothing then we default to NoTimePickers
-
+{-| Exposed
 -}
-type TimePickerConfig
-    = TimePickerConfig { pickerType : TimePicker.PickerType, defaultTime : Clock.Time, mirrorTimes : Bool }
+type alias TimePickerConfig =
+    { pickerType : TimePicker.PickerType
+    , defaultTime : Clock.Time
+    , mirrorTimes : Bool
+    }
 
 
 {-| Internal
 -}
 type TimePickerState
     = NoTimePickers
-    | NotInitialised { pickerType : TimePicker.PickerType, defaultTime : Clock.Time, mirrorTimes : Bool }
+    | NotInitialised TimePickerConfig
     | TimePickers { mirrorTimes : Bool, startPicker : TimePicker.Model, endPicker : TimePicker.Model }
 
 
@@ -110,34 +92,23 @@ type alias Model =
     , viewType : ViewType
     , primaryDate : DateTime
     , range : DateRange
-
-    -- , showOnHover : Shadowing -- TODO: Think about that ?
     , dateLimit : DateLimit
     , dateRangeOffset : DateRangeOffset
-
-    --
     , internalViewType : InternalViewType
-
-    --
     , timePickers : TimePickerState
     }
 
 
-type alias DateRangeConfig =
+type alias CalendarConfig =
     { today : DateTime
-    , viewType : ViewType
     , primaryDate : DateTime
     , dateLimit : DateLimit
-
-    --
-    , timePickerConfig : Maybe TimePickerConfig
-
-    -- , showOnHover : Shadowing
+    , dateRangeOffset : Maybe OffsetConfig
     }
 
 
-initialise : DateRangeConfig -> Model
-initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
+initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
+initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
     let
         primaryDate_ =
             case dateLimit of
@@ -147,20 +118,26 @@ initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
                 _ ->
                     primaryDate
     in
-    { today = today
-    , viewType = viewType
+    { viewType = viewType
+    , internalViewType = CalendarView
+
+    --
+    , today = today
     , primaryDate = primaryDate_
     , range = NoneSelected
     , dateLimit = dateLimit
-    , dateRangeOffset = Offset { minDateRangeLength = 4, invalidDates = [] }
+    , dateRangeOffset =
+        case dateRangeOffset of
+            Just { minDateRangeLength } ->
+                Offset { minDateRangeLength = minDateRangeLength, invalidDates = [] }
 
-    --
-    , internalViewType = CalendarView
+            Nothing ->
+                NoOffset
 
     --
     , timePickers =
         case timePickerConfig of
-            Just (TimePickerConfig config) ->
+            Just config ->
                 NotInitialised config
 
             Nothing ->
@@ -457,6 +434,10 @@ updateDateRangeOffset : Model -> Model
 updateDateRangeOffset ({ range, dateRangeOffset } as model) =
     case dateRangeOffset of
         Offset { minDateRangeLength } ->
+            let
+                offsetConfig invalidDates =
+                    { minDateRangeLength = minDateRangeLength, invalidDates = invalidDates }
+            in
             case range of
                 StartDateSelected start ->
                     let
@@ -486,14 +467,10 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
                         invalidDates =
                             invalidFutureDates ++ invalidPastDates
                     in
-                    { model
-                        | dateRangeOffset = Offset (OffsetConfig invalidDates minDateRangeLength)
-                    }
+                    { model | dateRangeOffset = Offset (offsetConfig invalidDates) }
 
                 _ ->
-                    { model
-                        | dateRangeOffset = Offset (OffsetConfig [] minDateRangeLength)
-                    }
+                    { model | dateRangeOffset = Offset (offsetConfig []) }
 
         NoOffset ->
             model
