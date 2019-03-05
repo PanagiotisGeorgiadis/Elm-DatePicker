@@ -202,75 +202,43 @@ update msg model =
                     , maxDate = DateTime.fromPosix sixteenOfApr
                     }
 
-                pickerType =
-                    TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
-
                 defaultTime =
                     Maybe.withDefault
                         Clock.midnight
                         (Clock.fromRawParts { hours = 11, minutes = 11, seconds = 11, milliseconds = 0 })
 
-                singleDatePickerConfig =
-                    { today = todayDateTime
-                    , viewType = DatePicker.Single
-                    , primaryDate = todayDateTime
-                    , dateLimit = DatePicker.NoLimit { disablePastDates = True }
-                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
-                    }
-
-                doubleDatePickerConfig =
-                    { today = todayDateTime
-                    , viewType = DatePicker.Double
-                    , primaryDate = todayDateTime
-                    , dateLimit = DatePicker.NoLimit { disablePastDates = True }
-                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
-                    }
-
-                singleDatePickerConfig_C =
-                    { today = todayDateTime
-                    , viewType = DatePicker.Single
-                    , primaryDate = todayDateTime
-                    , dateLimit = DatePicker.DateLimit constrains
-                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
-                    }
-
-                doubleDatePickerConfig_C =
-                    { today = todayDateTime
-                    , viewType = DatePicker.Double
-                    , primaryDate = todayDateTime
-                    , dateLimit = DatePicker.DateLimit constrains
-                    , timePickerConfig = DatePicker.TimePickerConfig { pickerType = pickerType, defaultTime = defaultTime }
-                    }
-
-                singleDateRangePickerConfig =
-                    { today = todayDateTime
-                    , primaryDate = todayDateTime
-                    , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-                    , dateRangeOffset = Just { minDateRangeLength = 7 }
-                    }
-
-                doubleDateRangePickerConfig =
-                    { today = todayDateTime
-                    , primaryDate = todayDateTime
-                    , dateLimit = DateRangePicker.NoLimit { disablePastDates = True }
-                    , dateRangeOffset = Just { minDateRangeLength = 7 }
-                    }
-
-                singleDateRangePickerConfig_C =
-                    { today = todayDateTime
-                    , primaryDate = todayDateTime
-                    , dateLimit = DateRangePicker.DateLimit constrains
-                    , dateRangeOffset = Just { minDateRangeLength = 4 }
-                    }
-
-                doubleDateRangePickerConfig_C =
-                    { today = todayDateTime
-                    , primaryDate = todayDateTime
-                    , dateLimit = DateRangePicker.DateLimit constrains
-                    , dateRangeOffset = Just { minDateRangeLength = 4 }
-                    }
-
                 timePickerConfig =
+                    Just
+                        { pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
+                        , defaultTime = defaultTime
+                        }
+
+                getDatePickerConfig dateLimit =
+                    { today = todayDateTime
+                    , primaryDate = todayDateTime
+                    , dateLimit = dateLimit
+                    }
+
+                getDateRangeConfig dateLimit dateRangeOffset =
+                    { today = todayDateTime
+                    , primaryDate = todayDateTime
+                    , dateLimit = dateLimit
+                    , dateRangeOffset = dateRangeOffset
+                    }
+
+                datePickerConfig =
+                    getDatePickerConfig (DatePicker.NoLimit { disablePastDates = True })
+
+                datePickerConfig_C =
+                    getDatePickerConfig (DatePicker.DateLimit constrains)
+
+                dateRangeConfig =
+                    getDateRangeConfig (DateRangePicker.NoLimit { disablePastDates = True }) (Just { minDateRangeLength = 7 })
+
+                dateRangeConfig_C =
+                    getDateRangeConfig (DateRangePicker.DateLimit constrains) (Just { minDateRangeLength = 4 })
+
+                timePickerConfig_Range =
                     Just
                         { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                         , defaultTime = defaultTime
@@ -281,16 +249,16 @@ update msg model =
                 | today = Just todayPosix
 
                 --
-                , singleDatePicker = Just (DatePicker.initialise singleDatePickerConfig)
-                , doubleDatePicker = Just (DatePicker.initialise doubleDatePickerConfig)
-                , singleDatePicker_C = Just (DatePicker.initialise singleDatePickerConfig_C)
-                , doubleDatePicker_C = Just (DatePicker.initialise doubleDatePickerConfig_C)
+                , singleDatePicker = Just (DatePicker.initialise DatePicker.Single datePickerConfig timePickerConfig)
+                , doubleDatePicker = Just (DatePicker.initialise DatePicker.Double datePickerConfig timePickerConfig)
+                , singleDatePicker_C = Just (DatePicker.initialise DatePicker.Single datePickerConfig_C timePickerConfig)
+                , doubleDatePicker_C = Just (DatePicker.initialise DatePicker.Double datePickerConfig_C timePickerConfig)
 
                 --
-                , singleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Single singleDateRangePickerConfig timePickerConfig)
-                , doubleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Double doubleDateRangePickerConfig timePickerConfig)
-                , singleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Single singleDateRangePickerConfig_C timePickerConfig)
-                , doubleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Double doubleDateRangePickerConfig_C timePickerConfig)
+                , singleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Single dateRangeConfig timePickerConfig_Range)
+                , doubleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Double dateRangeConfig timePickerConfig_Range)
+                , singleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Single dateRangeConfig_C timePickerConfig_Range)
+                , doubleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Double dateRangeConfig_C timePickerConfig_Range)
               }
             , Cmd.none
             )

@@ -2,7 +2,6 @@ module Components.DatePicker.Update exposing
     ( DateLimit(..)
     , Model
     , Msg(..)
-    , TimePickerConfig(..)
     , TimePickerState(..)
     , ViewType(..)
     , initialise
@@ -27,16 +26,15 @@ type alias Model =
 
 type alias Config =
     { today : DateTime
-    , viewType : ViewType
     , primaryDate : DateTime
     , dateLimit : DateLimit
-    , timePickerConfig : TimePickerConfig
     }
 
 
-type TimePickerConfig
-    = NoPicker
-    | TimePickerConfig { pickerType : TimePicker.PickerType, defaultTime : Clock.Time }
+type alias TimePickerConfig =
+    { pickerType : TimePicker.PickerType
+    , defaultTime : Clock.Time
+    }
 
 
 {-| Extract to another file as a common type
@@ -57,8 +55,8 @@ type TimePickerState
     | TimePicker TimePicker.Model
 
 
-initialise : Config -> Model
-initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
+initialise : ViewType -> Config -> Maybe TimePickerConfig -> Model
+initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
     { today = today
     , viewType = viewType
     , primaryDate = primaryDate
@@ -66,11 +64,11 @@ initialise { today, viewType, primaryDate, dateLimit, timePickerConfig } =
     , dateLimit = dateLimit
     , timePicker =
         case timePickerConfig of
-            NoPicker ->
-                NoTimePicker
-
-            TimePickerConfig config ->
+            Just config ->
                 NotInitialised config
+
+            Nothing ->
+                NoTimePicker
     }
 
 
