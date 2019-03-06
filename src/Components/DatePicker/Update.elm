@@ -14,6 +14,8 @@ import DateTime exposing (DateTime)
 import Utils.Actions exposing (fireAction)
 
 
+{-| Expose
+-}
 type alias Model =
     { today : DateTime
     , viewType : ViewType
@@ -24,6 +26,8 @@ type alias Model =
     }
 
 
+{-| Expose
+-}
 type alias Config =
     { today : DateTime
     , primaryDate : DateTime
@@ -31,30 +35,38 @@ type alias Config =
     }
 
 
+{-| Expose
+-}
 type alias TimePickerConfig =
     { pickerType : TimePicker.PickerType
     , defaultTime : Clock.Time
     }
 
 
-{-| Extract to another file as a common type
+{-| Expose
 -}
 type ViewType
     = Single
     | Double
 
 
+{-| Expose
+-}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
     | NoLimit { disablePastDates : Bool }
 
 
+{-| Internal
+-}
 type TimePickerState
     = NoTimePicker
     | NotInitialised { pickerType : TimePicker.PickerType, defaultTime : Clock.Time }
     | TimePicker TimePicker.Model
 
 
+{-| Expose
+-}
 initialise : ViewType -> Config -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
     { today = today
@@ -72,9 +84,10 @@ initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
     }
 
 
+{-| Expose
+-}
 type Msg
-    = NoOp
-    | PreviousMonth
+    = PreviousMonth
     | NextMonth
     | SelectDate DateTime
     | MoveToToday
@@ -82,6 +95,8 @@ type Msg
     | TimePickerMsg TimePicker.Msg
 
 
+{-| Expose
+-}
 type ExtMsg
     = None
     | SelectedDate DateTime
@@ -94,12 +109,6 @@ type ExtMsg
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model
-            , Cmd.none
-            , None
-            )
-
         PreviousMonth ->
             ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
