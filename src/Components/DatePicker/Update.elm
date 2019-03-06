@@ -123,6 +123,12 @@ update msg model =
 
         SelectDate date ->
             let
+                -- Getting the time if it has already been selected
+                -- by the user in order to update it on the newly
+                -- selected date. For example: The user has selected
+                -- 16 Sep 2019 21:00 but now they want to choose 17 Sep 2019.
+                -- We maintain the time as 21:00 since they've already made
+                -- this choice.
                 ( time, cmd ) =
                     case model.timePicker of
                         TimePicker timePicker ->
@@ -165,28 +171,23 @@ update msg model =
             )
 
         InitialiseTimePicker ->
-            case model.selectedDate of
-                Just dateTime ->
+            case ( model.selectedDate, model.timePicker ) of
+                ( Just dateTime, NotInitialised { pickerType, defaultTime } ) ->
                     let
                         timePicker =
-                            case model.timePicker of
-                                NotInitialised { pickerType, defaultTime } ->
-                                    TimePicker
-                                        (TimePicker.initialise
-                                            { time = defaultTime
-                                            , pickerType = pickerType
-                                            }
-                                        )
-
-                                _ ->
-                                    model.timePicker
+                            TimePicker
+                                (TimePicker.initialise
+                                    { time = defaultTime
+                                    , pickerType = pickerType
+                                    }
+                                )
                     in
                     ( { model | timePicker = timePicker }
                     , Cmd.none
                     , None
                     )
 
-                Nothing ->
+                _ ->
                     ( model
                     , Cmd.none
                     , None
