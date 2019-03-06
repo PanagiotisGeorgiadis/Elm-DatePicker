@@ -1,5 +1,12 @@
 module Components.DatePicker.View exposing (view)
 
+import Components.Common
+    exposing
+        ( emptyDateHtml
+        , getFirstDayOfTheMonth
+        , totalCalendarCells
+        , weekdaysHtml
+        )
 import Components.DatePicker.Update
     exposing
         ( DateLimit(..)
@@ -173,46 +180,22 @@ calendarView model =
         ]
 
 
-{-| Extract to another file as a common view fragment
--}
-weekdaysHtml : Html Msg
-weekdaysHtml =
-    div [ class "weekdays" ]
-        [ span [] [ text "Su" ]
-        , span [] [ text "Mo" ]
-        , span [] [ text "Tu" ]
-        , span [] [ text "We" ]
-        , span [] [ text "Th" ]
-        , span [] [ text "Fr" ]
-        , span [] [ text "Sa" ]
-        ]
-
-
-{-| Extract to another file as a common view fragment
--}
-getFirstDayOfTheMonth : DateTime -> Maybe DateTime
-getFirstDayOfTheMonth date =
-    DateTime.fromRawParts
-        { day = 1
-        , month = DateTime.getMonth date
-        , year = DateTime.getYear date
-        }
-        { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
-
-
 dateHtml : Model -> DateTime -> Html Msg
 dateHtml ({ today, selectedDate } as model) date =
     let
         fullDateString =
             Time.toHumanReadableDate date
 
+        isEqualToDate date_ =
+            DateTime.compareDates date date_ == EQ
+
         ( isToday, isPastDate ) =
-            ( areDatesEqual today date
+            ( isEqualToDate today
             , DateTime.compareDates today date == GT
             )
 
         isSelected =
-            Maybe.mapWithDefault (areDatesEqual date) False selectedDate
+            Maybe.mapWithDefault isEqualToDate False selectedDate
 
         isDisabledDate =
             checkIfDisabled model date
@@ -242,18 +225,6 @@ dateHtml ({ today, selectedDate } as model) date =
             ]
 
 
-areDatesEqual : DateTime -> DateTime -> Bool
-areDatesEqual lhs rhs =
-    DateTime.compareDates lhs rhs == EQ
-
-
-{-| Extract to another file as a common view fragment
--}
-emptyDateHtml : Html msg
-emptyDateHtml =
-    span [ class "empty-date" ] []
-
-
 {-| Checks if a Date on the DatePicker is a disabled one based on the specified date limitations.
 -}
 checkIfDisabled : Model -> DateTime -> Bool
@@ -261,6 +232,9 @@ checkIfDisabled { today, dateLimit } date =
     let
         isPastDate =
             DateTime.compareDates today date == GT
+
+        isEqualToDate date_ =
+            DateTime.compareDates date date_ == EQ
     in
     case dateLimit of
         NoLimit { disablePastDates } ->
@@ -269,8 +243,8 @@ checkIfDisabled { today, dateLimit } date =
         DateLimit { minDate, maxDate } ->
             let
                 isPartOfTheConstraint =
-                    (DateTime.compareDates minDate date == LT || areDatesEqual minDate date)
-                        && (DateTime.compareDates maxDate date == GT || areDatesEqual maxDate date)
+                    (DateTime.compareDates minDate date == LT || isEqualToDate minDate)
+                        && (DateTime.compareDates maxDate date == GT || isEqualToDate maxDate)
             in
             not isPartOfTheConstraint
 
@@ -291,18 +265,6 @@ getPreviousButtonAction isButtonActive =
 
     else
         Nothing
-
-
-{-| Extract to another file as a common view fragment
-
-    6 rows in total on the calendar
-    7 columns on the calendar
-    6 \* 7 = 42 is the total count of cells.
-
--}
-totalCalendarCells : Int
-totalCalendarCells =
-    6 * 7
 
 
 todayButtonHtml : Model -> Html Msg

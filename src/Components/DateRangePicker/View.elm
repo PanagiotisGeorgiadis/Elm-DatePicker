@@ -1,6 +1,13 @@
 module Components.DateRangePicker.View exposing (view)
 
 import Clock
+import Components.Common
+    exposing
+        ( emptyDateHtml
+        , getFirstDayOfTheMonth
+        , totalCalendarCells
+        , weekdaysHtml
+        )
 import Components.DateRangePicker.Internal.Update
     exposing
         ( DateRange(..)
@@ -430,56 +437,6 @@ checkIfInvalid { dateRangeOffset } date =
 
         NoOffset ->
             False
-
-
-{-| Extract to another file as a common view fragment
--}
-getFirstDayOfTheMonth : DateTime -> Maybe DateTime
-getFirstDayOfTheMonth date =
-    DateTime.fromRawParts
-        { day = 1
-        , month = DateTime.getMonth date
-        , year = DateTime.getYear date
-        }
-        { hours = 0
-        , minutes = 0
-        , seconds = 0
-        , milliseconds = 0
-        }
-
-
-{-| Extract to another file as a common view fragment
--}
-weekdaysHtml : Html Msg
-weekdaysHtml =
-    div [ class "weekdays" ]
-        [ span [] [ text "Su" ]
-        , span [] [ text "Mo" ]
-        , span [] [ text "Tu" ]
-        , span [] [ text "We" ]
-        , span [] [ text "Th" ]
-        , span [] [ text "Fr" ]
-        , span [] [ text "Sa" ]
-        ]
-
-
-{-| Extract to another file as a common view fragment
--}
-emptyDateHtml : Html Msg
-emptyDateHtml =
-    span [ class "empty-date" ] []
-
-
-{-| Extract to another file as a common view fragment
-
-6 rows in total on the calendar
-7 columns on the calendar
-6 \* 7 = 42 is the total count of cells.
-
--}
-totalCalendarCells : Int
-totalCalendarCells =
-    6 * 7
 
 
 todayButtonHtml : Model -> Html Msg
