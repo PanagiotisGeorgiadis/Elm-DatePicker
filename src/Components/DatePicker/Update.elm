@@ -1,5 +1,6 @@
 module Components.DatePicker.Update exposing
     ( DateLimit(..)
+    , ExtMsg(..)
     , Model
     , Msg(..)
     , TimePickerState(..)

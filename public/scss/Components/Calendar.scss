@@ -24,7 +24,7 @@
 
         &:hover {
             .date-inner {
-                background-color: rgba(0, 0, 0, 0.4);
+                background-color: var(--concrete-grey);
             }
         }
 
@@ -36,7 +36,7 @@
         }
 
         &.invalid {
-            color: rgba(0, 0, 0, 0.2);
+            color: var(--concrete-grey);
             cursor: not-allowed;
             &:hover {
                 .date-inner {
@@ -46,7 +46,7 @@
         }
 
         &.disabled {
-            color: rgba(0, 0, 0, 0.2);
+            color: var(--concrete-grey);
             cursor: default;
             &:hover {
                 .date-inner {
