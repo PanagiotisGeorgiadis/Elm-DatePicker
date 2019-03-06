@@ -269,6 +269,16 @@ update msg model =
                     let
                         ( subModel, subCmd, extMsg ) =
                             DatePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date
+                        -- out of the DatePicker module.
+                        selectedDate =
+                            case extMsg of
+                                DatePicker.DateSelected date ->
+                                    date
+
+                                DatePicker.None ->
+                                    Nothing
                     in
                     ( { model | singleDatePicker = Just subModel }
                     , Cmd.map SingleDatePickerMsg subCmd
@@ -285,6 +295,16 @@ update msg model =
                     let
                         ( subModel, subCmd, extMsg ) =
                             DatePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date
+                        -- out of the DatePicker module.
+                        selectedDate =
+                            case extMsg of
+                                DatePicker.DateSelected date ->
+                                    date
+
+                                DatePicker.None ->
+                                    Nothing
                     in
                     ( { model | doubleDatePicker = Just subModel }
                     , Cmd.map DoubleDatePickerMsg subCmd
@@ -301,6 +321,16 @@ update msg model =
                     let
                         ( subModel, subCmd, extMsg ) =
                             DatePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date
+                        -- out of the DatePicker module.
+                        selectedDate =
+                            case extMsg of
+                                DatePicker.DateSelected date ->
+                                    date
+
+                                DatePicker.None ->
+                                    Nothing
                     in
                     ( { model | singleDatePicker_C = Just subModel }
                     , Cmd.map SingleDatePickerMsg_C subCmd
@@ -317,6 +347,16 @@ update msg model =
                     let
                         ( subModel, subCmd, extMsg ) =
                             DatePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date
+                        -- out of the DatePicker module.
+                        selectedDate =
+                            case extMsg of
+                                DatePicker.DateSelected date ->
+                                    date
+
+                                DatePicker.None ->
+                                    Nothing
                     in
                     ( { model | doubleDatePicker_C = Just subModel }
                     , Cmd.map DoubleDatePickerMsg_C subCmd

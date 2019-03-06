@@ -28,7 +28,7 @@ type alias Model =
 
 {-| Expose
 -}
-type alias Config =
+type alias CalendarConfig =
     { today : DateTime
     , primaryDate : DateTime
     , dateLimit : DateLimit
@@ -67,11 +67,20 @@ type TimePickerState
 
 {-| Expose
 -}
-initialise : ViewType -> Config -> Maybe TimePickerConfig -> Model
+initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
+    let
+        primaryDate_ =
+            case timePickerConfig of
+                Just { defaultTime } ->
+                    DateTime.setTime defaultTime primaryDate
+
+                Nothing ->
+                    primaryDate
+    in
     { today = today
     , viewType = viewType
-    , primaryDate = primaryDate
+    , primaryDate = primaryDate_
     , selectedDate = Nothing
     , dateLimit = dateLimit
     , timePicker =
@@ -99,11 +108,7 @@ type Msg
 -}
 type ExtMsg
     = None
-    | SelectedDate DateTime
-
-
-
--- | SelectedDateAndTime
+    | DateSelected (Maybe DateTime)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
@@ -149,19 +154,19 @@ update msg model =
                     if DateTime.getDate updatedDate == DateTime.getDate selected then
                         ( { model | selectedDate = Nothing }
                         , Cmd.none
-                        , SelectedDate date
+                        , DateSelected Nothing
                         )
 
                     else
                         ( { model | selectedDate = Just updatedDate }
                         , cmd
-                        , SelectedDate date
+                        , DateSelected (Just updatedDate)
                         )
 
                 Nothing ->
                     ( { model | selectedDate = Just updatedDate }
                     , cmd
-                    , SelectedDate date
+                    , DateSelected (Just updatedDate)
                     )
 
         MoveToToday ->
@@ -206,14 +211,14 @@ update msg model =
                                     Just (DateTime.setTime newTime date)
 
                                 _ ->
-                                    model.selectedDate
+                                    Just date
                     in
                     ( { model
                         | selectedDate = updatedDate
                         , timePicker = TimePicker subModel
                       }
                     , Cmd.map TimePickerMsg subCmd
-                    , None
+                    , DateSelected updatedDate
                     )
 
                 _ ->
