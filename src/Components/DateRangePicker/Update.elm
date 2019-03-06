@@ -1,5 +1,6 @@
 module Components.DateRangePicker.Update exposing
     ( DateLimit(..)
+    , ExtMsg(..)
     , Model
     , Msg(..)
     , TimePickerConfig
@@ -33,12 +34,6 @@ type ViewType
 
 {-| Expose
 -}
-type alias OffsetConfig =
-    { minDateRangeLength : Int }
-
-
-{-| Expose
--}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
     | NoLimit { disablePastDates : Bool }
@@ -50,7 +45,7 @@ type alias CalendarConfig =
     { today : DateTime
     , primaryDate : DateTime
     , dateLimit : DateLimit
-    , dateRangeOffset : Maybe OffsetConfig
+    , dateRangeOffset : Maybe { minDateRangeLength : Int }
     }
 
 
@@ -79,13 +74,21 @@ type alias Model =
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
     let
+        updateTime dateTime =
+            case timePickerConfig of
+                Just { defaultTime } ->
+                    DateTime.setTime defaultTime dateTime
+
+                _ ->
+                    dateTime
+
         primaryDate_ =
             case dateLimit of
                 DateLimit { minDate } ->
-                    minDate
+                    updateTime minDate
 
                 _ ->
-                    primaryDate
+                    updateTime primaryDate
 
         dateRangeOffset_ =
             case dateRangeOffset of
@@ -132,19 +135,32 @@ type Msg
     | MoveToToday
 
 
+type ExtMsg
+    = None
+    | DateRangeSelected (Maybe SelectedDateRange)
+
+
+type alias SelectedDateRange =
+    { startDate : DateTime
+    , endDate : DateTime
+    }
+
+
 {-| Expose
 -}
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
     case msg of
         PreviousMonth ->
             ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
+            , None
             )
 
         NextMonth ->
             ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
+            , None
             )
 
         SelectDate date ->
@@ -154,19 +170,22 @@ update msg model =
                         EQ ->
                             ( { model | range = NoneSelected }
                             , Cmd.none
+                            , DateRangeSelected Nothing
                             )
 
                         LT ->
                             ( { model | range = BothSelected (Chosen start date) }
                             , fireAction InitialiseTimePickers
+                            , DateRangeSelected (Just { startDate = start, endDate = date })
                             )
 
                         GT ->
                             ( { model | range = BothSelected (Chosen date start) }
                             , fireAction InitialiseTimePickers
+                            , DateRangeSelected (Just { startDate = date, endDate = start })
                             )
 
-                ( model_, cmd ) =
+                ( model_, cmd, extMsg ) =
                     case model.range of
                         StartDateSelected start ->
                             updateModel start
@@ -177,10 +196,12 @@ update msg model =
                         _ ->
                             ( { model | range = StartDateSelected date }
                             , Cmd.none
+                            , None
                             )
             in
             ( updateDateRangeOffset model_
             , cmd
+            , extMsg
             )
 
         UpdateVisualSelection date ->
@@ -192,43 +213,47 @@ update msg model =
 
                         _ ->
                             { model | range = BothSelected (Visually start date) }
+
+                updatedModel =
+                    case model.range of
+                        StartDateSelected start ->
+                            updateModel start
+
+                        BothSelected (Visually start _) ->
+                            updateModel start
+
+                        _ ->
+                            model
             in
-            case model.range of
-                StartDateSelected start ->
-                    ( updateModel start
-                    , Cmd.none
-                    )
-
-                BothSelected (Visually start _) ->
-                    ( updateModel start
-                    , Cmd.none
-                    )
-
-                _ ->
-                    ( model
-                    , Cmd.none
-                    )
+            ( updatedModel
+            , Cmd.none
+            , None
+            )
 
         ResetVisualSelection ->
             case model.range of
                 BothSelected (Visually start _) ->
                     ( { model | range = StartDateSelected start }
                     , Cmd.none
+                    , None
                     )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         ShowClockView ->
             ( { model | internalViewType = ClockView }
             , Cmd.none
+            , None
             )
 
         ShowCalendarView ->
             ( { model | internalViewType = CalendarView }
             , Cmd.none
+            , None
             )
 
         InitialiseTimePickers ->
@@ -249,16 +274,19 @@ update msg model =
                                         }
                               }
                             , Cmd.none
+                            , None
                             )
 
                         _ ->
                             ( model
                             , Cmd.none
+                            , None
                             )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         ToggleTimeMirroring ->
@@ -269,11 +297,13 @@ update msg model =
                             TimePickers { startPicker = startPicker, endPicker = endPicker, mirrorTimes = not mirrorTimes }
                       }
                     , fireAction (SyncTimePickers start)
+                    , None
                     )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         SyncTimePickers dateTime ->
@@ -284,13 +314,16 @@ update msg model =
                             time =
                                 DateTime.getTime dateTime
 
-                            ( updateFn, timePickerUpdateFn ) =
-                                ( DateTime.setTime time
-                                , TimePicker.updateDisplayTime time
+                            timePickerUpdateFn =
+                                TimePicker.updateDisplayTime time
+
+                            ( updatedStartDate, updatedEndDate ) =
+                                ( DateTime.setTime time start
+                                , DateTime.setTime time end
                                 )
                         in
                         ( { model
-                            | range = BothSelected (Chosen (updateFn start) (updateFn end))
+                            | range = BothSelected (Chosen updatedStartDate updatedEndDate)
                             , timePickers =
                                 TimePickers
                                     { startPicker = timePickerUpdateFn startPicker
@@ -299,16 +332,19 @@ update msg model =
                                     }
                           }
                         , Cmd.none
+                        , DateRangeSelected (Just { startDate = updatedStartDate, endDate = updatedEndDate })
                         )
 
                     else
                         ( model
                         , Cmd.none
+                        , None
                         )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         RangeStartPickerMsg subMsg ->
@@ -318,7 +354,7 @@ update msg model =
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg startPicker
 
-                        ( range, cmd ) =
+                        ( range, cmd, externalMsg ) =
                             case extMsg of
                                 TimePicker.UpdatedTime time ->
                                     let
@@ -327,31 +363,33 @@ update msg model =
                                     in
                                     ( BothSelected (Chosen updatedStart end)
                                     , fireAction (SyncTimePickers updatedStart)
+                                    , DateRangeSelected (Just { startDate = updatedStart, endDate = end })
                                     )
 
                                 _ ->
                                     ( model.range
                                     , Cmd.none
+                                    , None
                                     )
+
+                        timePickers =
+                            TimePickers { startPicker = subModel, endPicker = endPicker, mirrorTimes = mirrorTimes }
                     in
                     ( { model
                         | range = range
-                        , timePickers =
-                            TimePickers
-                                { startPicker = subModel
-                                , endPicker = endPicker
-                                , mirrorTimes = mirrorTimes
-                                }
+                        , timePickers = timePickers
                       }
                     , Cmd.batch
                         [ Cmd.map RangeStartPickerMsg subCmd
                         , cmd
                         ]
+                    , externalMsg
                     )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         RangeEndPickerMsg subMsg ->
@@ -361,7 +399,7 @@ update msg model =
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg endPicker
 
-                        ( range, cmd ) =
+                        ( range, cmd, externalMsg ) =
                             case extMsg of
                                 TimePicker.UpdatedTime time ->
                                     let
@@ -370,36 +408,39 @@ update msg model =
                                     in
                                     ( BothSelected (Chosen start updatedEnd)
                                     , fireAction (SyncTimePickers updatedEnd)
+                                    , DateRangeSelected (Just { startDate = start, endDate = updatedEnd })
                                     )
 
                                 _ ->
                                     ( model.range
                                     , Cmd.none
+                                    , None
                                     )
+
+                        timePickers =
+                            TimePickers { startPicker = startPicker, endPicker = subModel, mirrorTimes = mirrorTimes }
                     in
                     ( { model
                         | range = range
-                        , timePickers =
-                            TimePickers
-                                { startPicker = startPicker
-                                , endPicker = subModel
-                                , mirrorTimes = mirrorTimes
-                                }
+                        , timePickers = timePickers
                       }
                     , Cmd.batch
                         [ Cmd.map RangeEndPickerMsg subCmd
                         , cmd
                         ]
+                    , externalMsg
                     )
 
                 _ ->
                     ( model
                     , Cmd.none
+                    , None
                     )
 
         MoveToToday ->
             ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
             , Cmd.none
+            , None
             )
 
 

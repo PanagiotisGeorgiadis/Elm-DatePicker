@@ -371,8 +371,18 @@ update msg model =
             case model.singleDateRangePicker of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DateRangePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date range
+                        -- out of the DateRangePicker module.
+                        selectedDateRange =
+                            case extMsg of
+                                DateRangePicker.DateRangeSelected date ->
+                                    date
+
+                                DateRangePicker.None ->
+                                    Nothing
                     in
                     ( { model | singleDateRangePicker = Just subModel }
                     , Cmd.map SingleDateRangeMsg subCmd
@@ -387,8 +397,18 @@ update msg model =
             case model.doubleDateRangePicker of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DateRangePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date range
+                        -- out of the DateRangePicker module.
+                        selectedDateRange =
+                            case extMsg of
+                                DateRangePicker.DateRangeSelected date ->
+                                    date
+
+                                DateRangePicker.None ->
+                                    Nothing
                     in
                     ( { model | doubleDateRangePicker = Just subModel }
                     , Cmd.map DoubleDateRangeMsg subCmd
@@ -403,8 +423,18 @@ update msg model =
             case model.singleDateRangePicker_C of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DateRangePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date range
+                        -- out of the DateRangePicker module.
+                        selectedDateRange =
+                            case extMsg of
+                                DateRangePicker.DateRangeSelected date ->
+                                    date
+
+                                DateRangePicker.None ->
+                                    Nothing
                     in
                     ( { model | singleDateRangePicker_C = Just subModel }
                     , Cmd.map SingleDateRangeMsg_C subCmd
@@ -419,8 +449,18 @@ update msg model =
             case model.doubleDateRangePicker_C of
                 Just datePickerModel ->
                     let
-                        ( subModel, subCmd ) =
+                        ( subModel, subCmd, extMsg ) =
                             DateRangePicker.update subMsg datePickerModel
+
+                        -- Example on how to get the selected date range
+                        -- out of the DateRangePicker module.
+                        selectedDateRange =
+                            case extMsg of
+                                DateRangePicker.DateRangeSelected date ->
+                                    date
+
+                                DateRangePicker.None ->
+                                    Nothing
                     in
                     ( { model | doubleDateRangePicker_C = Just subModel }
                     , Cmd.map DoubleDateRangeMsg_C subCmd

@@ -209,7 +209,7 @@ calendarView : Model -> Html Msg
 calendarView ({ primaryDate } as model) =
     let
         monthDates =
-            List.map (DateTime.setTime Clock.midnight) (DateTime.getDatesInMonth primaryDate)
+            DateTime.getDatesInMonth primaryDate
 
         datesHtml =
             List.map (dateHtml model) monthDates
