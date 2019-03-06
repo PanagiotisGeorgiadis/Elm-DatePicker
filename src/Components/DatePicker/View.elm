@@ -113,7 +113,14 @@ singleClockView { timePicker, selectedDate } =
                 displayDateHtml =
                     case selectedDate of
                         Just date ->
-                            span [ class "date" ] [ text (Time.toHumanReadableDateTime date) ]
+                            let
+                                dateTimeStr =
+                                    String.join " "
+                                        [ Time.toHumanReadableDate date
+                                        , TimePicker.toHumanReadableTime tp
+                                        ]
+                            in
+                            span [ class "date" ] [ text dateTimeStr ]
 
                         Nothing ->
                             text ""

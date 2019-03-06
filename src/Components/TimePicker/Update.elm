@@ -6,6 +6,7 @@ module Components.TimePicker.Update exposing
     , getPickerTypeString
     , getTime
     , initialise
+    , toHumanReadableTime
     , update
     , updateDisplayTime
     )
@@ -539,6 +540,9 @@ getSecondsStep { pickerType } =
 
 
 {-| Extracts the `millisecondsStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
+
+    Internal
+
 -}
 getMillisecondsStep : Model -> Int
 getMillisecondsStep { pickerType } =
@@ -556,6 +560,17 @@ getMillisecondsStep { pickerType } =
             millisecondsStep
 
 
+{-| Increments / Decrements time units based recursively and returns the updated time.
+This is based on the stepSize ( n ), the increment / decrement function ( updateFn )
+and the initial time given.
+
+Example:
+
+    stepThrough { n = 5, updateFn = Clock.incrementMinutes, time = 21:00 } -> 21:05
+
+    Internal
+
+-}
 stepThrough : SteppingParams -> Clock.Time
 stepThrough { n, updateFn, time } =
     let
@@ -575,11 +590,15 @@ stepThrough { n, updateFn, time } =
             }
 
 
+{-| Exposed
+-}
 getTime : Model -> Clock.Time
 getTime { time } =
     time
 
 
+{-| Exposed
+-}
 getPickerTypeString : Model -> String
 getPickerTypeString { pickerType } =
     case pickerType of
@@ -594,3 +613,35 @@ getPickerTypeString { pickerType } =
 
         HH_MM_SS_MMMM _ ->
             "hh_mm_ss_mmmm"
+
+
+{-| Exposed
+-}
+toHumanReadableTime : Model -> String
+toHumanReadableTime model =
+    case model.pickerType of
+        HH _ ->
+            model.hoursDisplayValue
+
+        HH_MM _ ->
+            String.join ":"
+                [ model.hoursDisplayValue
+                , model.minutesDisplayValue
+                ]
+
+        HH_MM_SS _ ->
+            String.join ":"
+                [ model.hoursDisplayValue
+                , model.minutesDisplayValue
+                , model.secondsDisplayValue
+                ]
+
+        HH_MM_SS_MMMM _ ->
+            String.join "."
+                [ String.join ":"
+                    [ model.hoursDisplayValue
+                    , model.minutesDisplayValue
+                    , model.secondsDisplayValue
+                    ]
+                , model.millisecondsDisplayValue
+                ]

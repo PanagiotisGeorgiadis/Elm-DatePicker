@@ -137,10 +137,19 @@ doubleClockView { range, timePickers, viewType } =
     case timePickers of
         TimePickers { startPicker, endPicker, mirrorTimes } ->
             let
-                displayDateHtml date =
+                displayDateHtml date timePicker =
                     case date of
                         Just d ->
-                            span [ class "date" ] [ text (Time.toHumanReadableDateTime d) ]
+                            let
+                                dateTimeStr =
+                                    String.join " "
+                                        [ Time.toHumanReadableDate d
+                                        , TimePicker.toHumanReadableTime timePicker
+                                        ]
+                            in
+                            span [ class "date" ]
+                                [ text dateTimeStr
+                                ]
 
                         Nothing ->
                             text ""
@@ -164,7 +173,7 @@ doubleClockView { range, timePickers, viewType } =
             div [ class ("double-clock-view " ++ pickerTypeString) ]
                 [ div [ class "time-picker-container no-select" ]
                     [ span [ class "header" ] [ text "Pick-up Time" ]
-                    , displayDateHtml rangeStart
+                    , displayDateHtml rangeStart startPicker
                     , Html.map RangeStartPickerMsg (TimePicker.view startPicker)
                     , div [ class "checkbox", onClick ToggleTimeMirroring ]
                         [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
@@ -173,7 +182,7 @@ doubleClockView { range, timePickers, viewType } =
                     ]
                 , div [ class "time-picker-container no-select" ]
                     [ span [ class "header" ] [ text "Drop-off Time" ]
-                    , displayDateHtml rangeEnd
+                    , displayDateHtml rangeEnd endPicker
                     , Html.map RangeEndPickerMsg (TimePicker.view endPicker)
                     , div [ class "filler" ] []
                     ]
