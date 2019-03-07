@@ -211,6 +211,7 @@ update msg model =
                     Just
                         { pickerType = TimePicker.HH_MM_SS { hoursStep = 1, minutesStep = 5, secondsStep = 10 }
                         , defaultTime = defaultTime
+                        , pickerTitle = "Pick-up Time"
                         }
 
                 getDatePickerConfig dateLimit =

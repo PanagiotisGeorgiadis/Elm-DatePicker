@@ -113,9 +113,9 @@ doubleCalendarView ({ dateLimit, primaryDate } as model) =
 
 
 singleClockView : Model -> Html Msg
-singleClockView { timePicker, selectedDate } =
-    case timePicker of
-        TimePicker tp ->
+singleClockView ({ selectedDate } as model) =
+    case model.timePicker of
+        TimePicker { timePicker, pickerTitle } ->
             let
                 displayDateHtml =
                     case selectedDate of
@@ -124,7 +124,7 @@ singleClockView { timePicker, selectedDate } =
                                 dateTimeStr =
                                     String.join " "
                                         [ Time.toHumanReadableDate date
-                                        , TimePicker.toHumanReadableTime tp
+                                        , TimePicker.toHumanReadableTime timePicker
                                         ]
                             in
                             span [ class "date" ] [ text dateTimeStr ]
@@ -133,13 +133,17 @@ singleClockView { timePicker, selectedDate } =
                             text ""
 
                 pickerTypeString =
-                    TimePicker.getPickerTypeString tp
+                    TimePicker.getPickerTypeString timePicker
             in
             div [ class ("single-clock-view " ++ pickerTypeString) ]
                 [ div [ class "time-picker-container no-select" ]
-                    [ span [ class "header" ] [ text "Pick-up Time" ]
+                    [ if String.isEmpty pickerTitle then
+                        text ""
+
+                      else
+                        span [ class "header" ] [ text pickerTitle ]
                     , displayDateHtml
-                    , Html.map TimePickerMsg (TimePicker.view tp)
+                    , Html.map TimePickerMsg (TimePicker.view timePicker)
                     ]
                 ]
 

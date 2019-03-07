@@ -41,6 +41,7 @@ type alias CalendarConfig =
 type alias TimePickerConfig =
     { pickerType : TimePicker.PickerType
     , defaultTime : Clock.Time
+    , pickerTitle : String
     }
 
 
@@ -62,8 +63,8 @@ type DateLimit
 -}
 type TimePickerState
     = NoTimePicker
-    | NotInitialised { pickerType : TimePicker.PickerType, defaultTime : Clock.Time }
-    | TimePicker TimePicker.Model
+    | NotInitialised TimePickerConfig
+    | TimePicker { timePicker : TimePicker.Model, pickerTitle : String }
 
 
 {-| Expose
@@ -137,7 +138,7 @@ update msg model =
                 -- this choice.
                 ( time, cmd ) =
                     case model.timePicker of
-                        TimePicker timePicker ->
+                        TimePicker { timePicker } ->
                             ( TimePicker.getTime timePicker
                             , Cmd.none
                             )
@@ -178,15 +179,13 @@ update msg model =
 
         InitialiseTimePicker ->
             case ( model.selectedDate, model.timePicker ) of
-                ( Just dateTime, NotInitialised { pickerType, defaultTime } ) ->
+                ( Just dateTime, NotInitialised { pickerType, defaultTime, pickerTitle } ) ->
                     let
                         timePicker =
                             TimePicker
-                                (TimePicker.initialise
-                                    { time = defaultTime
-                                    , pickerType = pickerType
-                                    }
-                                )
+                                { timePicker = TimePicker.initialise { time = defaultTime, pickerType = pickerType }
+                                , pickerTitle = pickerTitle
+                                }
                     in
                     ( { model | timePicker = timePicker }
                     , Cmd.none
@@ -201,7 +200,7 @@ update msg model =
 
         TimePickerMsg subMsg ->
             case ( model.selectedDate, model.timePicker ) of
-                ( Just date, TimePicker timePicker ) ->
+                ( Just date, TimePicker { timePicker, pickerTitle } ) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg timePicker
@@ -216,7 +215,7 @@ update msg model =
                     in
                     ( { model
                         | selectedDate = updatedDate
-                        , timePicker = TimePicker subModel
+                        , timePicker = TimePicker { timePicker = subModel, pickerTitle = pickerTitle }
                       }
                     , Cmd.map TimePickerMsg subCmd
                     , DateSelected updatedDate
