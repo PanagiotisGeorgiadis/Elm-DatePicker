@@ -142,7 +142,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 doubleClockView : Model -> Html Msg
 doubleClockView { range, timePickers, viewType } =
     case timePickers of
-        TimePickers { startPicker, endPicker, mirrorTimes } ->
+        TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes } ->
             let
                 displayDateHtml date timePicker =
                     case date of
@@ -176,19 +176,26 @@ doubleClockView { range, timePickers, viewType } =
 
                         Double ->
                             ""
+
+                titleHtml str =
+                    if String.isEmpty str then
+                        text ""
+
+                    else
+                        span [ class "header" ] [ text str ]
             in
             div [ class ("double-clock-view " ++ pickerTypeString) ]
                 [ div [ class "time-picker-container no-select" ]
-                    [ span [ class "header" ] [ text "Pick-up Time" ]
+                    [ titleHtml pickerTitles.start
                     , displayDateHtml rangeStart startPicker
                     , Html.map RangeStartPickerMsg (TimePicker.view startPicker)
                     , div [ class "checkbox", onClick ToggleTimeMirroring ]
                         [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
-                        , span [ class "text" ] [ text "Same as drop-off time" ]
+                        , span [ class "text" ] [ text ("Same as " ++ String.toLower pickerTitles.end) ]
                         ]
                     ]
                 , div [ class "time-picker-container no-select" ]
-                    [ span [ class "header" ] [ text "Drop-off Time" ]
+                    [ titleHtml pickerTitles.end
                     , displayDateHtml rangeEnd endPicker
                     , Html.map RangeEndPickerMsg (TimePicker.view endPicker)
                     , div [ class "filler" ] []

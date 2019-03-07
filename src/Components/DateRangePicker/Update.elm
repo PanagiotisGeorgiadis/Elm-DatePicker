@@ -258,7 +258,7 @@ update msg model =
 
         InitialiseTimePickers ->
             case model.timePickers of
-                NotInitialised { pickerType, defaultTime, mirrorTimes } ->
+                NotInitialised { pickerType, defaultTime, pickerTitles, mirrorTimes } ->
                     case model.range of
                         BothSelected (Chosen start end) ->
                             let
@@ -270,6 +270,7 @@ update msg model =
                                     TimePickers
                                         { startPicker = timePicker
                                         , endPicker = timePicker
+                                        , pickerTitles = pickerTitles
                                         , mirrorTimes = mirrorTimes
                                         }
                               }
@@ -291,10 +292,10 @@ update msg model =
 
         ToggleTimeMirroring ->
             case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, mirrorTimes }, BothSelected (Chosen start end) ) ->
+                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
                     ( { model
                         | timePickers =
-                            TimePickers { startPicker = startPicker, endPicker = endPicker, mirrorTimes = not mirrorTimes }
+                            TimePickers { startPicker = startPicker, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = not mirrorTimes }
                       }
                     , fireAction (SyncTimePickers start)
                     , None
@@ -308,7 +309,7 @@ update msg model =
 
         SyncTimePickers dateTime ->
             case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, mirrorTimes }, BothSelected (Chosen start end) ) ->
+                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
                     if mirrorTimes == True then
                         let
                             time =
@@ -328,6 +329,7 @@ update msg model =
                                 TimePickers
                                     { startPicker = timePickerUpdateFn startPicker
                                     , endPicker = timePickerUpdateFn endPicker
+                                    , pickerTitles = pickerTitles
                                     , mirrorTimes = mirrorTimes
                                     }
                           }
@@ -349,7 +351,7 @@ update msg model =
 
         RangeStartPickerMsg subMsg ->
             case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, mirrorTimes }, BothSelected (Chosen start end) ) ->
+                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg startPicker
@@ -373,7 +375,7 @@ update msg model =
                                     )
 
                         timePickers =
-                            TimePickers { startPicker = subModel, endPicker = endPicker, mirrorTimes = mirrorTimes }
+                            TimePickers { startPicker = subModel, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
                     in
                     ( { model
                         | range = range
@@ -394,7 +396,7 @@ update msg model =
 
         RangeEndPickerMsg subMsg ->
             case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, mirrorTimes }, BothSelected (Chosen start end) ) ->
+                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg endPicker
@@ -418,7 +420,7 @@ update msg model =
                                     )
 
                         timePickers =
-                            TimePickers { startPicker = startPicker, endPicker = subModel, mirrorTimes = mirrorTimes }
+                            TimePickers { startPicker = startPicker, endPicker = subModel, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
                     in
                     ( { model
                         | range = range

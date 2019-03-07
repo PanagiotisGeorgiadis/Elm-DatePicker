@@ -214,6 +214,14 @@ update msg model =
                         , pickerTitle = "Pick-up Time"
                         }
 
+                timePickerConfig_Range =
+                    Just
+                        { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+                        , defaultTime = defaultTime
+                        , pickerTitles = { start = "Pick-up Time", end = "Drop-off Time" }
+                        , mirrorTimes = True
+                        }
+
                 getDatePickerConfig dateLimit =
                     { today = todayDateTime
                     , primaryDate = todayDateTime
@@ -238,13 +246,6 @@ update msg model =
 
                 dateRangeConfig_C =
                     getDateRangeConfig (DateRangePicker.DateLimit constrains) (Just { minDateRangeLength = 4 })
-
-                timePickerConfig_Range =
-                    Just
-                        { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
-                        , defaultTime = defaultTime
-                        , mirrorTimes = True
-                        }
             in
             ( { model
                 | today = Just todayPosix

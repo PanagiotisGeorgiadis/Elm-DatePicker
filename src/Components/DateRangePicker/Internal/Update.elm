@@ -46,7 +46,7 @@ type InternalViewType
 type TimePickerState
     = NoTimePickers
     | NotInitialised TimePickerConfig
-    | TimePickers { startPicker : TimePicker.Model, endPicker : TimePicker.Model, mirrorTimes : Bool }
+    | TimePickers { startPicker : TimePicker.Model, endPicker : TimePicker.Model, pickerTitles : { start : String, end : String }, mirrorTimes : Bool }
 
 
 {-| Expose
@@ -54,5 +54,6 @@ type TimePickerState
 type alias TimePickerConfig =
     { pickerType : TimePicker.PickerType
     , defaultTime : Clock.Time
+    , pickerTitles : { start : String, end : String }
     , mirrorTimes : Bool
     }
