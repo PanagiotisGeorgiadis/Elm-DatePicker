@@ -83,15 +83,15 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            , todayButtonHandler = MoveToToday
             }
     in
     div
         [ class "single-calendar-view no-select"
         , onMouseLeave ResetVisualSelection
         ]
-        [ MonthPicker.singleMonthPickerView2 pickerConfig
+        [ MonthPicker.singleMonthPickerView pickerConfig
         , calendarView model
-        , todayButtonHtml model
         ]
 
 
@@ -117,6 +117,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            , todayButtonHandler = MoveToToday
             }
 
         nextModel =
@@ -126,10 +127,9 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         [ class "double-calendar-view no-select"
         , onMouseLeave ResetVisualSelection
         ]
-        [ MonthPicker.doubleMonthPickerView2 pickerConfig
+        [ MonthPicker.doubleMonthPickerView pickerConfig
         , calendarView model
         , calendarView nextModel
-        , todayButtonHtml model
         , case model.range of
             BothSelected (Chosen _ _) ->
                 div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
@@ -444,16 +444,3 @@ checkIfInvalid { dateRangeOffset } date =
 
         NoOffset ->
             False
-
-
-todayButtonHtml : Model -> Html Msg
-todayButtonHtml { viewType } =
-    div
-        [ classList
-            [ ( "today-button", True )
-            , ( "align-left", viewType == Single )
-            ]
-        , onClick MoveToToday
-        ]
-        [ text "Today"
-        ]

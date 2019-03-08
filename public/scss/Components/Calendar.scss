@@ -98,6 +98,7 @@
     // }
 }
 
+
 .weekdays {
     width: 100%;
     padding: 6px 0;
@@ -110,25 +111,6 @@
     span {
         flex: 1;
         text-align: center;
-    }
-}
-
-
-.single-calendar-view,
-.double-calendar-view {
-
-    .today-button {
-        position: absolute;
-        top: 8px;
-        left: 24px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--brand-primary);
-        cursor: pointer;
-
-        &.align-left {
-            left: 24px;
-        }
     }
 }
 

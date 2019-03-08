@@ -32,15 +32,22 @@
             cursor: default;
         }
     }
+
+    .today-button {
+        position: absolute;
+        top: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--brand-primary);
+        cursor: pointer;
+    }
 }
 
 
 .single-month-picker {
-
-    .action {
-        // text-align: center;
+    .today-button {
+        left: 12px;
     }
-
 }
 
 
@@ -49,6 +56,10 @@
     // min-width: 700px;
     // max-width: 700px;
     justify-content: space-between;
+
+    .today-button {
+        left: 24px;
+    }
 
     .next-month,
     .previous-month {

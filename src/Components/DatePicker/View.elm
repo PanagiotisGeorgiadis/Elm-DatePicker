@@ -68,12 +68,12 @@ singleCalendarView ({ dateLimit, primaryDate } as model) =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            , todayButtonHandler = MoveToToday
             }
     in
     div [ class "single-calendar-view no-select" ]
-        [ MonthPicker.singleMonthPickerView2 pickerConfig
+        [ MonthPicker.singleMonthPickerView pickerConfig
         , calendarView model
-        , todayButtonHtml model
         ]
 
 
@@ -102,13 +102,13 @@ doubleCalendarView ({ dateLimit, primaryDate } as model) =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
+            , todayButtonHandler = MoveToToday
             }
     in
     div [ class "double-calendar-view no-select" ]
-        [ MonthPicker.doubleMonthPickerView2 pickerConfig
+        [ MonthPicker.doubleMonthPickerView pickerConfig
         , calendarView model
         , calendarView nextModel
-        , todayButtonHtml model
         ]
 
 
@@ -269,16 +269,3 @@ getPreviousButtonAction isButtonActive =
 
     else
         Nothing
-
-
-todayButtonHtml : Model -> Html Msg
-todayButtonHtml { viewType } =
-    div
-        [ classList
-            [ ( "today-button", True )
-            , ( "align-left", viewType == Single )
-            ]
-        , onClick MoveToToday
-        ]
-        [ text "Today"
-        ]
