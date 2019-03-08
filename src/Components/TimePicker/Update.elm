@@ -3,6 +3,7 @@ module Components.TimePicker.Update exposing
     , Model
     , Msg(..)
     , PickerType(..)
+    , TimeParts(..)
     , getPickerTypeString
     , getTime
     , initialise
@@ -57,6 +58,13 @@ initialise { pickerType, time } =
     }
 
 
+type TimeParts
+    = Hours
+    | Minutes
+    | Seconds
+    | Milliseconds
+
+
 type Msg
     = HoursInputHandler String
     | MinutesInputHandler String
@@ -66,14 +74,8 @@ type Msg
     | UpdateMinutes String
     | UpdateSeconds String
     | UpdateMilliseconds String
-    | IncrementHours
-    | IncrementMinutes
-    | IncrementSeconds
-    | IncrementMilliseconds
-    | DecrementHours
-    | DecrementMinutes
-    | DecrementSeconds
-    | DecrementMilliseconds
+    | Increment TimeParts
+    | Decrement TimeParts
 
 
 type ExtMsg
@@ -180,14 +182,33 @@ update msg model =
                     , None
                     )
 
-        IncrementHours ->
+        Increment timePart ->
             let
-                updateFn =
-                    Tuple.first << Clock.incrementHours
+                ( updateFn, step ) =
+                    case timePart of
+                        Hours ->
+                            ( Tuple.first << Clock.incrementHours
+                            , getHoursStep model
+                            )
+
+                        Minutes ->
+                            ( Tuple.first << Clock.incrementMinutes
+                            , getMinutesStep model
+                            )
+
+                        Seconds ->
+                            ( Tuple.first << Clock.incrementSeconds
+                            , getSecondsStep model
+                            )
+
+                        Milliseconds ->
+                            ( Tuple.first << Clock.incrementMilliseconds
+                            , getMillisecondsStep model
+                            )
 
                 time =
                     stepThrough
-                        { n = getHoursStep model
+                        { n = step
                         , time = model.time
                         , updateFn = updateFn
                         }
@@ -197,116 +218,33 @@ update msg model =
             , UpdatedTime time
             )
 
-        IncrementMinutes ->
+        Decrement timePart ->
             let
-                updateFn =
-                    Tuple.first << Clock.incrementMinutes
+                ( updateFn, step ) =
+                    case timePart of
+                        Hours ->
+                            ( Tuple.first << Clock.decrementHours
+                            , getHoursStep model
+                            )
+
+                        Minutes ->
+                            ( Tuple.first << Clock.decrementMinutes
+                            , getMinutesStep model
+                            )
+
+                        Seconds ->
+                            ( Tuple.first << Clock.decrementSeconds
+                            , getSecondsStep model
+                            )
+
+                        Milliseconds ->
+                            ( Tuple.first << Clock.decrementMilliseconds
+                            , getMillisecondsStep model
+                            )
 
                 time =
                     stepThrough
-                        { n = getMinutesStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        IncrementSeconds ->
-            let
-                updateFn =
-                    Tuple.first << Clock.incrementSeconds
-
-                time =
-                    stepThrough
-                        { n = getSecondsStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        IncrementMilliseconds ->
-            let
-                updateFn =
-                    Tuple.first << Clock.incrementMilliseconds
-
-                time =
-                    stepThrough
-                        { n = getMillisecondsStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        DecrementHours ->
-            let
-                updateFn =
-                    Tuple.first << Clock.decrementHours
-
-                time =
-                    stepThrough
-                        { n = getHoursStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        DecrementMinutes ->
-            let
-                updateFn =
-                    Tuple.first << Clock.decrementMinutes
-
-                time =
-                    stepThrough
-                        { n = getMinutesStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        DecrementSeconds ->
-            let
-                updateFn =
-                    Tuple.first << Clock.decrementSeconds
-
-                time =
-                    stepThrough
-                        { n = getSecondsStep model
-                        , time = model.time
-                        , updateFn = updateFn
-                        }
-            in
-            ( updateDisplayTime time model
-            , Cmd.none
-            , UpdatedTime time
-            )
-
-        DecrementMilliseconds ->
-            let
-                updateFn =
-                    Tuple.first << Clock.decrementMilliseconds
-
-                time =
-                    stepThrough
-                        { n = getMillisecondsStep model
+                        { n = step
                         , time = model.time
                         , updateFn = updateFn
                         }
