@@ -44,14 +44,14 @@ view ({ pickerType } as model) =
 
 
 hourPicker : Model -> Html Msg
-hourPicker { hoursDisplayValue } =
+hourPicker { hours } =
     div [ class "hours-picker" ]
         [ div [ class "button", onClick IncrementHours ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput HoursInputHandler
-            , onBlur (UpdateHours hoursDisplayValue)
-            , value hoursDisplayValue
+            , onBlur (UpdateHours hours)
+            , value hours
             , maxlength 2
             ]
             []
@@ -60,14 +60,14 @@ hourPicker { hoursDisplayValue } =
 
 
 minutePicker : Model -> Html Msg
-minutePicker { minutesDisplayValue } =
+minutePicker { minutes } =
     div [ class "minutes-picker" ]
         [ div [ class "button", onClick IncrementMinutes ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput MinutesInputHandler
-            , onBlur (UpdateMinutes minutesDisplayValue)
-            , value minutesDisplayValue
+            , onBlur (UpdateMinutes minutes)
+            , value minutes
             , maxlength 2
             ]
             []
@@ -76,14 +76,14 @@ minutePicker { minutesDisplayValue } =
 
 
 secondsPicker : Model -> Html Msg
-secondsPicker { secondsDisplayValue } =
+secondsPicker { seconds } =
     div [ class "seconds-picker" ]
         [ div [ class "button", onClick IncrementSeconds ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput SecondsInputHandler
-            , onBlur (UpdateSeconds secondsDisplayValue)
-            , value secondsDisplayValue
+            , onBlur (UpdateSeconds seconds)
+            , value seconds
             , maxlength 2
             ]
             []
@@ -92,14 +92,14 @@ secondsPicker { secondsDisplayValue } =
 
 
 millisecondsPicker : Model -> Html Msg
-millisecondsPicker { millisecondsDisplayValue } =
+millisecondsPicker { milliseconds } =
     div [ class "milliseconds-picker" ]
         [ div [ class "button", onClick IncrementMilliseconds ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
             , onInput MillisecondsInputHandler
-            , onBlur (UpdateMilliseconds millisecondsDisplayValue)
-            , value millisecondsDisplayValue
+            , onBlur (UpdateMilliseconds milliseconds)
+            , value milliseconds
             , maxlength 3
             ]
             []

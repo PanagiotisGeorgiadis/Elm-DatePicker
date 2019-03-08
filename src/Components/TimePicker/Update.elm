@@ -12,6 +12,7 @@ module Components.TimePicker.Update exposing
     )
 
 import Clock
+import Utils.Time exposing (millisToString, timeToString)
 
 
 {-| Describes different picker types.
@@ -28,10 +29,10 @@ type PickerType
 type alias Model =
     { time : Clock.Time
     , pickerType : PickerType
-    , hoursDisplayValue : String
-    , minutesDisplayValue : String
-    , secondsDisplayValue : String
-    , millisecondsDisplayValue : String
+    , hours : String
+    , minutes : String
+    , seconds : String
+    , milliseconds : String
     }
 
 
@@ -49,10 +50,10 @@ initialise : Config -> Model
 initialise { pickerType, time } =
     { pickerType = pickerType
     , time = time
-    , hoursDisplayValue = toHoursString time
-    , minutesDisplayValue = toMinutesString time
-    , secondsDisplayValue = toSecondsString time
-    , millisecondsDisplayValue = toMillisecondsString time
+    , hours = toHoursString time
+    , minutes = toMinutesString time
+    , seconds = toSecondsString time
+    , milliseconds = toMillisecondsString time
     }
 
 
@@ -84,25 +85,25 @@ update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
     case msg of
         HoursInputHandler value ->
-            ( { model | hoursDisplayValue = validateHours model value }
+            ( { model | hours = validateHours model value }
             , Cmd.none
             , None
             )
 
         MinutesInputHandler value ->
-            ( { model | minutesDisplayValue = validateMinutes model value }
+            ( { model | minutes = validateMinutes model value }
             , Cmd.none
             , None
             )
 
         SecondsInputHandler value ->
-            ( { model | secondsDisplayValue = validateSeconds model value }
+            ( { model | seconds = validateSeconds model value }
             , Cmd.none
             , None
             )
 
         MillisecondsInputHandler value ->
-            ( { model | millisecondsDisplayValue = validateMilliseconds model value }
+            ( { model | milliseconds = validateMilliseconds model value }
             , Cmd.none
             , None
             )
@@ -114,13 +115,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, hoursDisplayValue = toHoursString time }
+                    ( { model | time = time, hours = toHoursString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | hoursDisplayValue = toHoursString model.time }
+                    ( model
                     , Cmd.none
                     , None
                     )
@@ -132,13 +133,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, minutesDisplayValue = toMinutesString time }
+                    ( { model | time = time, minutes = toMinutesString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | minutesDisplayValue = toMinutesString model.time }
+                    ( model
                     , Cmd.none
                     , None
                     )
@@ -150,13 +151,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, secondsDisplayValue = toSecondsString time }
+                    ( { model | time = time, seconds = toSecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | secondsDisplayValue = toSecondsString model.time }
+                    ( model
                     , Cmd.none
                     , None
                     )
@@ -168,13 +169,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, millisecondsDisplayValue = toMillisecondsString time }
+                    ( { model | time = time, milliseconds = toMillisecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( { model | millisecondsDisplayValue = toMillisecondsString model.time }
+                    ( model
                     , Cmd.none
                     , None
                     )
@@ -319,13 +320,13 @@ update msg model =
 {-| Validates the String representation of `Hour` given from the time-input.
 -}
 validateHours : Model -> String -> String
-validateHours { hoursDisplayValue } newValue =
+validateHours { hours } newValue =
     let
         sanitisedValue =
             filterNonDigits newValue
     in
     validateTimeSegment
-        { default = hoursDisplayValue
+        { default = hours
         , new = sanitisedValue
         , ceil = 24
         }
@@ -334,13 +335,13 @@ validateHours { hoursDisplayValue } newValue =
 {-| Validates the String representation of `Minute` given from the time-input.
 -}
 validateMinutes : Model -> String -> String
-validateMinutes { minutesDisplayValue } newValue =
+validateMinutes { minutes } newValue =
     let
         sanitisedValue =
             filterNonDigits newValue
     in
     validateTimeSegment
-        { default = minutesDisplayValue
+        { default = minutes
         , new = sanitisedValue
         , ceil = 60
         }
@@ -349,13 +350,13 @@ validateMinutes { minutesDisplayValue } newValue =
 {-| Validates the String representation of `Second` given from the time-input.
 -}
 validateSeconds : Model -> String -> String
-validateSeconds { secondsDisplayValue } newValue =
+validateSeconds { seconds } newValue =
     let
         sanitisedValue =
             filterNonDigits newValue
     in
     validateTimeSegment
-        { default = secondsDisplayValue
+        { default = seconds
         , new = sanitisedValue
         , ceil = 60
         }
@@ -364,13 +365,13 @@ validateSeconds { secondsDisplayValue } newValue =
 {-| Validates the String representation of `Millisecond` given from the time-input.
 -}
 validateMilliseconds : Model -> String -> String
-validateMilliseconds { millisecondsDisplayValue } newValue =
+validateMilliseconds { milliseconds } newValue =
     let
         sanitisedValue =
             filterNonDigits newValue
     in
     validateTimeSegment
-        { default = millisecondsDisplayValue
+        { default = milliseconds
         , new = sanitisedValue
         , ceil = 1000
         }
@@ -418,10 +419,10 @@ updateDisplayTime : Clock.Time -> Model -> Model
 updateDisplayTime time model =
     { model
         | time = time
-        , hoursDisplayValue = toHoursString time
-        , minutesDisplayValue = toMinutesString time
-        , secondsDisplayValue = toSecondsString time
-        , millisecondsDisplayValue = toMillisecondsString time
+        , hours = toHoursString time
+        , minutes = toMinutesString time
+        , seconds = toSecondsString time
+        , milliseconds = toMillisecondsString time
     }
 
 
@@ -451,31 +452,6 @@ toSecondsString =
 toMillisecondsString : Clock.Time -> String
 toMillisecondsString =
     millisToString << Clock.getMilliseconds
-
-
-{-| Formats `Hours`, `Minutes`, `Seconds` to a representation string.
--}
-timeToString : Int -> String
-timeToString time =
-    if time < 10 then
-        "0" ++ String.fromInt time
-
-    else
-        String.fromInt time
-
-
-{-| Formats milliseconds to a representation string.
--}
-millisToString : Int -> String
-millisToString millis =
-    if millis < 10 then
-        "00" ++ String.fromInt millis
-
-    else if millis < 100 then
-        "0" ++ String.fromInt millis
-
-    else
-        String.fromInt millis
 
 
 type alias SteppingParams =
@@ -560,9 +536,9 @@ getMillisecondsStep { pickerType } =
             millisecondsStep
 
 
-{-| Increments / Decrements time units based recursively and returns the updated time.
-This is based on the stepSize ( n ), the increment / decrement function ( updateFn )
-and the initial time given.
+{-| Increments / Decrements time units (based on the updateFn) recursively
+and returns the updated time. This is based on the stepSize ( n ), the
+increment / decrement function ( updateFn ) and the initial time given.
 
 Example:
 
@@ -597,7 +573,7 @@ getTime { time } =
     time
 
 
-{-| Exposed
+{-| Transforms the pickerType to String.
 -}
 getPickerTypeString : Model -> String
 getPickerTypeString { pickerType } =
@@ -615,33 +591,23 @@ getPickerTypeString { pickerType } =
             "hh_mm_ss_mmmm"
 
 
-{-| Exposed
+{-| Transforms a time to its human readable representation based
+on the `PickerType` that was defined.
 -}
 toHumanReadableTime : Model -> String
-toHumanReadableTime model =
-    case model.pickerType of
+toHumanReadableTime { pickerType, hours, minutes, seconds, milliseconds } =
+    case pickerType of
         HH _ ->
-            model.hoursDisplayValue
+            hours
 
         HH_MM _ ->
-            String.join ":"
-                [ model.hoursDisplayValue
-                , model.minutesDisplayValue
-                ]
+            String.join ":" [ hours, minutes ]
 
         HH_MM_SS _ ->
-            String.join ":"
-                [ model.hoursDisplayValue
-                , model.minutesDisplayValue
-                , model.secondsDisplayValue
-                ]
+            String.join ":" [ hours, minutes, seconds ]
 
         HH_MM_SS_MMMM _ ->
             String.join "."
-                [ String.join ":"
-                    [ model.hoursDisplayValue
-                    , model.minutesDisplayValue
-                    , model.secondsDisplayValue
-                    ]
-                , model.millisecondsDisplayValue
+                [ String.join ":" [ hours, minutes, seconds ]
+                , milliseconds
                 ]

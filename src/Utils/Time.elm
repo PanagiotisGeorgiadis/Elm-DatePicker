@@ -1,33 +1,21 @@
 module Utils.Time exposing
-    ( monthToString
-    , monthToStringCondensed
+    ( millisToString
+    , monthToString
     , precedingWeekdays
     , timeToString
     , toHumanReadableDate
-    , toHumanReadableDateTime
-    , weekdayToString
-    , weekdayToStringCondensed
     )
 
 import DateTime exposing (DateTime)
 import Time exposing (Month(..), Posix, Weekday(..), Zone)
 
 
-toHumanReadableDateTime : DateTime -> String
-toHumanReadableDateTime dateTime =
-    let
-        humanReadableTime =
-            String.join ":"
-                [ timeToString (DateTime.getHours dateTime)
-                , timeToString (DateTime.getMinutes dateTime)
-                ]
-    in
-    String.join " "
-        [ toHumanReadableDate dateTime
-        , humanReadableTime
-        ]
+{-| Returns a formatted date from a given DateTime.
 
+    -- dateTime = 27 Sep 2019 14:57:45.160
+    toHumanReadableDate dateTime -- "Fri 27 Sep 2019" : String
 
+-}
 toHumanReadableDate : DateTime -> String
 toHumanReadableDate dateTime =
     String.join " "
@@ -38,6 +26,13 @@ toHumanReadableDate dateTime =
         ]
 
 
+{-| Formats `Hours`, `Minutes`, `Seconds` to a representation String.
+
+    timeToString 0 -- "00" : String
+
+    timeToString 30 -- "30" : String
+
+-}
 timeToString : Int -> String
 timeToString time =
     if time < 10 then
@@ -47,6 +42,15 @@ timeToString time =
         String.fromInt time
 
 
+{-| Formats `Milliseconds` to a representation String.
+
+    millisToString 1 -- "001" : String
+
+    millisToString 10 -- "010" : String
+
+    millisToString 100 -- "100" : String
+
+-}
 millisToString : Int -> String
 millisToString millis =
     if millis < 10 then
@@ -59,6 +63,8 @@ millisToString millis =
         String.fromInt millis
 
 
+{-| Transforms a Weekday to a String.
+-}
 weekdayToString : Weekday -> String
 weekdayToString weekday =
     case weekday of
@@ -84,11 +90,18 @@ weekdayToString weekday =
             "Sunday"
 
 
+{-| Transforms a Weekday to a condensed String.
+
+    weekdayToStringCondensed Fri : "Fri" String
+
+-}
 weekdayToStringCondensed : Weekday -> String
 weekdayToStringCondensed =
     String.left 3 << weekdayToString
 
 
+{-| Transforms a Month to a String.
+-}
 monthToString : Month -> String
 monthToString month =
     case month of
@@ -129,11 +142,19 @@ monthToString month =
             "December"
 
 
+{-| Transforms a Month to a condensed String.
+
+    monthToStringCondensed Aug : "Aug" String
+
+-}
 monthToStringCondensed : Month -> String
 monthToStringCondensed =
     String.left 3 << monthToString
 
 
+{-| Gets the precedingWeekdays based on the assumption that the week starts
+on Sunday. May need to rething a better approach for that.
+-}
 precedingWeekdays : Weekday -> Int
 precedingWeekdays weekday =
     case weekday of
