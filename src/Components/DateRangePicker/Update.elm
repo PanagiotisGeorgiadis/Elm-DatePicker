@@ -2,7 +2,7 @@ module Components.DateRangePicker.Update exposing
     ( DateLimit(..)
     , ExtMsg(..)
     , Model
-    , Msg(..)
+    , Msg
     , TimePickerConfig
     , ViewType(..)
     , initialise
@@ -15,6 +15,7 @@ import Components.DateRangePicker.Internal.Update as Internal
         ( DateRange(..)
         , DateRangeOffset(..)
         , InternalViewType(..)
+        , Msg(..)
         , SelectionType(..)
         , TimePickerState(..)
         )
@@ -25,21 +26,29 @@ import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
-{-| Expose
+{-| The Calendar ViewType.
 -}
 type ViewType
     = Single
     | Double
 
 
-{-| Expose
+{-| The `optional` Calendar date restrictions. You can impose all the types of
+different restrictions by using this simple type.
+
+    NoLimit { disablePastDates = False } -- An unlimited Calendar.
+    NoLimit { disablePastDates = True } -- Allows only `future date selection`.
+    DateLimit { minDate = 1 Jan 2019, maxDate = 31 Dec 2019 }
+    -- A Custom imposed restriction for the year 2019 inclusive of the
+    minDate and maxDate.
+
 -}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
     | NoLimit { disablePastDates : Bool }
 
 
-{-| Expose
+{-| Used in order to configure the `Calendar` part of the `DateRangePicker`.
 -}
 type alias CalendarConfig =
     { today : DateTime
@@ -49,13 +58,17 @@ type alias CalendarConfig =
     }
 
 
-{-| Expose
+{-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.
 -}
 type alias TimePickerConfig =
-    Internal.TimePickerConfig
+    { pickerType : TimePicker.PickerType
+    , defaultTime : Clock.Time
+    , pickerTitles : { start : String, end : String }
+    , mirrorTimes : Bool
+    }
 
 
-{-| Expose
+{-| The `DateRangePicker Model`.
 -}
 type alias Model =
     { viewType : ViewType
@@ -69,7 +82,7 @@ type alias Model =
     }
 
 
-{-| Expose
+{-| The function used to initialise the `DateRangePicker Model`.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
@@ -117,36 +130,29 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
     }
 
 
-{-| Expose
+{-| The Internal messages that are being used by the DateRangePicker component.
 -}
-type Msg
-    = PreviousMonth
-    | NextMonth
-    | SelectDate DateTime
-    | UpdateVisualSelection DateTime
-    | ResetVisualSelection
-    | ShowClockView
-    | ShowCalendarView
-    | InitialiseTimePickers
-    | ToggleTimeMirroring
-    | SyncTimePickers DateTime
-    | RangeStartPickerMsg TimePicker.Msg
-    | RangeEndPickerMsg TimePicker.Msg
-    | MoveToToday
+type alias Msg =
+    Internal.Msg
 
 
+{-| The External messages that are being used to transform information to the
+parent component.
+-}
 type ExtMsg
     = None
     | DateRangeSelected (Maybe SelectedDateRange)
 
 
+{-| The SelectedDateRange returned as a payload by the ExtMsg DateRangeSelected
+-}
 type alias SelectedDateRange =
     { startDate : DateTime
     , endDate : DateTime
     }
 
 
-{-| Expose
+{-| The DateRangePicker's update function.
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg model =
@@ -446,7 +452,8 @@ update msg model =
             )
 
 
-{-| Internal
+{-| Updates the DateRangeOffset on the given model, if there is any.
+The dateRangeOffset is essentially a list of invalid dates.
 -}
 updateDateRangeOffset : Model -> Model
 updateDateRangeOffset ({ range, dateRangeOffset } as model) =
@@ -459,13 +466,16 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
             case range of
                 StartDateSelected start ->
                     let
+                        isNotEqualToStartDate d =
+                            DateTime.compareDates start d /= EQ
+
                         -- Get all the future dates that are too close to the range start date.
                         -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
                         -- [ 27 Aug 2019, 28 Aug 2019 ] will be the disabled dates because
                         -- we want a minimum length of 4 days which will be [ 26, 27, 28, 29 ]
                         -- Note that 29 Aug 2019 will be the first available date to choose ( from the future dates ).
                         invalidFutureDates =
-                            List.filter ((/=) start) <|
+                            List.filter isNotEqualToStartDate <|
                                 List.reverse <|
                                     List.drop 1 <|
                                         List.reverse <|
@@ -477,7 +487,7 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
                         -- we want a minimum length of 4 days which will be [ 23, 24, 25, 26 ]
                         -- Note that 23 Aug 2019 will be the first available date to choose ( from the past dates ).
                         invalidPastDates =
-                            List.filter ((/=) start) <|
+                            List.filter isNotEqualToStartDate <|
                                 List.reverse <|
                                     List.drop 1 <|
                                         DateTime.getDateRange start (DateTime.decrementDays (minDateRangeLength - 1) start) Clock.midnight
