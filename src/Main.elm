@@ -5,6 +5,7 @@ import Browser.Navigation as Navigation
 import Clock
 import Components.DatePicker.Update as DatePicker
 import Components.DatePicker.View as DatePicker
+import Components.DateRangePicker.Types as DateRangePicker
 import Components.DateRangePicker.Update as DateRangePicker
 import Components.DateRangePicker.View as DateRangePicker
 import Components.TimePicker.Update as TimePicker

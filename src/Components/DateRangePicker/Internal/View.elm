@@ -2,16 +2,17 @@ module Components.DateRangePicker.Internal.View exposing (view)
 
 import Clock
 import Components.Common exposing (emptyDateHtml, getFirstDayOfTheMonth, totalCalendarCells, weekdaysHtml)
-import Components.DateRangePicker.Internal.Update
+import Components.DateRangePicker.Internal.Update as Internal
     exposing
         ( DateRange(..)
         , DateRangeOffset(..)
+        , Model(..)
         , Msg(..)
         , SelectionType(..)
         , TimePickerState(..)
         , ViewType(..)
         )
-import Components.DateRangePicker.Update exposing (DateLimit(..), Model)
+import Components.DateRangePicker.Types exposing (DateLimit(..))
 import Components.MonthPicker as MonthPicker
 import Components.TimePicker.Update as TimePicker
 import Components.TimePicker.View as TimePicker
@@ -26,12 +27,12 @@ import Utils.Time as Time
 
 
 view : Model -> Html Msg
-view ({ viewType } as model) =
+view ((Model { viewType, range }) as model) =
     div [ class "date-range-picker" ]
         (case viewType of
             SingleCalendar ->
                 [ singleCalendarView model
-                , case model.range of
+                , case range of
                     BothSelected (Chosen _ _) ->
                         doubleClockView model
 
@@ -50,7 +51,7 @@ view ({ viewType } as model) =
 
 
 singleCalendarView : Model -> Html Msg
-singleCalendarView ({ primaryDate, dateLimit } as model) =
+singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
     let
         ( isPreviousButtonActive, isNextButtonActive ) =
             case dateLimit of
@@ -85,7 +86,7 @@ singleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleCalendarView : Model -> Html Msg
-doubleCalendarView ({ primaryDate, dateLimit } as model) =
+doubleCalendarView ((Model { primaryDate, dateLimit, range }) as model) =
     let
         nextDate =
             DateTime.incrementMonth primaryDate
@@ -110,7 +111,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
             }
 
         nextModel =
-            { model | primaryDate = nextDate }
+            Internal.updatePrimaryDate nextDate model
     in
     div
         [ class "double-calendar-view no-select"
@@ -119,7 +120,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
         [ MonthPicker.doubleMonthPickerView pickerConfig
         , calendarView model
         , calendarView nextModel
-        , case model.range of
+        , case range of
             BothSelected (Chosen _ _) ->
                 div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
 
@@ -129,7 +130,7 @@ doubleCalendarView ({ primaryDate, dateLimit } as model) =
 
 
 doubleClockView : Model -> Html Msg
-doubleClockView { range, timePickers, viewType } =
+doubleClockView (Model { range, timePickers, viewType }) =
     case timePickers of
         TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes } ->
             let
@@ -202,7 +203,7 @@ doubleClockView { range, timePickers, viewType } =
 
 
 calendarView : Model -> Html Msg
-calendarView ({ primaryDate } as model) =
+calendarView ((Model { primaryDate }) as model) =
     let
         monthDates =
             DateTime.getDatesInMonth primaryDate
@@ -235,7 +236,7 @@ calendarView ({ primaryDate } as model) =
 
 
 dateHtml : Model -> DateTime -> Html Msg
-dateHtml model date =
+dateHtml ((Model { today, range }) as model) date =
     let
         isDisabled =
             checkIfDisabled model date
@@ -253,7 +254,7 @@ dateHtml model date =
             DateTime.compareDates date date_ == LT
 
         isToday =
-            isEqualToDate model.today
+            isEqualToDate today
 
         isPartOfTheDateRange =
             let
@@ -261,7 +262,7 @@ dateHtml model date =
                     (isGreaterThanDate start && isLesserThanDate end)
                         || (isLesserThanDate start && isGreaterThanDate end)
             in
-            case model.range of
+            case range of
                 BothSelected (Visually start shadowEnd) ->
                     isDateBetween start shadowEnd
 
@@ -288,7 +289,7 @@ dateHtml model date =
     else
         let
             ( isStart, isEnd ) =
-                case model.range of
+                case range of
                     BothSelected (Visually start end) ->
                         let
                             -- The visual dates are not always sorted.
@@ -317,7 +318,7 @@ dateHtml model date =
                         ( False, False )
 
             isSelected =
-                case model.range of
+                case range of
                     StartDateSelected start ->
                         isEqualToDate start
 
@@ -362,7 +363,7 @@ getPreviousButtonAction isButtonActive =
 
 
 checkIfDisabled : Model -> DateTime -> Bool
-checkIfDisabled { today, dateLimit } date =
+checkIfDisabled (Model { today, dateLimit }) date =
     let
         isGreaterThanDate date_ =
             DateTime.compareDates date date_ == GT
@@ -386,7 +387,7 @@ checkIfDisabled { today, dateLimit } date =
 
 
 checkIfInvalid : Model -> DateTime -> Bool
-checkIfInvalid { dateRangeOffset } date =
+checkIfInvalid (Model { dateRangeOffset }) date =
     case dateRangeOffset of
         Offset { invalidDates } ->
             List.any (\d -> DateTime.compareDates date d == EQ) invalidDates

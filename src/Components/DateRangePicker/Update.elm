@@ -1,9 +1,7 @@
 module Components.DateRangePicker.Update exposing
-    ( DateLimit(..)
-    , ExtMsg(..)
+    ( ExtMsg(..)
     , Model
     , Msg
-    , TimePickerConfig
     , ViewType(..)
     , initialise
     , update
@@ -14,9 +12,16 @@ import Components.DateRangePicker.Internal.Update as Internal
     exposing
         ( DateRange(..)
         , DateRangeOffset(..)
+        , Model(..)
         , Msg(..)
         , SelectionType(..)
         , TimePickerState(..)
+        )
+import Components.DateRangePicker.Types
+    exposing
+        ( CalendarConfig
+        , DateLimit(..)
+        , TimePickerConfig
         )
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
@@ -41,52 +46,10 @@ type ViewType
     | Double
 
 
-{-| The `optional` Calendar date restrictions. You can impose all the types of
-different restrictions by using this simple type.
-
-    NoLimit { disablePastDates = False } -- An unlimited Calendar.
-    NoLimit { disablePastDates = True } -- Allows only `future date selection`.
-    DateLimit { minDate = 1 Jan 2019, maxDate = 31 Dec 2019 }
-    -- A Custom imposed restriction for the year 2019 inclusive of the
-    minDate and maxDate.
-
--}
-type DateLimit
-    = DateLimit { minDate : DateTime, maxDate : DateTime }
-    | NoLimit { disablePastDates : Bool }
-
-
-{-| Used in order to configure the `Calendar` part of the `DateRangePicker`.
--}
-type alias CalendarConfig =
-    { today : DateTime
-    , primaryDate : DateTime
-    , dateLimit : DateLimit
-    , dateRangeOffset : Maybe { minDateRangeLength : Int }
-    }
-
-
-{-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.
--}
-type alias TimePickerConfig =
-    { pickerType : TimePicker.PickerType
-    , defaultTime : Clock.Time
-    , pickerTitles : { start : String, end : String }
-    , mirrorTimes : Bool
-    }
-
-
 {-| The `DateRangePicker Model`.
 -}
 type alias Model =
-    { viewType : Internal.ViewType
-    , today : DateTime
-    , primaryDate : DateTime
-    , range : DateRange
-    , dateLimit : DateLimit
-    , dateRangeOffset : DateRangeOffset
-    , timePickers : TimePickerState
-    }
+    Internal.Model
 
 
 {-| The function used to initialise the `DateRangePicker Model`.
@@ -134,14 +97,15 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
                 Double ->
                     Internal.DoubleCalendar
     in
-    { viewType = viewType_
-    , today = today
-    , primaryDate = primaryDate_
-    , range = NoneSelected
-    , dateLimit = dateLimit
-    , dateRangeOffset = dateRangeOffset_
-    , timePickers = timePickers
-    }
+    Model
+        { viewType = viewType_
+        , today = today
+        , primaryDate = primaryDate_
+        , range = NoneSelected
+        , dateLimit = dateLimit
+        , dateRangeOffset = dateRangeOffset_
+        , timePickers = timePickers
+        }
 
 
 {-| The Internal messages that are being used by the DateRangePicker component.
@@ -169,16 +133,16 @@ type alias SelectedDateRange =
 {-| The DateRangePicker's update function.
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
-update msg model =
+update msg (Model model) =
     case msg of
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
+            ( Model { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
+            ( Model { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
@@ -219,7 +183,7 @@ update msg model =
                             , None
                             )
             in
-            ( updateDateRangeOffset model_
+            ( Model (Internal.updateDateRangeOffset model_)
             , cmd
             , extMsg
             )
@@ -245,7 +209,7 @@ update msg model =
                         _ ->
                             model
             in
-            ( updatedModel
+            ( Model updatedModel
             , Cmd.none
             , None
             )
@@ -253,13 +217,13 @@ update msg model =
         ResetVisualSelection ->
             case model.range of
                 BothSelected (Visually start _) ->
-                    ( { model | range = StartDateSelected start }
+                    ( Model { model | range = StartDateSelected start }
                     , Cmd.none
                     , None
                     )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -268,7 +232,7 @@ update msg model =
             -- This message is only used on the DoubleCalendar view case.
             -- If the viewType is of SingleCalendar type then there is no
             -- switchViewButton that triggers this message.
-            ( { model | viewType = Internal.DoubleTimePicker }
+            ( Model { model | viewType = Internal.DoubleTimePicker }
             , Cmd.none
             , None
             )
@@ -277,7 +241,7 @@ update msg model =
             -- This message is only used on the DoubleClock view case.
             -- If the viewType is of SingleCalendar type then there is no
             -- switchViewButton that triggers this message.
-            ( { model | viewType = Internal.DoubleCalendar }
+            ( Model { model | viewType = Internal.DoubleCalendar }
             , Cmd.none
             , None
             )
@@ -291,27 +255,28 @@ update msg model =
                                 timePicker =
                                     TimePicker.initialise { time = defaultTime, pickerType = pickerType }
                             in
-                            ( { model
-                                | timePickers =
-                                    TimePickers
-                                        { startPicker = timePicker
-                                        , endPicker = timePicker
-                                        , pickerTitles = pickerTitles
-                                        , mirrorTimes = mirrorTimes
-                                        }
-                              }
+                            ( Model
+                                { model
+                                    | timePickers =
+                                        TimePickers
+                                            { startPicker = timePicker
+                                            , endPicker = timePicker
+                                            , pickerTitles = pickerTitles
+                                            , mirrorTimes = mirrorTimes
+                                            }
+                                }
                             , Cmd.none
                             , None
                             )
 
                         _ ->
-                            ( model
+                            ( Model model
                             , Cmd.none
                             , None
                             )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -319,16 +284,17 @@ update msg model =
         ToggleTimeMirroring ->
             case ( model.timePickers, model.range ) of
                 ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
-                    ( { model
-                        | timePickers =
-                            TimePickers { startPicker = startPicker, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = not mirrorTimes }
-                      }
+                    ( Model
+                        { model
+                            | timePickers =
+                                TimePickers { startPicker = startPicker, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = not mirrorTimes }
+                        }
                     , fireAction (SyncTimePickers start)
                     , None
                     )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -349,28 +315,29 @@ update msg model =
                                 , DateTime.setTime time end
                                 )
                         in
-                        ( { model
-                            | range = BothSelected (Chosen updatedStartDate updatedEndDate)
-                            , timePickers =
-                                TimePickers
-                                    { startPicker = timePickerUpdateFn startPicker
-                                    , endPicker = timePickerUpdateFn endPicker
-                                    , pickerTitles = pickerTitles
-                                    , mirrorTimes = mirrorTimes
-                                    }
-                          }
+                        ( Model
+                            { model
+                                | range = BothSelected (Chosen updatedStartDate updatedEndDate)
+                                , timePickers =
+                                    TimePickers
+                                        { startPicker = timePickerUpdateFn startPicker
+                                        , endPicker = timePickerUpdateFn endPicker
+                                        , pickerTitles = pickerTitles
+                                        , mirrorTimes = mirrorTimes
+                                        }
+                            }
                         , Cmd.none
                         , DateRangeSelected (Just { startDate = updatedStartDate, endDate = updatedEndDate })
                         )
 
                     else
-                        ( model
+                        ( Model model
                         , Cmd.none
                         , None
                         )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -403,10 +370,11 @@ update msg model =
                         timePickers =
                             TimePickers { startPicker = subModel, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
                     in
-                    ( { model
-                        | range = range
-                        , timePickers = timePickers
-                      }
+                    ( Model
+                        { model
+                            | range = range
+                            , timePickers = timePickers
+                        }
                     , Cmd.batch
                         [ Cmd.map RangeStartPickerMsg subCmd
                         , cmd
@@ -415,7 +383,7 @@ update msg model =
                     )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -448,10 +416,11 @@ update msg model =
                         timePickers =
                             TimePickers { startPicker = startPicker, endPicker = subModel, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
                     in
-                    ( { model
-                        | range = range
-                        , timePickers = timePickers
-                      }
+                    ( Model
+                        { model
+                            | range = range
+                            , timePickers = timePickers
+                        }
                     , Cmd.batch
                         [ Cmd.map RangeEndPickerMsg subCmd
                         , cmd
@@ -460,65 +429,13 @@ update msg model =
                     )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
 
         MoveToToday ->
-            ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
+            ( Model { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
             , Cmd.none
             , None
             )
-
-
-{-| Updates the DateRangeOffset on the given model, if there is any.
-The dateRangeOffset is essentially a list of invalid dates.
--}
-updateDateRangeOffset : Model -> Model
-updateDateRangeOffset ({ range, dateRangeOffset } as model) =
-    case dateRangeOffset of
-        Offset { minDateRangeLength } ->
-            let
-                offsetConfig invalidDates =
-                    { minDateRangeLength = minDateRangeLength, invalidDates = invalidDates }
-            in
-            case range of
-                StartDateSelected start ->
-                    let
-                        isNotEqualToStartDate d =
-                            DateTime.compareDates start d /= EQ
-
-                        -- Get all the future dates that are too close to the range start date.
-                        -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
-                        -- [ 27 Aug 2019, 28 Aug 2019 ] will be the disabled dates because
-                        -- we want a minimum length of 4 days which will be [ 26, 27, 28, 29 ]
-                        -- Note that 29 Aug 2019 will be the first available date to choose ( from the future dates ).
-                        invalidFutureDates =
-                            List.filter isNotEqualToStartDate <|
-                                List.reverse <|
-                                    List.drop 1 <|
-                                        List.reverse <|
-                                            DateTime.getDateRange start (DateTime.incrementDays (minDateRangeLength - 1) start) Clock.midnight
-
-                        -- Get all the past dates that are too close to the range start date.
-                        -- Example for minDateRangeLength == 4 and startDate == 26 Aug 2019
-                        -- [ 24 Aug 2019, 25 Aug 2019 ] will be the disabled dates because
-                        -- we want a minimum length of 4 days which will be [ 23, 24, 25, 26 ]
-                        -- Note that 23 Aug 2019 will be the first available date to choose ( from the past dates ).
-                        invalidPastDates =
-                            List.filter isNotEqualToStartDate <|
-                                List.reverse <|
-                                    List.drop 1 <|
-                                        DateTime.getDateRange start (DateTime.decrementDays (minDateRangeLength - 1) start) Clock.midnight
-
-                        invalidDates =
-                            invalidFutureDates ++ invalidPastDates
-                    in
-                    { model | dateRangeOffset = Offset (offsetConfig invalidDates) }
-
-                _ ->
-                    { model | dateRangeOffset = Offset (offsetConfig []) }
-
-        NoOffset ->
-            model
