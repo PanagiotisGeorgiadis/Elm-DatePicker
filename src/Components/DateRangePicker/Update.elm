@@ -14,7 +14,6 @@ import Components.DateRangePicker.Internal.Update as Internal
     exposing
         ( DateRange(..)
         , DateRangeOffset(..)
-        , InternalViewType(..)
         , Msg(..)
         , SelectionType(..)
         , TimePickerState(..)
@@ -27,6 +26,15 @@ import Utils.DateTime as DateTime
 
 
 {-| The Calendar ViewType.
+
+Single DateRangePicker with no TimePickers:
+
+Single DateRangePicker with TimePickers:
+
+Double DateRangePicker with no TimePickers:
+
+Double DateRangePicker with TimePickers:
+
 -}
 type ViewType
     = Single
@@ -71,8 +79,7 @@ type alias TimePickerConfig =
 {-| The `DateRangePicker Model`.
 -}
 type alias Model =
-    { viewType : ViewType
-    , internalViewType : InternalViewType
+    { viewType : Internal.ViewType
     , today : DateTime
     , primaryDate : DateTime
     , range : DateRange
@@ -118,9 +125,16 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
 
                 Nothing ->
                     NoTimePickers
+
+        viewType_ =
+            case viewType of
+                Single ->
+                    Internal.SingleCalendar
+
+                Double ->
+                    Internal.DoubleCalendar
     in
-    { viewType = viewType
-    , internalViewType = CalendarView
+    { viewType = viewType_
     , today = today
     , primaryDate = primaryDate_
     , range = NoneSelected
@@ -251,13 +265,19 @@ update msg model =
                     )
 
         ShowClockView ->
-            ( { model | internalViewType = ClockView }
+            -- This message is only used on the DoubleCalendar view case.
+            -- If the viewType is of SingleCalendar type then there is no
+            -- switchViewButton that triggers this message.
+            ( { model | viewType = Internal.DoubleTimePicker }
             , Cmd.none
             , None
             )
 
         ShowCalendarView ->
-            ( { model | internalViewType = CalendarView }
+            -- This message is only used on the DoubleClock view case.
+            -- If the viewType is of SingleCalendar type then there is no
+            -- switchViewButton that triggers this message.
+            ( { model | viewType = Internal.DoubleCalendar }
             , Cmd.none
             , None
             )

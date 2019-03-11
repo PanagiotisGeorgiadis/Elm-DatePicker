@@ -1,15 +1,24 @@
 module Components.DateRangePicker.Internal.Update exposing
     ( DateRange(..)
     , DateRangeOffset(..)
-    , InternalViewType(..)
     , Msg(..)
     , SelectionType(..)
     , TimePickerState(..)
+    , ViewType(..)
     )
 
 import Clock
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
+
+
+{-| The Internal ViewType which combines both the `display mode` and the type
+of the view that's active.
+-}
+type ViewType
+    = SingleCalendar
+    | DoubleCalendar
+    | DoubleTimePicker
 
 
 {-| DateRangeOffset is being used to ensure that the `dateRange` that the user will
@@ -62,18 +71,6 @@ that the user has fully selected a dateRange.
 type SelectionType
     = Visually DateTime DateTime
     | Chosen DateTime DateTime
-
-
-{-| Internal view type. The only valid ViewType combinations would be:
-
-    Single, CalendarView
-    Double, CalendarView
-    Double, ClockView
-
--}
-type InternalViewType
-    = CalendarView
-    | ClockView
 
 
 {-| A representation of the TimePickerState.

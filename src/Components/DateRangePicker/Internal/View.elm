@@ -6,12 +6,12 @@ import Components.DateRangePicker.Internal.Update
     exposing
         ( DateRange(..)
         , DateRangeOffset(..)
-        , InternalViewType(..)
         , Msg(..)
         , SelectionType(..)
         , TimePickerState(..)
+        , ViewType(..)
         )
-import Components.DateRangePicker.Update exposing (DateLimit(..), Model, ViewType(..))
+import Components.DateRangePicker.Update exposing (DateLimit(..), Model)
 import Components.MonthPicker as MonthPicker
 import Components.TimePicker.Update as TimePicker
 import Components.TimePicker.View as TimePicker
@@ -26,10 +26,10 @@ import Utils.Time as Time
 
 
 view : Model -> Html Msg
-view ({ viewType, internalViewType } as model) =
+view ({ viewType } as model) =
     div [ class "date-range-picker" ]
-        (case ( viewType, internalViewType ) of
-            ( Single, _ ) ->
+        (case viewType of
+            SingleCalendar ->
                 [ singleCalendarView model
                 , case model.range of
                     BothSelected (Chosen _ _) ->
@@ -39,11 +39,11 @@ view ({ viewType, internalViewType } as model) =
                         text ""
                 ]
 
-            ( Double, CalendarView ) ->
+            DoubleCalendar ->
                 [ doubleCalendarView model
                 ]
 
-            ( Double, ClockView ) ->
+            DoubleTimePicker ->
                 [ doubleClockView model
                 ]
         )
@@ -160,10 +160,10 @@ doubleClockView { range, timePickers, viewType } =
 
                 pickerTypeString =
                     case viewType of
-                        Single ->
+                        SingleCalendar ->
                             TimePicker.getPickerTypeString startPicker
 
-                        Double ->
+                        _ ->
                             ""
 
                 titleHtml str =
@@ -190,11 +190,11 @@ doubleClockView { range, timePickers, viewType } =
                     , div [ class "filler" ] []
                     ]
                 , case viewType of
-                    Single ->
-                        text ""
-
-                    Double ->
+                    DoubleTimePicker ->
                         div [ class "switch-view-button", onClick ShowCalendarView ] [ Icons.chevron Icons.Left (Icons.Size "20" "20") ]
+
+                    _ ->
+                        text ""
                 ]
 
         _ ->
