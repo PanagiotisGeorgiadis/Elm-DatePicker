@@ -1,8 +1,6 @@
 module Utils.Time exposing
-    ( millisToString
-    , monthToString
+    ( monthToString
     , precedingWeekdays
-    , timeToString
     , toHumanReadableDate
     )
 
@@ -24,43 +22,6 @@ toHumanReadableDate dateTime =
         , monthToStringCondensed (DateTime.getMonth dateTime)
         , String.fromInt (DateTime.getYear dateTime)
         ]
-
-
-{-| Formats `Hours`, `Minutes`, `Seconds` to a representation String.
-
-    timeToString 0 -- "00" : String
-
-    timeToString 30 -- "30" : String
-
--}
-timeToString : Int -> String
-timeToString time =
-    if time < 10 then
-        "0" ++ String.fromInt time
-
-    else
-        String.fromInt time
-
-
-{-| Formats `Milliseconds` to a representation String.
-
-    millisToString 1 -- "001" : String
-
-    millisToString 10 -- "010" : String
-
-    millisToString 100 -- "100" : String
-
--}
-millisToString : Int -> String
-millisToString millis =
-    if millis < 10 then
-        "00" ++ String.fromInt millis
-
-    else if millis < 100 then
-        "0" ++ String.fromInt millis
-
-    else
-        String.fromInt millis
 
 
 {-| Transforms a Weekday to a String.
