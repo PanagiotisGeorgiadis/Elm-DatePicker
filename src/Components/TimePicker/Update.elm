@@ -1,9 +1,7 @@
 module Components.TimePicker.Update exposing
     ( ExtMsg(..)
     , Model
-    , Msg(..)
-    , PickerType(..)
-    , TimeParts(..)
+    , Msg
     , getPickerTypeString
     , getTime
     , initialise
@@ -13,28 +11,19 @@ module Components.TimePicker.Update exposing
     )
 
 import Clock
-import Utils.Time exposing (millisToString, timeToString)
-
-
-{-| Describes different picker types.
--}
-type PickerType
-    = HH { hoursStep : Int }
-    | HH_MM { hoursStep : Int, minutesStep : Int }
-    | HH_MM_SS { hoursStep : Int, minutesStep : Int, secondsStep : Int }
-    | HH_MM_SS_MMMM { hoursStep : Int, minutesStep : Int, secondsStep : Int, millisecondsStep : Int }
+import Components.TimePicker.Internal.Update as Internal
+    exposing
+        ( InternalModel
+        , Model(..)
+        , Msg(..)
+        )
+import Components.TimePicker.Types exposing (PickerType(..), TimeParts(..))
 
 
 {-| The TimePicker Model
 -}
 type alias Model =
-    { time : Clock.Time
-    , pickerType : PickerType
-    , hours : String
-    , minutes : String
-    , seconds : String
-    , milliseconds : String
-    }
+    Internal.Model
 
 
 {-| The Config needed to create a TimePicker.Model
@@ -49,63 +38,53 @@ type alias Config =
 -}
 initialise : Config -> Model
 initialise { pickerType, time } =
-    { pickerType = pickerType
-    , time = time
-    , hours = toHoursString time
-    , minutes = toMinutesString time
-    , seconds = toSecondsString time
-    , milliseconds = toMillisecondsString time
-    }
+    Model
+        { pickerType = pickerType
+        , time = time
+        , hours = toHoursString time
+        , minutes = toMinutesString time
+        , seconds = toSecondsString time
+        , milliseconds = toMillisecondsString time
+        }
 
 
-type TimeParts
-    = Hours
-    | Minutes
-    | Seconds
-    | Milliseconds
+{-| An alias of the TimePicker internal messages.
+-}
+type alias Msg =
+    Internal.Msg
 
 
-type Msg
-    = HoursInputHandler String
-    | MinutesInputHandler String
-    | SecondsInputHandler String
-    | MillisecondsInputHandler String
-    | UpdateHours String
-    | UpdateMinutes String
-    | UpdateSeconds String
-    | UpdateMilliseconds String
-    | Increment TimeParts
-    | Decrement TimeParts
-
-
+{-| The External messages that are being used to transform information to the
+parent component.
+-}
 type ExtMsg
     = None
     | UpdatedTime Clock.Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
-update msg model =
+update msg (Model model) =
     case msg of
         HoursInputHandler value ->
-            ( { model | hours = validateHours model value }
+            ( Model { model | hours = validateHours model value }
             , Cmd.none
             , None
             )
 
         MinutesInputHandler value ->
-            ( { model | minutes = validateMinutes model value }
+            ( Model { model | minutes = validateMinutes model value }
             , Cmd.none
             , None
             )
 
         SecondsInputHandler value ->
-            ( { model | seconds = validateSeconds model value }
+            ( Model { model | seconds = validateSeconds model value }
             , Cmd.none
             , None
             )
 
         MillisecondsInputHandler value ->
-            ( { model | milliseconds = validateMilliseconds model value }
+            ( Model { model | milliseconds = validateMilliseconds model value }
             , Cmd.none
             , None
             )
@@ -117,13 +96,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, hours = toHoursString time }
+                    ( Model { model | time = time, hours = toHoursString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -135,13 +114,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, minutes = toMinutesString time }
+                    ( Model { model | time = time, minutes = toMinutesString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -153,13 +132,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, seconds = toSecondsString time }
+                    ( Model { model | time = time, seconds = toSecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -171,13 +150,13 @@ update msg model =
             in
             case updatedTime of
                 Just time ->
-                    ( { model | time = time, milliseconds = toMillisecondsString time }
+                    ( Model { model | time = time, milliseconds = toMillisecondsString time }
                     , Cmd.none
                     , UpdatedTime time
                     )
 
                 Nothing ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )
@@ -213,7 +192,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( updateDisplayTime time model
+            ( updateDisplayTime time (Model model)
             , Cmd.none
             , UpdatedTime time
             )
@@ -249,7 +228,7 @@ update msg model =
                         , updateFn = updateFn
                         }
             in
-            ( updateDisplayTime time model
+            ( updateDisplayTime time (Model model)
             , Cmd.none
             , UpdatedTime time
             )
@@ -257,7 +236,7 @@ update msg model =
 
 {-| Validates the String representation of `Hour` given from the time-input.
 -}
-validateHours : Model -> String -> String
+validateHours : InternalModel -> String -> String
 validateHours { hours } newValue =
     let
         sanitisedValue =
@@ -272,7 +251,7 @@ validateHours { hours } newValue =
 
 {-| Validates the String representation of `Minute` given from the time-input.
 -}
-validateMinutes : Model -> String -> String
+validateMinutes : InternalModel -> String -> String
 validateMinutes { minutes } newValue =
     let
         sanitisedValue =
@@ -287,7 +266,7 @@ validateMinutes { minutes } newValue =
 
 {-| Validates the String representation of `Second` given from the time-input.
 -}
-validateSeconds : Model -> String -> String
+validateSeconds : InternalModel -> String -> String
 validateSeconds { seconds } newValue =
     let
         sanitisedValue =
@@ -302,7 +281,7 @@ validateSeconds { seconds } newValue =
 
 {-| Validates the String representation of `Millisecond` given from the time-input.
 -}
-validateMilliseconds : Model -> String -> String
+validateMilliseconds : InternalModel -> String -> String
 validateMilliseconds { milliseconds } newValue =
     let
         sanitisedValue =
@@ -354,14 +333,15 @@ filterNonDigits =
 {-| Updates the time property in the TimePicker Model
 -}
 updateDisplayTime : Clock.Time -> Model -> Model
-updateDisplayTime time model =
-    { model
-        | time = time
-        , hours = toHoursString time
-        , minutes = toMinutesString time
-        , seconds = toSecondsString time
-        , milliseconds = toMillisecondsString time
-    }
+updateDisplayTime time (Model model) =
+    Model
+        { model
+            | time = time
+            , hours = toHoursString time
+            , minutes = toMinutesString time
+            , seconds = toSecondsString time
+            , milliseconds = toMillisecondsString time
+        }
 
 
 {-| Returns the formatted `Hour` string from a Clock.Time
@@ -392,16 +372,46 @@ toMillisecondsString =
     millisToString << Clock.getMilliseconds
 
 
-type alias SteppingParams =
-    { n : Int
-    , updateFn : Clock.Time -> Clock.Time
-    , time : Clock.Time
-    }
+{-| Formats `Hours`, `Minutes`, `Seconds` to a representation String.
+
+    timeToString 0 -- "00" : String
+
+    timeToString 30 -- "30" : String
+
+-}
+timeToString : Int -> String
+timeToString time =
+    if time < 10 then
+        "0" ++ String.fromInt time
+
+    else
+        String.fromInt time
+
+
+{-| Formats `Milliseconds` to a representation String.
+
+    millisToString 1 -- "001" : String
+
+    millisToString 10 -- "010" : String
+
+    millisToString 100 -- "100" : String
+
+-}
+millisToString : Int -> String
+millisToString millis =
+    if millis < 10 then
+        "00" ++ String.fromInt millis
+
+    else if millis < 100 then
+        "0" ++ String.fromInt millis
+
+    else
+        String.fromInt millis
 
 
 {-| Extracts the `hoursStep` from the Model
 -}
-getHoursStep : Model -> Int
+getHoursStep : InternalModel -> Int
 getHoursStep { pickerType } =
     case pickerType of
         HH { hoursStep } ->
@@ -419,7 +429,7 @@ getHoursStep { pickerType } =
 
 {-| Extracts the `minutesStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
 -}
-getMinutesStep : Model -> Int
+getMinutesStep : InternalModel -> Int
 getMinutesStep { pickerType } =
     case pickerType of
         HH _ ->
@@ -437,7 +447,7 @@ getMinutesStep { pickerType } =
 
 {-| Extracts the `secondsStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
 -}
-getSecondsStep : Model -> Int
+getSecondsStep : InternalModel -> Int
 getSecondsStep { pickerType } =
     case pickerType of
         HH _ ->
@@ -454,11 +464,8 @@ getSecondsStep { pickerType } =
 
 
 {-| Extracts the `millisecondsStep` from the Model or uses a `defaultValue` on the `Invalid State` cases.
-
-    Internal
-
 -}
-getMillisecondsStep : Model -> Int
+getMillisecondsStep : InternalModel -> Int
 getMillisecondsStep { pickerType } =
     case pickerType of
         HH _ ->
@@ -472,6 +479,15 @@ getMillisecondsStep { pickerType } =
 
         HH_MM_SS_MMMM { millisecondsStep } ->
             millisecondsStep
+
+
+{-| The parameters defined for usage with the stepThrough function.
+-}
+type alias SteppingParams =
+    { n : Int
+    , updateFn : Clock.Time -> Clock.Time
+    , time : Clock.Time
+    }
 
 
 {-| Increments / Decrements time units (based on the updateFn) recursively
@@ -504,17 +520,17 @@ stepThrough { n, updateFn, time } =
             }
 
 
-{-| Exposed
+{-| Helper function that returns the Clock.Time stored in the TimePicker's model.
 -}
 getTime : Model -> Clock.Time
-getTime { time } =
+getTime (Model { time }) =
     time
 
 
-{-| Transforms the pickerType to String.
+{-| Returns a string based on the pickerType specified in the module's Model.
 -}
 getPickerTypeString : Model -> String
-getPickerTypeString { pickerType } =
+getPickerTypeString (Model { pickerType }) =
     case pickerType of
         HH _ ->
             "hh"
@@ -533,7 +549,7 @@ getPickerTypeString { pickerType } =
 on the `PickerType` that was defined.
 -}
 toHumanReadableTime : Model -> String
-toHumanReadableTime { pickerType, hours, minutes, seconds, milliseconds } =
+toHumanReadableTime (Model { pickerType, hours, minutes, seconds, milliseconds }) =
     case pickerType of
         HH _ ->
             hours

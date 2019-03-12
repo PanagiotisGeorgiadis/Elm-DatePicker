@@ -9,7 +9,7 @@ the internal and external DateRangePicker module.
 -}
 
 import Clock
-import Components.TimePicker.Update as TimePicker
+import Components.TimePicker.Types as TimePicker
 import DateTime exposing (DateTime)
 
 

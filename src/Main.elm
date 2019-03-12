@@ -9,6 +9,7 @@ import Components.DatePicker.View as DatePicker
 import Components.DateRangePicker.Types as DateRangePicker
 import Components.DateRangePicker.Update as DateRangePicker
 import Components.DateRangePicker.View as DateRangePicker
+import Components.TimePicker.Types as TimePicker
 import Components.TimePicker.Update as TimePicker
 import DateTime as DateTime
 import Html exposing (Html, br, div, hr, text)

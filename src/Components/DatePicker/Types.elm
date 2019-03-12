@@ -6,7 +6,7 @@ module Components.DatePicker.Types exposing
     )
 
 import Clock
-import Components.TimePicker.Update as TimePicker
+import Components.TimePicker.Types as TimePicker
 import DateTime exposing (DateTime)
 
 
