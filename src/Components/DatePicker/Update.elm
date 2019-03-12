@@ -1,73 +1,37 @@
 module Components.DatePicker.Update exposing
-    ( DateLimit(..)
-    , ExtMsg(..)
+    ( ExtMsg(..)
     , Model
-    , Msg(..)
-    , TimePickerState(..)
-    , ViewType(..)
+    , Msg
     , initialise
     , update
     )
 
 import Clock
+import Components.DatePicker.Internal.Update as Internal
+    exposing
+        ( Model(..)
+        , Msg(..)
+        , TimePickerState(..)
+        )
+import Components.DatePicker.Types
+    exposing
+        ( CalendarConfig
+        , DateLimit(..)
+        , TimePickerConfig
+        , ViewType(..)
+        )
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
 import Utils.Actions exposing (fireAction)
 
 
-{-| Expose
+{-| An Alias of the DatePicker Model.
 -}
 type alias Model =
-    { today : DateTime
-    , viewType : ViewType
-    , primaryDate : DateTime
-    , dateLimit : DateLimit
-    , selectedDate : Maybe DateTime
-    , timePicker : TimePickerState
-    }
+    Internal.Model
 
 
-{-| Expose
--}
-type alias CalendarConfig =
-    { today : DateTime
-    , primaryDate : DateTime
-    , dateLimit : DateLimit
-    }
-
-
-{-| Expose
--}
-type alias TimePickerConfig =
-    { pickerType : TimePicker.PickerType
-    , defaultTime : Clock.Time
-    , pickerTitle : String
-    }
-
-
-{-| Expose
--}
-type ViewType
-    = Single
-    | Double
-
-
-{-| Expose
--}
-type DateLimit
-    = DateLimit { minDate : DateTime, maxDate : DateTime }
-    | NoLimit { disablePastDates : Bool }
-
-
-{-| Internal
--}
-type TimePickerState
-    = NoTimePicker
-    | NotInitialised TimePickerConfig
-    | TimePicker { timePicker : TimePicker.Model, pickerTitle : String }
-
-
-{-| Expose
+{-| The function used to initialise the `DateRangePicker Model`.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
@@ -80,33 +44,30 @@ initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
                 Nothing ->
                     primaryDate
     in
-    { today = today
-    , viewType = viewType
-    , primaryDate = primaryDate_
-    , selectedDate = Nothing
-    , dateLimit = dateLimit
-    , timePicker =
-        case timePickerConfig of
-            Just config ->
-                NotInitialised config
+    Model
+        { today = today
+        , viewType = viewType
+        , primaryDate = primaryDate_
+        , selectedDate = Nothing
+        , dateLimit = dateLimit
+        , timePicker =
+            case timePickerConfig of
+                Just config ->
+                    NotInitialised config
 
-            Nothing ->
-                NoTimePicker
-    }
+                Nothing ->
+                    NoTimePicker
+        }
 
 
-{-| Expose
+{-| An alias of the DatePicker internal messages.
 -}
-type Msg
-    = PreviousMonth
-    | NextMonth
-    | SelectDate DateTime
-    | MoveToToday
-    | InitialiseTimePicker
-    | TimePickerMsg TimePicker.Msg
+type alias Msg =
+    Internal.Msg
 
 
-{-| Expose
+{-| The External messages that are being used to transform information to the
+parent component.
 -}
 type ExtMsg
     = None
@@ -114,16 +75,16 @@ type ExtMsg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
-update msg model =
+update msg (Model model) =
     case msg of
         PreviousMonth ->
-            ( { model | primaryDate = DateTime.decrementMonth model.primaryDate }
+            ( Model { model | primaryDate = DateTime.decrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
 
         NextMonth ->
-            ( { model | primaryDate = DateTime.incrementMonth model.primaryDate }
+            ( Model { model | primaryDate = DateTime.incrementMonth model.primaryDate }
             , Cmd.none
             , None
             )
@@ -154,49 +115,50 @@ update msg model =
             case model.selectedDate of
                 Just selected ->
                     if DateTime.getDate updatedDate == DateTime.getDate selected then
-                        ( { model | selectedDate = Nothing }
+                        ( Model { model | selectedDate = Nothing }
                         , Cmd.none
                         , DateSelected Nothing
                         )
 
                     else
-                        ( { model | selectedDate = Just updatedDate }
+                        ( Model { model | selectedDate = Just updatedDate }
                         , cmd
                         , DateSelected (Just updatedDate)
                         )
 
                 Nothing ->
-                    ( { model | selectedDate = Just updatedDate }
+                    ( Model { model | selectedDate = Just updatedDate }
                     , cmd
                     , DateSelected (Just updatedDate)
                     )
 
         MoveToToday ->
-            ( { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
+            ( Model { model | primaryDate = DateTime.setDate (DateTime.getDate model.today) model.primaryDate }
             , Cmd.none
             , None
             )
 
         InitialiseTimePicker ->
-            case ( model.selectedDate, model.timePicker ) of
-                ( Just dateTime, NotInitialised { pickerType, defaultTime, pickerTitle } ) ->
-                    let
-                        timePicker =
-                            TimePicker
-                                { timePicker = TimePicker.initialise { time = defaultTime, pickerType = pickerType }
-                                , pickerTitle = pickerTitle
-                                }
-                    in
-                    ( { model | timePicker = timePicker }
-                    , Cmd.none
-                    , None
-                    )
+            let
+                updatedModel =
+                    case ( model.selectedDate, model.timePicker ) of
+                        ( Just dateTime, NotInitialised { pickerType, defaultTime, pickerTitle } ) ->
+                            let
+                                timePicker =
+                                    TimePicker
+                                        { timePicker = TimePicker.initialise { time = defaultTime, pickerType = pickerType }
+                                        , pickerTitle = pickerTitle
+                                        }
+                            in
+                            { model | timePicker = timePicker }
 
-                _ ->
-                    ( model
-                    , Cmd.none
-                    , None
-                    )
+                        _ ->
+                            model
+            in
+            ( Model updatedModel
+            , Cmd.none
+            , None
+            )
 
         TimePickerMsg subMsg ->
             case ( model.selectedDate, model.timePicker ) of
@@ -213,16 +175,17 @@ update msg model =
                                 _ ->
                                     Just date
                     in
-                    ( { model
-                        | selectedDate = updatedDate
-                        , timePicker = TimePicker { timePicker = subModel, pickerTitle = pickerTitle }
-                      }
+                    ( Model
+                        { model
+                            | selectedDate = updatedDate
+                            , timePicker = TimePicker { timePicker = subModel, pickerTitle = pickerTitle }
+                        }
                     , Cmd.map TimePickerMsg subCmd
                     , DateSelected updatedDate
                     )
 
                 _ ->
-                    ( model
+                    ( Model model
                     , Cmd.none
                     , None
                     )

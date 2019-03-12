@@ -3,6 +3,7 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Clock
+import Components.DatePicker.Types as DatePicker
 import Components.DatePicker.Update as DatePicker
 import Components.DatePicker.View as DatePicker
 import Components.DateRangePicker.Types as DateRangePicker
