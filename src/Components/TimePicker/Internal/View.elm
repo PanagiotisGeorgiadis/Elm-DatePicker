@@ -51,7 +51,7 @@ hourPicker (Model { hours }) =
         , input
             [ class "time-input"
             , onInput (InputHandler Hours)
-            , onBlur (UpdateHours hours)
+            , onBlur (Update Hours hours)
             , value hours
             , maxlength 2
             ]
@@ -67,7 +67,7 @@ minutePicker (Model { minutes }) =
         , input
             [ class "time-input"
             , onInput (InputHandler Minutes)
-            , onBlur (UpdateMinutes minutes)
+            , onBlur (Update Minutes minutes)
             , value minutes
             , maxlength 2
             ]
@@ -83,7 +83,7 @@ secondsPicker (Model { seconds }) =
         , input
             [ class "time-input"
             , onInput (InputHandler Seconds)
-            , onBlur (UpdateSeconds seconds)
+            , onBlur (Update Seconds seconds)
             , value seconds
             , maxlength 2
             ]
@@ -99,7 +99,7 @@ millisecondsPicker (Model { milliseconds }) =
         , input
             [ class "time-input"
             , onInput (InputHandler Milliseconds)
-            , onBlur (UpdateMilliseconds milliseconds)
+            , onBlur (Update Milliseconds milliseconds)
             , value milliseconds
             , maxlength 3
             ]

@@ -86,68 +86,40 @@ update msg (Model model) =
             , None
             )
 
-        UpdateHours hours ->
+        Update timePart value ->
             let
                 updatedTime =
-                    Maybe.andThen (\h -> Clock.setHours h model.time) (String.toInt hours)
+                    case timePart of
+                        Hours ->
+                            Maybe.andThen (\h -> Clock.setHours h model.time) (String.toInt value)
+
+                        Minutes ->
+                            Maybe.andThen (\m -> Clock.setMinutes m model.time) (String.toInt value)
+
+                        Seconds ->
+                            Maybe.andThen (\s -> Clock.setSeconds s model.time) (String.toInt value)
+
+                        Milliseconds ->
+                            Maybe.andThen (\m -> Clock.setMilliseconds m model.time) (String.toInt value)
             in
             case updatedTime of
                 Just time ->
-                    ( Model { model | time = time, hours = toHoursString time }
-                    , Cmd.none
-                    , UpdatedTime time
-                    )
+                    let
+                        updatedModel =
+                            case timePart of
+                                Hours ->
+                                    Model { model | time = time, hours = toHoursString time }
 
-                Nothing ->
-                    ( Model model
-                    , Cmd.none
-                    , None
-                    )
+                                Minutes ->
+                                    Model { model | time = time, minutes = toMinutesString time }
 
-        UpdateMinutes value ->
-            let
-                updatedTime =
-                    Maybe.andThen (\m -> Clock.setMinutes m model.time) (String.toInt value)
-            in
-            case updatedTime of
-                Just time ->
-                    ( Model { model | time = time, minutes = toMinutesString time }
-                    , Cmd.none
-                    , UpdatedTime time
-                    )
+                                Seconds ->
+                                    Model { model | time = time, seconds = toSecondsString time }
 
-                Nothing ->
-                    ( Model model
-                    , Cmd.none
-                    , None
-                    )
-
-        UpdateSeconds value ->
-            let
-                updatedTime =
-                    Maybe.andThen (\s -> Clock.setSeconds s model.time) (String.toInt value)
-            in
-            case updatedTime of
-                Just time ->
-                    ( Model { model | time = time, seconds = toSecondsString time }
-                    , Cmd.none
-                    , UpdatedTime time
-                    )
-
-                Nothing ->
-                    ( Model model
-                    , Cmd.none
-                    , None
-                    )
-
-        UpdateMilliseconds value ->
-            let
-                updatedTime =
-                    Maybe.andThen (\m -> Clock.setMilliseconds m model.time) (String.toInt value)
-            in
-            case updatedTime of
-                Just time ->
-                    ( Model { model | time = time, milliseconds = toMillisecondsString time }
+                                Milliseconds ->
+                                    Model { model | time = time, milliseconds = toMillisecondsString time }
+                    in
+                    ( updatedModel
                     , Cmd.none
                     , UpdatedTime time
                     )

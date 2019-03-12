@@ -12,10 +12,7 @@ import Components.TimePicker.Types exposing (PickerType, TimeParts)
 -}
 type Msg
     = InputHandler TimeParts String
-    | UpdateHours String
-    | UpdateMinutes String
-    | UpdateSeconds String
-    | UpdateMilliseconds String
+    | Update TimeParts String
     | Increment TimeParts
     | Decrement TimeParts
 
