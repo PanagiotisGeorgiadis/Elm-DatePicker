@@ -111,13 +111,13 @@ type Msg
     | MoveToToday
 
 
-type Model
-    = Model Model_
-
-
 {-| The `DateRangePicker Model`.
 -}
-type alias Model_ =
+type Model
+    = Model InternalModel
+
+
+type alias InternalModel =
     { viewType : ViewType
     , today : DateTime
     , primaryDate : DateTime
@@ -132,7 +132,7 @@ type alias Model_ =
 been specified by the consumer. The dateRangeOffset is consists of a list of
 invalid dates and the minimum date range length.
 -}
-updateDateRangeOffset : Model_ -> Model_
+updateDateRangeOffset : InternalModel -> InternalModel
 updateDateRangeOffset ({ range, dateRangeOffset } as model) =
     case dateRangeOffset of
         Offset { minDateRangeLength } ->

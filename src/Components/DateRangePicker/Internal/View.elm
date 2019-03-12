@@ -22,7 +22,6 @@ import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Icons
 import Utils.DateTime exposing (getMonthInt)
-import Utils.Maybe as Maybe
 import Utils.Time as Time
 
 
