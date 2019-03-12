@@ -50,7 +50,7 @@ hourPicker (Model { hours }) =
         [ div [ class "button", onClick (Increment Hours) ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
-            , onInput HoursInputHandler
+            , onInput (InputHandler Hours)
             , onBlur (UpdateHours hours)
             , value hours
             , maxlength 2
@@ -66,7 +66,7 @@ minutePicker (Model { minutes }) =
         [ div [ class "button", onClick (Increment Minutes) ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
-            , onInput MinutesInputHandler
+            , onInput (InputHandler Minutes)
             , onBlur (UpdateMinutes minutes)
             , value minutes
             , maxlength 2
@@ -82,7 +82,7 @@ secondsPicker (Model { seconds }) =
         [ div [ class "button", onClick (Increment Seconds) ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
-            , onInput SecondsInputHandler
+            , onInput (InputHandler Seconds)
             , onBlur (UpdateSeconds seconds)
             , value seconds
             , maxlength 2
@@ -98,7 +98,7 @@ millisecondsPicker (Model { milliseconds }) =
         [ div [ class "button", onClick (Increment Milliseconds) ] [ Icons.chevron Icons.Up (Icons.Size "24" "24") ]
         , input
             [ class "time-input"
-            , onInput MillisecondsInputHandler
+            , onInput (InputHandler Milliseconds)
             , onBlur (UpdateMilliseconds milliseconds)
             , value milliseconds
             , maxlength 3

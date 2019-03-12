@@ -65,26 +65,23 @@ type ExtMsg
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
     case msg of
-        HoursInputHandler value ->
-            ( Model { model | hours = validateHours model value }
-            , Cmd.none
-            , None
-            )
+        InputHandler timePart value ->
+            let
+                updatedModel =
+                    case timePart of
+                        Hours ->
+                            Model { model | hours = validateHours model value }
 
-        MinutesInputHandler value ->
-            ( Model { model | minutes = validateMinutes model value }
-            , Cmd.none
-            , None
-            )
+                        Minutes ->
+                            Model { model | minutes = validateMinutes model value }
 
-        SecondsInputHandler value ->
-            ( Model { model | seconds = validateSeconds model value }
-            , Cmd.none
-            , None
-            )
+                        Seconds ->
+                            Model { model | seconds = validateSeconds model value }
 
-        MillisecondsInputHandler value ->
-            ( Model { model | milliseconds = validateMilliseconds model value }
+                        Milliseconds ->
+                            Model { model | milliseconds = validateMilliseconds model value }
+            in
+            ( updatedModel
             , Cmd.none
             , None
             )

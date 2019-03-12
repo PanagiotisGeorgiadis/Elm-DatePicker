@@ -11,10 +11,7 @@ import Components.TimePicker.Types exposing (PickerType, TimeParts)
 {-| The Internal messages that are being used by the DateRangePicker component.
 -}
 type Msg
-    = HoursInputHandler String
-    | MinutesInputHandler String
-    | SecondsInputHandler String
-    | MillisecondsInputHandler String
+    = InputHandler TimeParts String
     | UpdateHours String
     | UpdateMinutes String
     | UpdateSeconds String
