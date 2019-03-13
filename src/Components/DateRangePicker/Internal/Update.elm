@@ -32,18 +32,14 @@ use NoOffset.
 
 Example:
 
-    minDateRangeLength = 3
     selectedDate = 1 Jan 2019.
+
+    minDateRangeLength = 3
     invalidDates = [ 31 Dec 2018, 2 Jan 2019 ]
+
     minimumDateRanges =
-        [ [ 1 Jan 2019
-          , 2 Jan 2019
-          , 3 Jan 2019
-          ]
-        , [ 30 Dec 2019
-          , 31 Dec 2019
-          , 1 Jan 2019
-          ]
+        [ [ 1 Jan 2019, 2 Jan 2019, 3 Jan 2019 ] -- First possible selection
+        , [ 30 Dec 2019, 31 Dec 2019, 1 Jan 2019 ] -- Second possible selection
         ]
 
 -}

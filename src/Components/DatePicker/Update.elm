@@ -25,13 +25,28 @@ import DateTime exposing (DateTime)
 import Utils.Actions exposing (fireAction)
 
 
-{-| An Alias of the DatePicker Model.
+{-| The DatePicker Model.
 -}
 type alias Model =
     Internal.Model
 
 
-{-| The function used to initialise the `DateRangePicker Model`.
+{-| The DatePicker module's internal messages.
+-}
+type alias Msg =
+    Internal.Msg
+
+
+{-| The External messages that are being used to pass information to the
+parent component. These messages are being returned by the update function
+so that the consumer can pattern match on them.
+-}
+type ExtMsg
+    = None
+    | DateSelected (Maybe DateTime)
+
+
+{-| The initialisation function for the `DatePicker` module.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
@@ -60,20 +75,9 @@ initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
         }
 
 
-{-| An alias of the DatePicker internal messages.
+{-| The DatePicker's update function. Can be used in order to "wire up" the DatePicker
+with the main application.
 -}
-type alias Msg =
-    Internal.Msg
-
-
-{-| The External messages that are being used to transform information to the
-parent component.
--}
-type ExtMsg
-    = None
-    | DateSelected (Maybe DateTime)
-
-
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
     case msg of

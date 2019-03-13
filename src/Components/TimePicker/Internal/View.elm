@@ -8,6 +8,8 @@ import Html.Events exposing (onBlur, onClick, onInput)
 import Icons
 
 
+{-| The TimePicker view.
+-}
 view : Model -> Html Msg
 view ((Model { pickerType }) as model) =
     case pickerType of
@@ -44,6 +46,8 @@ view ((Model { pickerType }) as model) =
                 ]
 
 
+{-| The `Hours` picker view fragment
+-}
 hourPicker : Model -> Html Msg
 hourPicker (Model { hours }) =
     div [ class "hours-picker" ]
@@ -60,6 +64,8 @@ hourPicker (Model { hours }) =
         ]
 
 
+{-| The `Minutes` picker view fragment
+-}
 minutePicker : Model -> Html Msg
 minutePicker (Model { minutes }) =
     div [ class "minutes-picker" ]
@@ -76,6 +82,8 @@ minutePicker (Model { minutes }) =
         ]
 
 
+{-| The `Seconds` picker view fragment
+-}
 secondsPicker : Model -> Html Msg
 secondsPicker (Model { seconds }) =
     div [ class "seconds-picker" ]
@@ -92,6 +100,8 @@ secondsPicker (Model { seconds }) =
         ]
 
 
+{-| The `Milliseconds` picker view fragment
+-}
 millisecondsPicker : Model -> Html Msg
 millisecondsPicker (Model { milliseconds }) =
     div [ class "milliseconds-picker" ]

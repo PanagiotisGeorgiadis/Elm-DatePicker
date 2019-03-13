@@ -25,7 +25,7 @@ type Model
 
 {-| A representation of the TimePickerState.
 
-    NoTimePickers -- The TimePickerConfig had a value of Nothing when passed on the initialisation function.
+    NoTimePickers -- The TimePickerConfig had a value of Nothing when passed on the initialise function.
 
     NotInitialised config -- The TimePickerConfig had a value of (Just config) but the user hasn't selected a `dateRange` yet.
 
@@ -38,7 +38,7 @@ type TimePickerState
     | TimePicker { timePicker : TimePicker.Model, pickerTitle : String }
 
 
-{-| The Internal messages that are being used by the DateRangePicker component.
+{-| The DatePicker module's internal messages.
 -}
 type Msg
     = PreviousMonth

@@ -5,6 +5,8 @@ import Components.TimePicker.Internal.View as Internal
 import Html exposing (Html)
 
 
+{-| The TimePicker view.
+-}
 view : Model -> Html Msg
 view =
     Internal.view

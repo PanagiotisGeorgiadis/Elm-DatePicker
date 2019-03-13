@@ -8,7 +8,7 @@ import Clock
 import Components.TimePicker.Types exposing (PickerType, TimeParts)
 
 
-{-| The Internal messages that are being used by the DateRangePicker component.
+{-| The Internal messages that are being used by the TimePicker component.
 -}
 type Msg
     = InputHandler TimeParts String

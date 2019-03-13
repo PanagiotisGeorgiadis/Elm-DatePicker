@@ -30,6 +30,8 @@ import Utils.DateTime exposing (getMonthInt)
 import Utils.Time as Time
 
 
+{-| The DatePicker view.
+-}
 view : Model -> Html Msg
 view ((Model { viewType, selectedDate }) as model) =
     div [ class "date-time-picker" ]
@@ -48,6 +50,8 @@ view ((Model { viewType, selectedDate }) as model) =
         ]
 
 
+{-| A single calendar view.
+-}
 singleCalendarView : Model -> Html Msg
 singleCalendarView ((Model { dateLimit, primaryDate }) as model) =
     let
@@ -80,6 +84,8 @@ singleCalendarView ((Model { dateLimit, primaryDate }) as model) =
         ]
 
 
+{-| A double calendar view.
+-}
 doubleCalendarView : Model -> Html Msg
 doubleCalendarView ((Model { dateLimit, primaryDate }) as model) =
     let
@@ -115,6 +121,8 @@ doubleCalendarView ((Model { dateLimit, primaryDate }) as model) =
         ]
 
 
+{-| The view surrounding a single time picker. Also renders the picker title and the selected date.
+-}
 singleClockView : Model -> Html Msg
 singleClockView (Model model) =
     case model.timePicker of
@@ -157,6 +165,8 @@ singleClockView (Model model) =
             text ""
 
 
+{-| A Calendar view fragment. Contains all the calendar rendering logic.
+-}
 calendarView : Model -> Html Msg
 calendarView ((Model { primaryDate }) as model) =
     let
@@ -190,6 +200,8 @@ calendarView ((Model { primaryDate }) as model) =
         ]
 
 
+{-| Date view fragment. Contains all the logic for the `selected`, `disabled`, `today` dates.
+-}
 dateHtml : Model -> DateTime -> Html Msg
 dateHtml ((Model { today, selectedDate }) as model) date =
     let
@@ -240,7 +252,12 @@ dateHtml ((Model { today, selectedDate }) as model) date =
             ]
 
 
-{-| Checks if a Date on the DatePicker is a disabled one based on the specified date limitations.
+{-| Checks whether a given date is `disabled`.
+
+  - The `disabled` dates are driven by the dateLimit value.
+  - If there is no limit we only check for past dates if `disablePastDates` === True.
+  - If there is some limit we disable all the dates outside of that range.
+
 -}
 checkIfDisabled : Model -> DateTime -> Bool
 checkIfDisabled (Model { today, dateLimit }) date =

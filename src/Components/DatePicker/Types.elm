@@ -17,13 +17,13 @@ import DateTime exposing (DateTime)
 
 {-| The Calendar ViewType.
 
-Single DatePicker with no TimePickers:
+[Single date picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Single-Date-Picker.png "Single date picker")
 
-Single DatePicker with TimePickers:
+[Single date-time picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Single-DateTime-Picker.png "Single date-time picker")
 
-Double DatePicker with no TimePickers:
+[Double date picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Double-Date-Picker.png "Double date picker.")
 
-Double DatePicker with TimePickers:
+[Double date-time picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Double-DateTime-Picker.png "Double date-time picker")
 
 -}
 type ViewType
@@ -52,13 +52,13 @@ type alias TimePickerConfig =
 {-| The `optional` Calendar date restrictions. You can impose all the types of
 different restrictions by using this simple type.
 
-NoLimit { disablePastDates = False } -- An unlimited Calendar.
+    NoLimit { disablePastDates = False } -- An unlimited Calendar.
 
-NoLimit { disablePastDates = True } -- Allows only `future date selection`.
+    NoLimit { disablePastDates = True } -- Allows only `future date selection`.
 
-DateLimit { minDate = 1 Jan 2019, maxDate = 31 Dec 2019 }
--- A Custom imposed restriction for the year 2019 inclusive of the
-minDate and maxDate.
+    DateLimit { minDate = 1 Jan 2019, maxDate = 31 Dec 2019 }
+    -- A Custom imposed restriction for the calendar year 2019.
+    -- Note: The date limit imposed is including the minDate and maxDate as valid dates.
 
 -}
 type DateLimit

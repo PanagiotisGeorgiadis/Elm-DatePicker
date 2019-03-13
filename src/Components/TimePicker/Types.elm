@@ -1,10 +1,21 @@
 module Components.TimePicker.Types exposing
-    ( PickerType(..)
+    ( Config
+    , PickerType(..)
     , TimeParts(..)
     )
 
 {-| This module contains the `Public types` that can be used by the consumers.
 -}
+
+import Clock
+
+
+{-| The Config needed to create a TimePicker.Model
+-}
+type alias Config =
+    { time : Clock.Time
+    , pickerType : PickerType
+    }
 
 
 {-| A type that describes the different parts of a `Time`

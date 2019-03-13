@@ -25,6 +25,8 @@ import Utils.DateTime exposing (getMonthInt)
 import Utils.Time as Time
 
 
+{-| The DateRangePicker view.
+-}
 view : Model -> Html Msg
 view ((Model { viewType, range }) as model) =
     div [ class "date-range-picker" ]
@@ -49,6 +51,8 @@ view ((Model { viewType, range }) as model) =
         )
 
 
+{-| A single calendar view.
+-}
 singleCalendarView : Model -> Html Msg
 singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
     let
@@ -84,6 +88,8 @@ singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
         ]
 
 
+{-| A double calendar view.
+-}
 doubleCalendarView : Model -> Html Msg
 doubleCalendarView ((Model { primaryDate, dateLimit, range, timePickers }) as model) =
     let
@@ -136,6 +142,9 @@ doubleCalendarView ((Model { primaryDate, dateLimit, range, timePickers }) as mo
         ]
 
 
+{-| The view surrounding two time pickers ( since we have a date range here ).
+Also contains the picker titles and the mirrorTimes checkbox.
+-}
 doubleClockView : Model -> Html Msg
 doubleClockView (Model { range, timePickers, viewType }) =
     case timePickers of
@@ -209,6 +218,8 @@ doubleClockView (Model { range, timePickers, viewType }) =
             text ""
 
 
+{-| A Calendar view fragment. Contains all the calendar rendering logic.
+-}
 calendarView : Model -> Html Msg
 calendarView ((Model { primaryDate }) as model) =
     let
@@ -242,6 +253,9 @@ calendarView ((Model { primaryDate }) as model) =
         ]
 
 
+{-| Date view fragment. Contains all the logic for the `date-range-start`,
+`date-range-end`, `date-range`, `invalid`, `disabled`, `today` dates.
+-}
 dateHtml : Model -> DateTime -> Html Msg
 dateHtml ((Model { today, range }) as model) date =
     let
@@ -369,6 +383,13 @@ getPreviousButtonAction isButtonActive =
         Nothing
 
 
+{-| Checks whether a given date is `disabled`.
+
+  - The `disabled` dates are driven by the dateLimit value.
+  - If there is no limit we only check for past dates if `disablePastDates` === True.
+  - If there is some limit we disable all the dates outside of that range.
+
+-}
 checkIfDisabled : Model -> DateTime -> Bool
 checkIfDisabled (Model { today, dateLimit }) date =
     let
@@ -393,6 +414,11 @@ checkIfDisabled (Model { today, dateLimit }) date =
             isLesserThanDate minDate || isGreaterThanDate maxDate
 
 
+{-| Checks whether a given date is `invalid`.
+
+  - The `invalid` dates are defined in the dateRangeOffset.
+
+-}
 checkIfInvalid : Model -> DateTime -> Bool
 checkIfInvalid (Model { dateRangeOffset }) date =
     case dateRangeOffset of

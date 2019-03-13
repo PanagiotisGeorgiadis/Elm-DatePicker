@@ -2,7 +2,6 @@ module Components.DateRangePicker.Update exposing
     ( ExtMsg(..)
     , Model
     , Msg
-    , ViewType(..)
     , initialise
     , update
     )
@@ -22,6 +21,7 @@ import Components.DateRangePicker.Types
         ( CalendarConfig
         , DateLimit(..)
         , TimePickerConfig
+        , ViewType(..)
         )
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
@@ -30,29 +30,35 @@ import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
-{-| The Calendar ViewType.
-
-Single DateRangePicker with no TimePickers:
-
-Single DateRangePicker with TimePickers:
-
-Double DateRangePicker with no TimePickers:
-
-Double DateRangePicker with TimePickers:
-
--}
-type ViewType
-    = Single
-    | Double
-
-
 {-| The `DateRangePicker Model`.
 -}
 type alias Model =
     Internal.Model
 
 
-{-| The function used to initialise the `DateRangePicker Model`.
+{-| The Internal messages that are being used by the DateRangePicker component.
+-}
+type alias Msg =
+    Internal.Msg
+
+
+{-| The External messages that are being used to transform information to the
+parent component.
+-}
+type ExtMsg
+    = None
+    | DateRangeSelected (Maybe SelectedDateRange)
+
+
+{-| The SelectedDateRange returned as a payload by the ExtMsg DateRangeSelected
+-}
+type alias SelectedDateRange =
+    { startDate : DateTime
+    , endDate : DateTime
+    }
+
+
+{-| The initialisation function for the `DateRangePicker` module.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
@@ -106,28 +112,6 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
         , dateRangeOffset = dateRangeOffset_
         , timePickers = timePickers
         }
-
-
-{-| The Internal messages that are being used by the DateRangePicker component.
--}
-type alias Msg =
-    Internal.Msg
-
-
-{-| The External messages that are being used to transform information to the
-parent component.
--}
-type ExtMsg
-    = None
-    | DateRangeSelected (Maybe SelectedDateRange)
-
-
-{-| The SelectedDateRange returned as a payload by the ExtMsg DateRangeSelected
--}
-type alias SelectedDateRange =
-    { startDate : DateTime
-    , endDate : DateTime
-    }
 
 
 {-| The DateRangePicker's update function.
