@@ -51,13 +51,21 @@ type ExtMsg
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
     let
-        primaryDate_ =
+        ( primaryDate_, timePicker_ ) =
+            let
+                date =
+                    Maybe.withDefault today primaryDate
+            in
             case timePickerConfig of
-                Just { defaultTime } ->
-                    DateTime.setTime defaultTime primaryDate
+                Just config ->
+                    ( DateTime.setTime config.defaultTime date
+                    , NotInitialised config
+                    )
 
                 Nothing ->
-                    primaryDate
+                    ( date
+                    , NoTimePicker
+                    )
     in
     Model
         { today = today
@@ -65,13 +73,7 @@ initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
         , primaryDate = primaryDate_
         , selectedDate = Nothing
         , dateLimit = dateLimit
-        , timePicker =
-            case timePickerConfig of
-                Just config ->
-                    NotInitialised config
-
-                Nothing ->
-                    NoTimePicker
+        , timePicker = timePicker_
         }
 
 

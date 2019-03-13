@@ -51,4 +51,4 @@ totalCalendarCells =
 -}
 getFirstDayOfTheMonth : DateTime -> Maybe DateTime
 getFirstDayOfTheMonth =
-    DateTime.setDay 1 << DateTime.setTime Clock.midnight
+    DateTime.setDay 1

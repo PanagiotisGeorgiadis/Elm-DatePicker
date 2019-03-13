@@ -32,15 +32,26 @@ type ViewType
 
 
 {-| Used in order to configure the `Calendar` part of the `DateRangePicker`.
+
+    today : The "today" DateTime
+    primaryDate : The default "focused" date. This will dictate which month / year
+    calendar will be visible by default. If it's not specified,
+    it will be set equal to today.
+
 -}
 type alias CalendarConfig =
     { today : DateTime
-    , primaryDate : DateTime
+    , primaryDate : Maybe DateTime
     , dateLimit : DateLimit
     }
 
 
 {-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.
+
+    pickerType : Defines the type of the `TimePicker` that needs to be constructed.
+    defaultTime : Defines the default `Time`.
+    pickerTitle : Defines the picker title that shows on the `TimePicker` view.
+
 -}
 type alias TimePickerConfig =
     { pickerType : TimePicker.PickerType
