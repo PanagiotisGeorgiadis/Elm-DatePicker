@@ -21,7 +21,7 @@ import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Icons
-import Utils.DateTime exposing (getMonthInt)
+import Utils.DateTime exposing (compareYearMonth)
 import Utils.Time as Time
 
 
@@ -54,21 +54,21 @@ view ((Model { viewType, range }) as model) =
 {-| A single calendar view.
 -}
 singleCalendarView : Model -> Html Msg
-singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
+singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
     let
         ( isPreviousButtonActive, isNextButtonActive ) =
             case dateLimit of
                 DateLimit { minDate, maxDate } ->
-                    let
-                        primaryDateMonthInt =
-                            getMonthInt primaryDate
-                    in
-                    ( getMonthInt minDate < primaryDateMonthInt
-                    , getMonthInt maxDate > primaryDateMonthInt
+                    ( compareYearMonth minDate primaryDate == LT
+                    , compareYearMonth maxDate primaryDate == GT
                     )
 
-                NoLimit _ ->
-                    ( True
+                NoLimit { disablePastDates } ->
+                    ( if disablePastDates then
+                        compareYearMonth today primaryDate == LT
+
+                      else
+                        True
                     , True
                     )
 
@@ -91,7 +91,7 @@ singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
 {-| A double calendar view.
 -}
 doubleCalendarView : Model -> Html Msg
-doubleCalendarView ((Model { primaryDate, dateLimit, range, timePickers }) as model) =
+doubleCalendarView ((Model { today, primaryDate, dateLimit, range, timePickers }) as model) =
     let
         nextDate =
             DateTime.incrementMonth primaryDate
@@ -99,12 +99,16 @@ doubleCalendarView ((Model { primaryDate, dateLimit, range, timePickers }) as mo
         ( isPreviousButtonActive, isNextButtonActive ) =
             case dateLimit of
                 DateLimit { minDate, maxDate } ->
-                    ( getMonthInt minDate < getMonthInt primaryDate
-                    , getMonthInt maxDate > getMonthInt nextDate
+                    ( compareYearMonth minDate primaryDate == LT
+                    , compareYearMonth maxDate nextDate == GT
                     )
 
-                NoLimit _ ->
-                    ( True
+                NoLimit { disablePastDates } ->
+                    ( if disablePastDates then
+                        compareYearMonth today primaryDate == LT
+
+                      else
+                        True
                     , True
                     )
 
