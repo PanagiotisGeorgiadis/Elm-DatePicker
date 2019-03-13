@@ -15,7 +15,7 @@ type alias MonthPickerConfig msg =
     { date : DateTime
     , previousButtonHandler : Maybe msg
     , nextButtonHandler : Maybe msg
-    , todayButtonHandler : msg
+    , todayButtonHandler : Maybe msg
     }
 
 
@@ -92,6 +92,11 @@ monthPickerText date =
     Time.monthToString month ++ " " ++ String.fromInt year
 
 
-todayButtonHtml : msg -> Html msg
+todayButtonHtml : Maybe msg -> Html msg
 todayButtonHtml msg =
-    div [ class "today-button", onClick msg ] [ text "Today" ]
+    case msg of
+        Just m ->
+            div [ class "today-button", onClick m ] [ text "Today" ]
+
+        Nothing ->
+            text ""

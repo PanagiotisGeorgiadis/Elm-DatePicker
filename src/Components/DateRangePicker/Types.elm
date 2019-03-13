@@ -35,7 +35,7 @@ type ViewType
 -}
 type alias CalendarConfig =
     { today : DateTime
-    , primaryDate : DateTime
+    , primaryDate : Maybe DateTime
     , dateLimit : DateLimit
     , dateRangeOffset : Maybe { minDateRangeLength : Int }
     }

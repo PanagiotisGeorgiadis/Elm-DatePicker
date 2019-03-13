@@ -56,11 +56,13 @@ view ((Model { viewType, range }) as model) =
 singleCalendarView : Model -> Html Msg
 singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
     let
-        ( isPreviousButtonActive, isNextButtonActive ) =
+        ( isPreviousButtonActive, isNextButtonActive, isTodayButtonActive ) =
             case dateLimit of
                 DateLimit { minDate, maxDate } ->
                     ( compareYearMonth minDate primaryDate == LT
                     , compareYearMonth maxDate primaryDate == GT
+                      -- If today is not in the DateRange we shouldn't render the Today button.
+                    , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
                 NoLimit { disablePastDates } ->
@@ -70,13 +72,14 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
                       else
                         True
                     , True
+                    , True
                     )
 
         pickerConfig =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
-            , todayButtonHandler = MoveToToday
+            , todayButtonHandler = getTodayButtonAction isTodayButtonActive
             }
     in
     div
@@ -96,11 +99,13 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, range, timePickers }
         nextDate =
             DateTime.incrementMonth primaryDate
 
-        ( isPreviousButtonActive, isNextButtonActive ) =
+        ( isPreviousButtonActive, isNextButtonActive, isTodayButtonActive ) =
             case dateLimit of
                 DateLimit { minDate, maxDate } ->
                     ( compareYearMonth minDate primaryDate == LT
                     , compareYearMonth maxDate nextDate == GT
+                      -- If today is not in the DateRange we shouldn't render the Today button.
+                    , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
                 NoLimit { disablePastDates } ->
@@ -110,13 +115,14 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, range, timePickers }
                       else
                         True
                     , True
+                    , True
                     )
 
         pickerConfig =
             { date = primaryDate
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
-            , todayButtonHandler = MoveToToday
+            , todayButtonHandler = getTodayButtonAction isTodayButtonActive
             }
 
         nextModel =
@@ -369,24 +375,6 @@ dateHtml ((Model { today, range }) as model) date =
             ]
 
 
-getNextButtonAction : Bool -> Maybe Msg
-getNextButtonAction isButtonActive =
-    if isButtonActive then
-        Just NextMonth
-
-    else
-        Nothing
-
-
-getPreviousButtonAction : Bool -> Maybe Msg
-getPreviousButtonAction isButtonActive =
-    if isButtonActive then
-        Just PreviousMonth
-
-    else
-        Nothing
-
-
 {-| Checks whether a given date is `disabled`.
 
   - The `disabled` dates are driven by the dateLimit value.
@@ -431,3 +419,30 @@ checkIfInvalid (Model { dateRangeOffset }) date =
 
         NoOffset ->
             False
+
+
+getNextButtonAction : Bool -> Maybe Msg
+getNextButtonAction isButtonActive =
+    if isButtonActive then
+        Just NextMonth
+
+    else
+        Nothing
+
+
+getPreviousButtonAction : Bool -> Maybe Msg
+getPreviousButtonAction isButtonActive =
+    if isButtonActive then
+        Just PreviousMonth
+
+    else
+        Nothing
+
+
+getTodayButtonAction : Bool -> Maybe Msg
+getTodayButtonAction isButtonActive =
+    if isButtonActive then
+        Just MoveToToday
+
+    else
+        Nothing
