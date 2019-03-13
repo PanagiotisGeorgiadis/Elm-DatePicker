@@ -17,35 +17,18 @@ import Components.TimePicker.Internal.Update as Internal
         , Model(..)
         , Msg(..)
         )
-import Components.TimePicker.Types exposing (PickerType(..), TimeParts(..))
+import Components.TimePicker.Types
+    exposing
+        ( Config
+        , PickerType(..)
+        , TimeParts(..)
+        )
 
 
 {-| The TimePicker Model
 -}
 type alias Model =
     Internal.Model
-
-
-{-| The Config needed to create a TimePicker.Model
--}
-type alias Config =
-    { time : Clock.Time
-    , pickerType : PickerType
-    }
-
-
-{-| Initialisation function
--}
-initialise : Config -> Model
-initialise { pickerType, time } =
-    Model
-        { pickerType = pickerType
-        , time = time
-        , hours = toHoursString time
-        , minutes = toMinutesString time
-        , seconds = toSecondsString time
-        , milliseconds = toMillisecondsString time
-        }
 
 
 {-| An alias of the TimePicker internal messages.
@@ -62,24 +45,43 @@ type ExtMsg
     | UpdatedTime Clock.Time
 
 
+{-| The initialisation function for the `TimePicker` module.
+-}
+initialise : Config -> Model
+initialise { pickerType, time } =
+    Model
+        { pickerType = pickerType
+        , time = time
+        , hours = toString Hours time
+        , minutes = toString Minutes time
+        , seconds = toString Seconds time
+        , milliseconds = toString Milliseconds time
+        }
+
+
+{-| The TimePicker's update function.
+-}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
     case msg of
         InputHandler timePart value ->
             let
+                validatedValue =
+                    validate model timePart value
+
                 updatedModel =
                     case timePart of
                         Hours ->
-                            Model { model | hours = validateHours model value }
+                            Model { model | hours = validatedValue }
 
                         Minutes ->
-                            Model { model | minutes = validateMinutes model value }
+                            Model { model | minutes = validatedValue }
 
                         Seconds ->
-                            Model { model | seconds = validateSeconds model value }
+                            Model { model | seconds = validatedValue }
 
                         Milliseconds ->
-                            Model { model | milliseconds = validateMilliseconds model value }
+                            Model { model | milliseconds = validatedValue }
             in
             ( updatedModel
             , Cmd.none
@@ -108,16 +110,16 @@ update msg (Model model) =
                         updatedModel =
                             case timePart of
                                 Hours ->
-                                    Model { model | time = time, hours = toHoursString time }
+                                    Model { model | time = time, hours = toString Hours time }
 
                                 Minutes ->
-                                    Model { model | time = time, minutes = toMinutesString time }
+                                    Model { model | time = time, minutes = toString Minutes time }
 
                                 Seconds ->
-                                    Model { model | time = time, seconds = toSecondsString time }
+                                    Model { model | time = time, seconds = toString Seconds time }
 
                                 Milliseconds ->
-                                    Model { model | time = time, milliseconds = toMillisecondsString time }
+                                    Model { model | time = time, milliseconds = toString Milliseconds time }
                     in
                     ( updatedModel
                     , Cmd.none
@@ -203,64 +205,32 @@ update msg (Model model) =
             )
 
 
-{-| Validates the String representation of `Hour` given from the time-input.
+{-| Generic time part validation function
 -}
-validateHours : InternalModel -> String -> String
-validateHours { hours } newValue =
+validate : InternalModel -> TimeParts -> String -> String
+validate { hours, minutes, seconds, milliseconds } timePart newValue =
     let
         sanitisedValue =
             filterNonDigits newValue
+
+        validationParams default ceil =
+            { default = default
+            , new = sanitisedValue
+            , ceil = ceil
+            }
     in
-    validateTimeSegment
-        { default = hours
-        , new = sanitisedValue
-        , ceil = 24
-        }
+    case timePart of
+        Hours ->
+            validateTimeSegment (validationParams hours 24)
 
+        Minutes ->
+            validateTimeSegment (validationParams minutes 60)
 
-{-| Validates the String representation of `Minute` given from the time-input.
--}
-validateMinutes : InternalModel -> String -> String
-validateMinutes { minutes } newValue =
-    let
-        sanitisedValue =
-            filterNonDigits newValue
-    in
-    validateTimeSegment
-        { default = minutes
-        , new = sanitisedValue
-        , ceil = 60
-        }
+        Seconds ->
+            validateTimeSegment (validationParams seconds 60)
 
-
-{-| Validates the String representation of `Second` given from the time-input.
--}
-validateSeconds : InternalModel -> String -> String
-validateSeconds { seconds } newValue =
-    let
-        sanitisedValue =
-            filterNonDigits newValue
-    in
-    validateTimeSegment
-        { default = seconds
-        , new = sanitisedValue
-        , ceil = 60
-        }
-
-
-{-| Validates the String representation of `Millisecond` given from the time-input.
--}
-validateMilliseconds : InternalModel -> String -> String
-validateMilliseconds { milliseconds } newValue =
-    let
-        sanitisedValue =
-            filterNonDigits newValue
-    in
-    validateTimeSegment
-        { default = milliseconds
-        , new = sanitisedValue
-        , ceil = 1000
-        }
+        Milliseconds ->
+            validateTimeSegment (validationParams milliseconds 1000)
 
 
 {-| Generic validation parameters used by validateTimeSegment
@@ -306,39 +276,29 @@ updateDisplayTime time (Model model) =
     Model
         { model
             | time = time
-            , hours = toHoursString time
-            , minutes = toMinutesString time
-            , seconds = toSecondsString time
-            , milliseconds = toMillisecondsString time
+            , hours = toString Hours time
+            , minutes = toString Minutes time
+            , seconds = toString Seconds time
+            , milliseconds = toString Milliseconds time
         }
 
 
-{-| Returns the formatted `Hour` string from a Clock.Time
+{-| Returns the formatted `TimePart` string from a Clock.Time.
 -}
-toHoursString : Clock.Time -> String
-toHoursString =
-    timeToString << Clock.getHours
+toString : TimeParts -> Clock.Time -> String
+toString timePart =
+    case timePart of
+        Hours ->
+            timeToString << Clock.getHours
 
+        Minutes ->
+            timeToString << Clock.getMinutes
 
-{-| Returns the formatted `Minute` string from a Clock.Time
--}
-toMinutesString : Clock.Time -> String
-toMinutesString =
-    timeToString << Clock.getMinutes
+        Seconds ->
+            timeToString << Clock.getSeconds
 
-
-{-| Returns the formatted `Second` string from a Clock.Time
--}
-toSecondsString : Clock.Time -> String
-toSecondsString =
-    timeToString << Clock.getSeconds
-
-
-{-| Returns the formatted `Millisecond` string from a Clock.Time
--}
-toMillisecondsString : Clock.Time -> String
-toMillisecondsString =
-    millisToString << Clock.getMilliseconds
+        Milliseconds ->
+            millisToString << Clock.getMilliseconds
 
 
 {-| Formats `Hours`, `Minutes`, `Seconds` to a representation String.
