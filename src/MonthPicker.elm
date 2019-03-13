@@ -1,4 +1,4 @@
-module Components.MonthPicker exposing
+module MonthPicker exposing
     ( doubleMonthPickerView
     , singleMonthPickerView
     )

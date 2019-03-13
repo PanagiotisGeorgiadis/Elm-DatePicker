@@ -1,4 +1,4 @@
-module Components.DatePicker.Update exposing
+module DatePicker.Update exposing
     ( ExtMsg(..)
     , Model
     , Msg
@@ -7,21 +7,21 @@ module Components.DatePicker.Update exposing
     )
 
 import Clock
-import Components.DatePicker.Internal.Update as Internal
+import DatePicker.Internal.Update as Internal
     exposing
         ( Model(..)
         , Msg(..)
         , TimePickerState(..)
         )
-import Components.DatePicker.Types
+import DatePicker.Types
     exposing
         ( CalendarConfig
         , DateLimit(..)
         , TimePickerConfig
         , ViewType(..)
         )
-import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
+import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 

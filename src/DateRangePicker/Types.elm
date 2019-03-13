@@ -1,4 +1,4 @@
-module Components.DateRangePicker.Types exposing
+module DateRangePicker.Types exposing
     ( CalendarConfig
     , DateLimit(..)
     , TimePickerConfig
@@ -10,8 +10,8 @@ the internal and external DateRangePicker module.
 -}
 
 import Clock
-import Components.TimePicker.Types as TimePicker
 import DateTime exposing (DateTime)
+import TimePicker.Types as TimePicker
 
 
 {-| The Calendar ViewType.

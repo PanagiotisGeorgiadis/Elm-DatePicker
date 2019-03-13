@@ -1,4 +1,4 @@
-module Components.TimePicker.Types exposing
+module TimePicker.Types exposing
     ( Config
     , PickerType(..)
     , TimeParts(..)

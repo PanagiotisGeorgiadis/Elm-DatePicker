@@ -1,13 +1,13 @@
-module Components.DatePicker.Internal.Update exposing
+module DatePicker.Internal.Update exposing
     ( Model(..)
     , Msg(..)
     , TimePickerState(..)
     , updatePrimaryDate
     )
 
-import Components.DatePicker.Types exposing (DateLimit, TimePickerConfig, ViewType)
-import Components.TimePicker.Update as TimePicker
+import DatePicker.Types exposing (DateLimit, TimePickerConfig, ViewType)
 import DateTime exposing (DateTime)
+import TimePicker.Update as TimePicker
 
 
 {-| The `DateRangePicker Model`.

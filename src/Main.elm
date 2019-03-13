@@ -3,18 +3,18 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Clock
-import Components.DatePicker.Types as DatePicker
-import Components.DatePicker.Update as DatePicker
-import Components.DatePicker.View as DatePicker
-import Components.DateRangePicker.Types as DateRangePicker
-import Components.DateRangePicker.Update as DateRangePicker
-import Components.DateRangePicker.View as DateRangePicker
-import Components.TimePicker.Types as TimePicker
-import Components.TimePicker.Update as TimePicker
+import DatePicker.Types as DatePicker
+import DatePicker.Update as DatePicker
+import DatePicker.View as DatePicker
+import DateRangePicker.Types as DateRangePicker
+import DateRangePicker.Update as DateRangePicker
+import DateRangePicker.View as DateRangePicker
 import DateTime as DateTime
 import Html exposing (Html, br, div, hr, text)
 import Task
 import Time
+import TimePicker.Types as TimePicker
+import TimePicker.Update as TimePicker
 import Url exposing (Url)
 import Utils.Time as Time
 
@@ -200,9 +200,21 @@ update msg model =
                     , Time.millisToPosix 1555372800000
                     )
 
+                -- ( 1 Jan 2019, 31 Dec 2019 )
+                ( date1, date2 ) =
+                    ( Time.millisToPosix 1546300800000
+                    , Time.millisToPosix 1577750400000
+                    )
+
+                -- ( 1 Jan 2020, 31 Dec 2020 )
+                ( date1_, date2_ ) =
+                    ( Time.millisToPosix 1577836800000
+                    , Time.millisToPosix 1609372800000
+                    )
+
                 constrains =
-                    { minDate = DateTime.fromPosix thirdOfFeb
-                    , maxDate = DateTime.fromPosix sixteenOfApr
+                    { minDate = DateTime.fromPosix date1_
+                    , maxDate = DateTime.fromPosix date2_
                     }
 
                 defaultTime =
@@ -227,13 +239,13 @@ update msg model =
 
                 getDatePickerConfig dateLimit =
                     { today = todayDateTime
-                    , primaryDate = todayDateTime
+                    , primaryDate = Nothing
                     , dateLimit = dateLimit
                     }
 
                 getDateRangeConfig dateLimit dateRangeOffset =
                     { today = todayDateTime
-                    , primaryDate = todayDateTime
+                    , primaryDate = Nothing
                     , dateLimit = dateLimit
                     , dateRangeOffset = dateRangeOffset
                     }

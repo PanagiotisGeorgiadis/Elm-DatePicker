@@ -1,4 +1,4 @@
-module Components.DatePicker.Types exposing
+module DatePicker.Types exposing
     ( CalendarConfig
     , DateLimit(..)
     , TimePickerConfig
@@ -6,8 +6,8 @@ module Components.DatePicker.Types exposing
     )
 
 import Clock
-import Components.TimePicker.Types as TimePicker
 import DateTime exposing (DateTime)
+import TimePicker.Types as TimePicker
 
 
 

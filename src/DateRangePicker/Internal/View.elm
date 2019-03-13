@@ -1,8 +1,8 @@
-module Components.DateRangePicker.Internal.View exposing (view)
+module DateRangePicker.Internal.View exposing (view)
 
 import Clock
-import Components.Common exposing (emptyDateHtml, getFirstDayOfTheMonth, totalCalendarCells, weekdaysHtml)
-import Components.DateRangePicker.Internal.Update as Internal
+import Common exposing (emptyDateHtml, getFirstDayOfTheMonth, totalCalendarCells, weekdaysHtml)
+import DateRangePicker.Internal.Update as Internal
     exposing
         ( DateRange(..)
         , DateRangeOffset(..)
@@ -12,15 +12,15 @@ import Components.DateRangePicker.Internal.Update as Internal
         , TimePickerState(..)
         , ViewType(..)
         )
-import Components.DateRangePicker.Types exposing (DateLimit(..))
-import Components.MonthPicker as MonthPicker
-import Components.TimePicker.Update as TimePicker
-import Components.TimePicker.View as TimePicker
+import DateRangePicker.Types exposing (DateLimit(..))
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick, onMouseLeave, onMouseOver)
 import Icons
+import MonthPicker as MonthPicker
+import TimePicker.Update as TimePicker
+import TimePicker.View as TimePicker
 import Utils.DateTime exposing (compareYearMonth)
 import Utils.Time as Time
 

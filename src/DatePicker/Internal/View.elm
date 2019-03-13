@@ -1,31 +1,31 @@
-module Components.DatePicker.Internal.View exposing (view)
+module DatePicker.Internal.View exposing (view)
 
-import Components.Common
+import Common
     exposing
         ( emptyDateHtml
         , getFirstDayOfTheMonth
         , totalCalendarCells
         , weekdaysHtml
         )
-import Components.DatePicker.Internal.Update
+import DatePicker.Internal.Update
     exposing
         ( Model(..)
         , Msg(..)
         , TimePickerState(..)
         , updatePrimaryDate
         )
-import Components.DatePicker.Types
+import DatePicker.Types
     exposing
         ( DateLimit(..)
         , ViewType(..)
         )
-import Components.MonthPicker as MonthPicker
-import Components.TimePicker.Update as TimePicker
-import Components.TimePicker.View as TimePicker
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, title)
 import Html.Events exposing (onClick)
+import MonthPicker as MonthPicker
+import TimePicker.Update as TimePicker
+import TimePicker.View as TimePicker
 import Utils.DateTime exposing (compareYearMonth)
 import Utils.Time as Time
 

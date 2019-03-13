@@ -1,4 +1,4 @@
-module Components.DateRangePicker.Internal.Update exposing
+module DateRangePicker.Internal.Update exposing
     ( DateRange(..)
     , DateRangeOffset(..)
     , Model(..)
@@ -11,9 +11,9 @@ module Components.DateRangePicker.Internal.Update exposing
     )
 
 import Clock
-import Components.DateRangePicker.Types exposing (DateLimit(..), TimePickerConfig)
-import Components.TimePicker.Update as TimePicker
+import DateRangePicker.Types exposing (DateLimit(..), TimePickerConfig)
 import DateTime exposing (DateTime)
+import TimePicker.Update as TimePicker
 import Utils.DateTime as DateTime
 
 

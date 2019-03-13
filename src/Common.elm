@@ -1,4 +1,4 @@
-module Components.Common exposing
+module Common exposing
     ( emptyDateHtml
     , getFirstDayOfTheMonth
     , totalCalendarCells

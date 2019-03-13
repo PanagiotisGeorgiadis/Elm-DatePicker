@@ -1,11 +1,11 @@
-module Components.TimePicker.Internal.View exposing (view)
+module TimePicker.Internal.View exposing (view)
 
-import Components.TimePicker.Internal.Update exposing (Model(..), Msg(..))
-import Components.TimePicker.Types exposing (PickerType(..), TimeParts(..))
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, maxlength, value)
 import Html.Events exposing (onBlur, onClick, onInput)
 import Icons
+import TimePicker.Internal.Update exposing (Model(..), Msg(..))
+import TimePicker.Types exposing (PickerType(..), TimeParts(..))
 
 
 {-| The TimePicker view.

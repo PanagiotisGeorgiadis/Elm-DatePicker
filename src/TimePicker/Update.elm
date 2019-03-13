@@ -1,4 +1,4 @@
-module Components.TimePicker.Update exposing
+module TimePicker.Update exposing
     ( ExtMsg(..)
     , Model
     , Msg
@@ -11,13 +11,13 @@ module Components.TimePicker.Update exposing
     )
 
 import Clock
-import Components.TimePicker.Internal.Update as Internal
+import TimePicker.Internal.Update as Internal
     exposing
         ( InternalModel
         , Model(..)
         , Msg(..)
         )
-import Components.TimePicker.Types
+import TimePicker.Types
     exposing
         ( Config
         , PickerType(..)
