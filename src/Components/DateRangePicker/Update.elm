@@ -58,26 +58,67 @@ type alias SelectedDateRange =
     }
 
 
+{-| Validates the primaryDate based on the dateLimit.
+-}
+validatePrimaryDate : CalendarConfig -> DateTime
+validatePrimaryDate { today, primaryDate, dateLimit } =
+    let
+        date =
+            -- Check if the user has specified a primaryDate. Otherwise use today as our primaryDate.
+            Maybe.withDefault today primaryDate
+    in
+    case dateLimit of
+        DateLimit { minDate, maxDate } ->
+            let
+                isBetweenConstrains =
+                    DateTime.compareYearMonth minDate date == LT && DateTime.compareYearMonth maxDate date == GT
+            in
+            -- If there is a DateLimit and the date is between the constrains then proceed.
+            -- If the date is outside of the constrains then set the primaryDate == minDate.
+            if isBetweenConstrains then
+                date
+
+            else
+                minDate
+
+        NoLimit { disablePastDates } ->
+            -- If we've disabled past dates and the `primaryDate` is a past date,
+            -- set the primaryDate == today. Else proceed.
+            if disablePastDates && DateTime.compareYearMonth date today == LT then
+                today
+
+            else
+                date
+
+
 {-| The initialisation function for the `DateRangePicker` module.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
-initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePickerConfig =
+initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) timePickerConfig =
     let
-        updateTime dateTime =
+        viewType_ =
+            case viewType of
+                Single ->
+                    Internal.SingleCalendar
+
+                Double ->
+                    Internal.DoubleCalendar
+
+        ( primaryDate_, timePickers ) =
+            let
+                dateTime =
+                    validatePrimaryDate calendarConfig
+            in
             case timePickerConfig of
-                Just { defaultTime } ->
-                    DateTime.setTime defaultTime dateTime
+                Just config ->
+                    ( DateTime.setTime config.defaultTime dateTime
+                    , NotInitialised config
+                    )
 
-                _ ->
-                    dateTime
-
-        primaryDate_ =
-            case dateLimit of
-                DateLimit { minDate } ->
-                    updateTime minDate
-
-                _ ->
-                    updateTime primaryDate
+                Nothing ->
+                    ( dateTime
+                    , NoTimePickers
+                    )
 
         dateRangeOffset_ =
             case dateRangeOffset of
@@ -86,22 +127,6 @@ initialise viewType { today, primaryDate, dateLimit, dateRangeOffset } timePicke
 
                 Nothing ->
                     NoOffset
-
-        timePickers =
-            case timePickerConfig of
-                Just config ->
-                    NotInitialised config
-
-                Nothing ->
-                    NoTimePickers
-
-        viewType_ =
-            case viewType of
-                Single ->
-                    Internal.SingleCalendar
-
-                Double ->
-                    Internal.DoubleCalendar
     in
     Model
         { viewType = viewType_

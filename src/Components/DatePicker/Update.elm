@@ -23,6 +23,7 @@ import Components.DatePicker.Types
 import Components.TimePicker.Update as TimePicker
 import DateTime exposing (DateTime)
 import Utils.Actions exposing (fireAction)
+import Utils.DateTime as DateTime
 
 
 {-| The DatePicker Model.
@@ -46,15 +47,48 @@ type ExtMsg
     | DateSelected (Maybe DateTime)
 
 
+{-| Validates the primaryDate based on the dateLimit.
+-}
+validatePrimaryDate : CalendarConfig -> DateTime
+validatePrimaryDate { today, primaryDate, dateLimit } =
+    let
+        date =
+            -- Check if the user has specified a primaryDate. Otherwise use today as our primaryDate.
+            Maybe.withDefault today primaryDate
+    in
+    case dateLimit of
+        DateLimit { minDate, maxDate } ->
+            let
+                isBetweenConstrains =
+                    DateTime.compareYearMonth minDate date == LT && DateTime.compareYearMonth maxDate date == GT
+            in
+            -- If there is a DateLimit and the date is between the constrains then proceed.
+            -- If the date is outside of the constrains then set the primaryDate == minDate.
+            if isBetweenConstrains then
+                date
+
+            else
+                minDate
+
+        NoLimit { disablePastDates } ->
+            -- If we've disabled past dates and the `primaryDate` is a past date,
+            -- set the primaryDate == today. Else proceed.
+            if disablePastDates && DateTime.compareYearMonth date today == LT then
+                today
+
+            else
+                date
+
+
 {-| The initialisation function for the `DatePicker` module.
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
-initialise viewType { today, primaryDate, dateLimit } timePickerConfig =
+initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
     let
         ( primaryDate_, timePicker_ ) =
             let
                 date =
-                    Maybe.withDefault today primaryDate
+                    validatePrimaryDate calendarConfig
             in
             case timePickerConfig of
                 Just config ->
