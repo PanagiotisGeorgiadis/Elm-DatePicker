@@ -85,7 +85,7 @@ singleCalendarView ((Model { primaryDate, dateLimit }) as model) =
 
 
 doubleCalendarView : Model -> Html Msg
-doubleCalendarView ((Model { primaryDate, dateLimit, range }) as model) =
+doubleCalendarView ((Model { primaryDate, dateLimit, range, timePickers }) as model) =
     let
         nextDate =
             DateTime.incrementMonth primaryDate
@@ -111,6 +111,14 @@ doubleCalendarView ((Model { primaryDate, dateLimit, range }) as model) =
 
         nextModel =
             Internal.updatePrimaryDate nextDate model
+
+        switchViewButton =
+            case range of
+                BothSelected (Chosen _ _) ->
+                    div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
+
+                _ ->
+                    div [ class "switch-view-button disabled" ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
     in
     div
         [ class "double-calendar-view no-select"
@@ -119,12 +127,12 @@ doubleCalendarView ((Model { primaryDate, dateLimit, range }) as model) =
         [ MonthPicker.doubleMonthPickerView pickerConfig
         , calendarView model
         , calendarView nextModel
-        , case range of
-            BothSelected (Chosen _ _) ->
-                div [ class "switch-view-button", onClick ShowClockView ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
+        , case timePickers of
+            NoTimePickers ->
+                text ""
 
             _ ->
-                div [ class "switch-view-button disabled" ] [ Icons.chevron Icons.Right (Icons.Size "20" "20") ]
+                switchViewButton
         ]
 
 
