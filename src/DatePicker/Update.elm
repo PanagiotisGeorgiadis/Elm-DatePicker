@@ -1,10 +1,22 @@
 module DatePicker.Update exposing
-    ( ExtMsg(..)
-    , Model
-    , Msg
-    , initialise
-    , update
+    ( Model, Msg, ExtMsg(..)
+    , initialise, update, view
     )
+
+{-| The `DatePicker` component is a DatePicker that allows the user to
+select a **single date**. It has its own [Model](DatePicker.Update#Model)
+and [Msg](DatePicker.Update#Msg) types which handle the rendering and date
+selection functionalities. It also exposes a list of **external messages**
+( [ExtMsg](DatePicker.Update#ExtMsg) ) which can be used by the consumer to extract the **selected date**.
+You can see a simple `DatePicker` application in
+[this ellie-app example](https://ellie-app.com/new) or you can clone [this
+example repository](https://github.com/PanagiotisGeorgiadis/).
+
+@docs Model, Msg, ExtMsg
+
+@docs initialise, update, view
+
+-}
 
 import Clock
 import DatePicker.Internal.Update as Internal
@@ -13,6 +25,7 @@ import DatePicker.Internal.Update as Internal
         , Msg(..)
         , TimePickerState(..)
         )
+import DatePicker.Internal.View as Internal
 import DatePicker.Types
     exposing
         ( CalendarConfig
@@ -21,26 +34,52 @@ import DatePicker.Types
         , ViewType(..)
         )
 import DateTime exposing (DateTime)
+import Html exposing (Html)
 import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
-{-| The DatePicker Model.
+{-| The `DatePicker` Model.
 -}
 type alias Model =
     Internal.Model
 
 
-{-| The DatePicker module's internal messages.
+{-| The internal messages that are being used by the `DatePicker`. You can map
+this message with your own message in order to "wire up" the `DatePicker` with your
+application. Example of wiring up:
+
+    import DatePicker
+
+    type Msg
+        = DatePickerMsg DatePicker.Msg
+
+    DatePickerMsg subMsg ->
+        let
+            (subModel, subCmd, extMsg) =
+                DatePicker.update subMsg model.datePicker
+
+            selectedDateTime =
+                case extMsg of
+                    DatePicker.DateSelected dateTime ->
+                        dateTime
+
+                    DatePicker.None ->
+                        Nothing
+        in
+        ( { model | datePicker = subModel }
+        , Cmd.map DatePickerMsg subCmd
+        )
+
 -}
 type alias Msg =
     Internal.Msg
 
 
-{-| The External messages that are being used to pass information to the
-parent component. These messages are being returned by the update function
-so that the consumer can pattern match on them.
+{-| The _**external messages**_ that are being used to pass information to the
+parent component. These messages are being returned by the [update function](DatePicker.Update#update)
+so that the consumer can pattern match on them and get the selected `DateTime`.
 -}
 type ExtMsg
     = None
@@ -80,7 +119,43 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
                 date
 
 
-{-| The initialisation function for the `DatePicker` module.
+{-| The initialisation function of the `DatePicker`.
+
+    import Clock
+    import DatePicker
+    import DateTime
+    import Time exposing (Month(..))
+    import TimePicker.Types as TimePicker
+
+    myInitialise : DateTime -> DatePicker.Model
+    myInitialise today =
+        let
+            ( date1, date2 ) =
+                ( DateTime.fromRawParts { day = 1, month = Jan, year = 2019 } { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
+                , DateTime.fromRawParts { day = 31, month = Dec, year = 2019 } { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
+                )
+
+            calendarConfig =
+                { today = today
+                , primaryDate = Nothing
+                , dateLimit =
+                    case ( date1, date2 ) of
+                        ( Just d1, Just d2 ) ->
+                            DateLimit { minDate = d1, maxDate = d2 }
+
+                        _ ->
+                            NoLimit { disablePastDates = False }
+                }
+
+            timePickerConfig =
+                Just
+                    { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+                    , defaultTime = Clock.midnight
+                    , pickerTitle = "Date Time"
+                    }
+        in
+        DatePicker.initialise DatePicker.Single calendarConfig timePickerConfig
+
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
@@ -111,8 +186,8 @@ initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
         }
 
 
-{-| The DatePicker's update function. Can be used in order to "wire up" the DatePicker
-with the main application.
+{-| The `DatePicker's` update function. Can be used in order to "wire up" the `DatePicker`
+with the **main application** as shown in the example of the [DatePicker.Msg](DatePicker.Update#Msg).
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
@@ -229,3 +304,10 @@ update msg (Model model) =
                     , Cmd.none
                     , None
                     )
+
+
+{-| The `DatePicker` view.
+-}
+view : Model -> Html Msg
+view =
+    Internal.view
