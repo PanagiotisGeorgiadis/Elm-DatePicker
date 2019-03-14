@@ -1,10 +1,22 @@
 module DateRangePicker.Update exposing
-    ( ExtMsg(..)
-    , Model
-    , Msg
-    , initialise
-    , update
+    ( Model, Msg, ExtMsg(..), SelectedDateRange
+    , initialise, update, view
     )
+
+{-| The `DateRangePicker` component is a DatePicker that allows the user to
+select a **range of dates**. It has its own [Model](DateRangePicker.Update#Model)
+and [Msg](DateRangePicker.Update#Msg) types which handle the rendering and date
+selection functionalities. It also exposes a list of **external messages**
+( ExtMsg ) which can be used by the consumer to extract the selected dates in
+the form of a **startDate** and an **endDate**. You can see a simple `DateRangePicker`
+application in [this ellie-app example](https://ellie-app.com/new) or you can clone [this
+example repository](https://github.com/PanagiotisGeorgiadis/).
+
+@docs Model, Msg, ExtMsg, SelectedDateRange
+
+@docs initialise, update, view
+
+-}
 
 import Clock
 import DateRangePicker.Internal.Update as Internal
@@ -16,6 +28,7 @@ import DateRangePicker.Internal.Update as Internal
         , SelectionType(..)
         , TimePickerState(..)
         )
+import DateRangePicker.Internal.View as Internal
 import DateRangePicker.Types
     exposing
         ( CalendarConfig
@@ -24,33 +37,60 @@ import DateRangePicker.Types
         , ViewType(..)
         )
 import DateTime exposing (DateTime)
+import Html exposing (Html)
 import Time
 import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
-{-| The `DateRangePicker Model`.
+{-| The `DateRangePicker` model.
 -}
 type alias Model =
     Internal.Model
 
 
-{-| The Internal messages that are being used by the DateRangePicker component.
+{-| The internal messages that are being used by the `DateRangePicker`. You can map
+this message with your own message in order to "wire up" the `DateRangePicker` with your
+application. Example of wiring up:
+
+    import DateRangePicker
+
+    type Msg
+        = DateRangePickerMsg DateRangePicker.Msg
+
+    DateRangePickerMsg subMsg ->
+        let
+            ( subModel, subCmd, extMsg ) =
+                DateRangePicker.update subMsg model.dateRangePicker
+
+            selectedDateRange =
+                case extMsg of
+                    DateRangePicker.DateRangeSelected dateRange ->
+                        dateRange
+
+                    DateRangePicker.None ->
+                        Nothing
+        in
+        ( { model | dateRangePicker = subModel }
+        , Cmd.map DateRangePickerMsg subCmd
+        )
+
 -}
 type alias Msg =
     Internal.Msg
 
 
-{-| The External messages that are being used to transform information to the
-parent component.
+{-| The External messages that are being used to pass information to the
+parent component. These messages are being returned by the [update](DateRangePicker.Update#update) function
+so that the consumer can pattern match on them and get the selected `DateTime`.
 -}
 type ExtMsg
     = None
     | DateRangeSelected (Maybe SelectedDateRange)
 
 
-{-| The SelectedDateRange returned as a payload by the ExtMsg DateRangeSelected
+{-| The start and end dates returned as a payload by the `DateRangeSelected` external message.
 -}
 type alias SelectedDateRange =
     { startDate : DateTime
@@ -91,7 +131,44 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
                 date
 
 
-{-| The initialisation function for the `DateRangePicker` module.
+{-| The initialisation function of the `DateRangePicker`.
+
+    import Clock
+    import DateRangePicker
+    import DateTime
+    import Time exposing (Month(..))
+
+    myInitialise : DateTime -> DateRangePicker.Model
+    myInitialise today =
+        let
+            ( date1, date2 ) =
+                ( DateTime.fromRawParts { day = 1, month = Jan, year = 2019 } { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
+                , DateTime.fromRawParts { day = 31, month = Dec, year = 2019 } { hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }
+                )
+
+            calendarConfig =
+                { today = today
+                , primaryDate = Nothing
+                , dateLimit =
+                    case ( date1, date2 ) of
+                        ( Just d1, Just d2 ) ->
+                            DateLimit { minDate = d1, maxDate = d2 }
+
+                        _ ->
+                            NoLimit { disablePastDates = False }
+                , dateRangeOffset = Just { minDateRangeLength = 7 }
+                }
+
+            timePickerConfig =
+                Just
+                    { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
+                    , defaultTime = Clock.midnight
+                    , pickerTitles = { start = "Start Date Time", end = "End Date Time" }
+                    , mirrorTimes = True
+                    }
+        in
+        DateRangePicker.initialise DateRangePicker.Single calendarConfig timePickerConfig
+
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
 initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) timePickerConfig =
@@ -139,7 +216,9 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
         }
 
 
-{-| The DateRangePicker's update function.
+{-| The update function of the `DateRangePicker`. Use this to "wire up" the
+`DateRangePicker` to your main application as shown in the example of the
+[DateRangePicker.Msg](DateRangePicker.Update#Msg).
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
@@ -448,3 +527,10 @@ update msg (Model model) =
             , Cmd.none
             , None
             )
+
+
+{-| The `DateRangePicker` view function.
+-}
+view : Model -> Html Msg
+view =
+    Internal.view
