@@ -16,13 +16,9 @@ import TimePicker.Internal.Update as Internal
         ( InternalModel
         , Model(..)
         , Msg(..)
-        )
-import TimePicker.Types
-    exposing
-        ( Config
-        , PickerType(..)
         , TimeParts(..)
         )
+import TimePicker.Types exposing (PickerType(..))
 
 
 {-| The TimePicker Model
@@ -43,6 +39,14 @@ parent component.
 type ExtMsg
     = None
     | UpdatedTime Clock.Time
+
+
+{-| The Config needed to create a TimePicker.Model
+-}
+type alias Config =
+    { time : Clock.Time
+    , pickerType : PickerType
+    }
 
 
 {-| The initialisation function for the `TimePicker` module.

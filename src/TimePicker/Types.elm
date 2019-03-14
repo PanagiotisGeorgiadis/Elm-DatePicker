@@ -1,30 +1,11 @@
-module TimePicker.Types exposing
-    ( Config
-    , PickerType(..)
-    , TimeParts(..)
-    )
+module TimePicker.Types exposing (PickerType(..))
 
-{-| This module contains the `Public types` that can be used by the consumers.
+{-| This module contains the `Public types` that can be used in order to create a TimePickerConfig
+for either the `DatePicker` or the `DateRangePicker` modules.
+
+@docs PickerType
+
 -}
-
-import Clock
-
-
-{-| The Config needed to create a TimePicker.Model
--}
-type alias Config =
-    { time : Clock.Time
-    , pickerType : PickerType
-    }
-
-
-{-| A type that describes the different parts of a `Time`
--}
-type TimeParts
-    = Hours
-    | Minutes
-    | Seconds
-    | Milliseconds
 
 
 {-| Describes different picker types.
