@@ -1,13 +1,13 @@
-module DatePicker.Update exposing
+module DatePicker exposing
     ( Model, Msg, ExtMsg(..)
     , initialise, update, view
     )
 
 {-| The `DatePicker` component is a DatePicker that allows the user to
-select a **single date**. It has its own [Model](DatePicker.Update#Model)
-and [Msg](DatePicker.Update#Msg) types which handle the rendering and date
+select a **single date**. It has its own [Model](DatePicker#Model)
+and [Msg](DatePicker#Msg) types which handle the rendering and date
 selection functionalities. It also exposes a list of **external messages**
-( [ExtMsg](DatePicker.Update#ExtMsg) ) which can be used by the consumer to extract the **selected date**.
+( [ExtMsg](DatePicker#ExtMsg) ) which can be used by the consumer to extract the **selected date**.
 You can see a simple `DatePicker` application in
 [this ellie-app example](https://ellie-app.com/new) or you can clone [this
 example repository](https://github.com/PanagiotisGeorgiadis/).
@@ -78,7 +78,7 @@ type alias Msg =
 
 
 {-| The _**external messages**_ that are being used to pass information to the
-parent component. These messages are being returned by the [update function](DatePicker.Update#update)
+parent component. These messages are being returned by the [update function](DatePicker#update)
 so that the consumer can pattern match on them and get the selected `DateTime`.
 -}
 type ExtMsg
@@ -187,7 +187,7 @@ initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
 
 
 {-| The `DatePicker's` update function. Can be used in order to "wire up" the `DatePicker`
-with the **main application** as shown in the example of the [DatePicker.Msg](DatePicker.Update#Msg).
+with the **main application** as shown in the example of the [DatePicker.Msg](DatePicker#Msg).
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =

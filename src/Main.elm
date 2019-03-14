@@ -3,12 +3,10 @@ module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Clock
+import DatePicker
 import DatePicker.Types as DatePicker
-import DatePicker.Update as DatePicker
-import DatePicker.View as DatePicker
+import DateRangePicker
 import DateRangePicker.Types as DateRangePicker
-import DateRangePicker.Update as DateRangePicker
-import DateRangePicker.View as DateRangePicker
 import DateTime as DateTime
 import Html exposing (Html, br, div, hr, text)
 import Task
@@ -27,8 +25,6 @@ type alias Model =
     { today : Maybe Time.Posix
     , singleDatePicker : Maybe DatePicker.Model
     , doubleDatePicker : Maybe DatePicker.Model
-
-    -- TODO: Implement those to just for completion
     , singleDatePicker_C : Maybe DatePicker.Model
     , doubleDatePicker_C : Maybe DatePicker.Model
     , singleDateRangePicker : Maybe DateRangePicker.Model
@@ -43,7 +39,6 @@ type Msg
     | Initialise Time.Posix
     | SingleDatePickerMsg DatePicker.Msg
     | DoubleDatePickerMsg DatePicker.Msg
-      -- TODO: Implement those two just for completion
     | SingleDatePickerMsg_C DatePicker.Msg
     | DoubleDatePickerMsg_C DatePicker.Msg
     | SingleDateRangeMsg DateRangePicker.Msg
@@ -270,8 +265,6 @@ update msg model =
                 , doubleDatePicker = Just (DatePicker.initialise DatePicker.Double datePickerConfig timePickerConfig)
                 , singleDatePicker_C = Just (DatePicker.initialise DatePicker.Single datePickerConfig_C timePickerConfig)
                 , doubleDatePicker_C = Just (DatePicker.initialise DatePicker.Double datePickerConfig_C timePickerConfig)
-
-                --
                 , singleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Single dateRangeConfig timePickerConfig_Range)
                 , doubleDateRangePicker = Just (DateRangePicker.initialise DateRangePicker.Double dateRangeConfig timePickerConfig_Range)
                 , singleDateRangePicker_C = Just (DateRangePicker.initialise DateRangePicker.Single dateRangeConfig_C timePickerConfig_Range)

@@ -1,13 +1,13 @@
-module DateRangePicker.Update exposing
+module DateRangePicker exposing
     ( Model, Msg, ExtMsg(..), SelectedDateRange
     , initialise, update, view
     )
 
 {-| The `DateRangePicker` component is a DatePicker that allows the user to
-select a **range of dates**. It has its own [Model](DateRangePicker.Update#Model)
-and [Msg](DateRangePicker.Update#Msg) types which handle the rendering and date
+select a **range of dates**. It has its own [Model](DateRangePicker#Model)
+and [Msg](DateRangePicker#Msg) types which handle the rendering and date
 selection functionalities. It also exposes a list of **external messages**
-( [ExtMsg](DateRangePicker.Update#ExtMsg) ) which can be used by the consumer to extract the selected dates in
+( [ExtMsg](DateRangePicker#ExtMsg) ) which can be used by the consumer to extract the selected dates in
 the form of a **startDate** and an **endDate**. You can see a simple `DateRangePicker`
 application in [this ellie-app example](https://ellie-app.com/new) or you can clone [this
 example repository](https://github.com/PanagiotisGeorgiadis/).
@@ -82,7 +82,7 @@ type alias Msg =
 
 
 {-| The _**external messages**_ that are being used to pass information to the
-parent component. These messages are being returned by the [update function](DateRangePicker.Update#update)
+parent component. These messages are being returned by the [update function](DateRangePicker#update)
 so that the consumer can pattern match on them and get the selected `DateTime`.
 -}
 type ExtMsg
@@ -218,7 +218,7 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
 
 
 {-| The `DateRangePicker's` update function. Can be used in order to "wire up" the `DateRangePicker`
-with the **main application** as shown in the example of the [DateRangePicker.Msg](DateRangePicker.Update#Msg).
+with the **main application** as shown in the example of the [DateRangePicker.Msg](DateRangePicker#Msg).
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
