@@ -50,7 +50,7 @@ type ViewType
 
 {-| Used in order to configure the `Calendar` part of the `DateRangePicker`.
 
-  - **`today`:** Represents the today `DateTime` provided by the consumer.
+  - **`today`:** Represents today as `DateTime` provided by the **parent application**.
 
   - **`primaryDate`:** Represents the default `month - year` calendar screen.
       - If the **primaryDate** is set to `Nothing` the `DateRangePicker` will
@@ -77,8 +77,10 @@ type alias CalendarConfig =
     }
 
 
-{-| The _**optional**_ `DateRangePicker` date restrictions. You can impose all the types of
-different restrictions by using this simple type.
+{-| The _**optional**_ `DateRangePicker` date restrictions. You can cover most of the
+date restriction cases with the type below. If by any change you need to achieve
+a case which is not possible by the current implementation please raise an issue
+on the repository of the package.
 
     -- A Custom imposed restriction for the year 2019
     -- inclusive of the minDate and maxDate.
@@ -98,7 +100,7 @@ type DateLimit
 
 {-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.
 
-  - **`pickerType`:** Defines the type of the picker as described in the [TimePicker module](TimePicker.Types#PickerType)
+  - **`pickerType`:** Defines the type of the picker as described in the [TimePicker module](TimePicker.Types#PickerType).
 
   - **`defaultTime`:** Defines the defaultTime that will be used as the default value of the `TimePicker`.
 

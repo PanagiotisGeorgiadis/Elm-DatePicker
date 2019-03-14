@@ -7,7 +7,7 @@ module DateRangePicker.Update exposing
 select a **range of dates**. It has its own [Model](DateRangePicker.Update#Model)
 and [Msg](DateRangePicker.Update#Msg) types which handle the rendering and date
 selection functionalities. It also exposes a list of **external messages**
-( ExtMsg ) which can be used by the consumer to extract the selected dates in
+( [ExtMsg](DateRangePicker.Update#ExtMsg) ) which can be used by the consumer to extract the selected dates in
 the form of a **startDate** and an **endDate**. You can see a simple `DateRangePicker`
 application in [this ellie-app example](https://ellie-app.com/new) or you can clone [this
 example repository](https://github.com/PanagiotisGeorgiadis/).
@@ -81,8 +81,8 @@ type alias Msg =
     Internal.Msg
 
 
-{-| The External messages that are being used to pass information to the
-parent component. These messages are being returned by the [update](DateRangePicker.Update#update) function
+{-| The _**external messages**_ that are being used to pass information to the
+parent component. These messages are being returned by the [update function](DateRangePicker.Update#update)
 so that the consumer can pattern match on them and get the selected `DateTime`.
 -}
 type ExtMsg
@@ -137,6 +137,7 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
     import DateRangePicker
     import DateTime
     import Time exposing (Month(..))
+    import TimePicker.Types as TimePicker
 
     myInitialise : DateTime -> DateRangePicker.Model
     myInitialise today =
@@ -216,9 +217,8 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
         }
 
 
-{-| The update function of the `DateRangePicker`. Use this to "wire up" the
-`DateRangePicker` to your main application as shown in the example of the
-[DateRangePicker.Msg](DateRangePicker.Update#Msg).
+{-| The `DateRangePicker's` update function. Can be used in order to "wire up" the `DateRangePicker`
+with the **main application** as shown in the example of the [DateRangePicker.Msg](DateRangePicker.Update#Msg).
 -}
 update : Msg -> Model -> ( Model, Cmd Msg, ExtMsg )
 update msg (Model model) =
