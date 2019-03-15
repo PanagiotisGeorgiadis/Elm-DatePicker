@@ -15,6 +15,8 @@
       "elm/datepicker"
   ],
   "scripts": {
+    "elm-bump": "elm bump",
+    "elm-publish": "elm publish",
     "elm-doc-preview": "elm-doc-preview"
   },
   "dependencies": {
