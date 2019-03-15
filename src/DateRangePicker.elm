@@ -38,7 +38,6 @@ import DateRangePicker.Types
         )
 import DateTime exposing (DateTime)
 import Html exposing (Html)
-import Time
 import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
