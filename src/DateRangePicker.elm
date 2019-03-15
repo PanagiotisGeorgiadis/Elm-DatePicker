@@ -104,8 +104,15 @@ validatePrimaryDate : CalendarConfig -> DateTime
 validatePrimaryDate { today, primaryDate, dateLimit } =
     let
         date =
-            -- Check if the user has specified a primaryDate. Otherwise use today as our primaryDate.
-            Maybe.withDefault today primaryDate
+            -- Check if the user has specified a primaryDate.
+            -- Otherwise use today's date as our primaryDate
+            -- with the time set to midnight.
+            case primaryDate of
+                Just d ->
+                    d
+
+                Nothing ->
+                    DateTime.setTime Clock.midnight today
     in
     case dateLimit of
         DateLimit { minDate, maxDate } ->
