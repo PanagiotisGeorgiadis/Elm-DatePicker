@@ -10,7 +10,7 @@ component that's focused on providing functionality and ease of use.
 
 ## Dependencies
 
-This package depends on the [elm-datetime][elm-datetime-url] package.
+This package depends on the [elm/time][elm-time-url] and [elm-datetime][elm-datetime-url] packages.
 That basically means that all the date related functionality as well as
 the **resulting dates** that will be returned by the `DatePicker` component
 will be of [DateTime][datetime-type-url] type which is implemented in the
@@ -54,6 +54,7 @@ You can get the styles from [this demo app](https://github.com/PanagiotisGeorgia
 or you can clone the repo and modify the styles as you wish.
 
 
+[elm-time-url]: https://package.elm-lang.org/packages/elm/time/latest/
 [elm-datetime-url]: https://package.elm-lang.org/packages/PanagiotisGeorgiadis/elm-datetime/latest/
 [datetime-type-url]: https://package.elm-lang.org/packages/PanagiotisGeorgiadis/elm-datetime/latest/DateTime#DateTime
 

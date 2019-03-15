@@ -23,25 +23,7 @@ import DateTime exposing (DateTime)
 import TimePicker.Types as TimePicker
 
 
-{-| The Calendar ViewType.
-
-**Single date range picker.**
-
-![Single date range picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Single-Date-RangePicker.png "Single date range picker")
-
-**Single date-time range picker.**
-
-![Single date-time range picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Single-DateTime-RangePicker.png "Single date-time range picker")
-
-**Double date range picker.**
-
-![Double date range picker](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Double-Date-RangePicker.png "Double date-time range picker")
-
-**Double date-time range picker.**
-
-![Double date-time range picker (Calendar)](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Double-DateTime-RangePicker-1.png "Double date range picker (Calendar).")
-![Double date-time range picker (Time Pickers)](https://raw.githubusercontent.com/PanagiotisGeorgiadis/Elm-DatePicker/master/assets/Double-DateTime-RangePicker-2.png "Double date range picker (Time Pickers).")
-
+{-| The Calendar ViewTypes.
 -}
 type ViewType
     = Single
