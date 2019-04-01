@@ -117,7 +117,8 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
         DateLimit { minDate, maxDate } ->
             let
                 isBetweenConstrains =
-                    DateTime.compareYearMonth minDate date == LT && DateTime.compareYearMonth maxDate date == GT
+                    (DateTime.compareYearMonth minDate date == LT || DateTime.compareYearMonth minDate date == EQ)
+                        && (DateTime.compareYearMonth maxDate date == GT || DateTime.compareYearMonth maxDate date == EQ)
             in
             -- If there is a DateLimit and the date is between the constrains then proceed.
             -- If the date is outside of the constrains then set the primaryDate == minDate.
