@@ -41,12 +41,7 @@ view ((Model { viewType, selectedDate }) as model) =
 
             Double ->
                 doubleCalendarView model
-        , case selectedDate of
-            Just date ->
-                singleClockView model
-
-            Nothing ->
-                text ""
+        , singleClockView model
         ]
 
 
@@ -153,7 +148,7 @@ singleClockView (Model model) =
                             span [ class "date" ] [ text dateTimeStr ]
 
                         Nothing ->
-                            text ""
+                            span [ class "placeholder" ] []
 
                 pickerTypeString =
                     TimePicker.getPickerTypeString timePicker

@@ -174,9 +174,12 @@ initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
                     validatePrimaryDate calendarConfig
             in
             case timePickerConfig of
-                Just config ->
-                    ( DateTime.setTime config.defaultTime date
-                    , NotInitialised config
+                Just { pickerType, defaultTime, pickerTitle } ->
+                    ( DateTime.setTime defaultTime date
+                    , TimePicker
+                        { timePicker = TimePicker.initialise { time = defaultTime, pickerType = pickerType }
+                        , pickerTitle = pickerTitle
+                        }
                     )
 
                 Nothing ->
@@ -229,7 +232,7 @@ update msg (Model model) =
 
                         _ ->
                             ( DateTime.getTime date
-                            , fireAction InitialiseTimePicker
+                            , Cmd.none
                             )
 
                 updatedDate =
@@ -261,42 +264,25 @@ update msg (Model model) =
             , None
             )
 
-        InitialiseTimePicker ->
-            let
-                updatedModel =
-                    case ( model.selectedDate, model.timePicker ) of
-                        ( Just dateTime, NotInitialised { pickerType, defaultTime, pickerTitle } ) ->
-                            let
-                                timePicker =
-                                    TimePicker
-                                        { timePicker = TimePicker.initialise { time = defaultTime, pickerType = pickerType }
-                                        , pickerTitle = pickerTitle
-                                        }
-                            in
-                            { model | timePicker = timePicker }
-
-                        _ ->
-                            model
-            in
-            ( Model updatedModel
-            , Cmd.none
-            , None
-            )
-
         TimePickerMsg subMsg ->
-            case ( model.selectedDate, model.timePicker ) of
-                ( Just date, TimePicker { timePicker, pickerTitle } ) ->
+            case model.timePicker of
+                TimePicker { timePicker, pickerTitle } ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg timePicker
 
                         updatedDate =
-                            case extMsg of
-                                TimePicker.UpdatedTime newTime ->
-                                    Just (DateTime.setTime newTime date)
+                            case model.selectedDate of
+                                Just date ->
+                                    case extMsg of
+                                        TimePicker.UpdatedTime newTime ->
+                                            Just (DateTime.setTime newTime date)
 
-                                _ ->
-                                    Just date
+                                        _ ->
+                                            model.selectedDate
+
+                                Nothing ->
+                                    model.selectedDate
                     in
                     ( Model
                         { model

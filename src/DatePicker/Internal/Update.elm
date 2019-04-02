@@ -25,16 +25,13 @@ type Model
 
 {-| A representation of the TimePickerState.
 
-    NoTimePickers -- The TimePickerConfig had a value of Nothing when passed on the initialise function.
+    NoTimePicker -- The TimePickerConfig had a value of Nothing when passed on the initialise function.
 
-    NotInitialised config -- The TimePickerConfig had a value of (Just config) but the user hasn't selected a `dateRange` yet.
-
-    TimePickers -- The TimePickers state.
+    TimePicker -- The TimePicker state.
 
 -}
 type TimePickerState
     = NoTimePicker
-    | NotInitialised TimePickerConfig
     | TimePicker { timePicker : TimePicker.Model, pickerTitle : String }
 
 
@@ -45,7 +42,6 @@ type Msg
     | NextMonth
     | SelectDate DateTime
     | MoveToToday
-    | InitialiseTimePicker
     | TimePickerMsg TimePicker.Msg
 
 
