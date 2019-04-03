@@ -277,7 +277,13 @@ update msg (Model model) =
                         BothSelected (Visually start end) ->
                             updateModel start
 
-                        _ ->
+                        BothSelected (Chosen start end) ->
+                            ( { model | range = StartDateSelected date }
+                            , Cmd.none
+                            , DateRangeSelected Nothing
+                            )
+
+                        NoneSelected ->
                             ( { model | range = StartDateSelected date }
                             , Cmd.none
                             , None
