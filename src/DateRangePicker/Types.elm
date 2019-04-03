@@ -62,22 +62,19 @@ type alias CalendarConfig =
 {-| The _**optional**_ `DateRangePicker` date restrictions. You can cover most of the
 date restriction cases with the type below. If by any change you need to achieve
 a case which is not possible by the current implementation please raise an issue
-on the repository of the package.
+on the repository of this package.
 
     -- A Custom imposed restriction for the year 2019
     -- inclusive of the minDate and maxDate.
     DateLimit { minDate = 1 Jan 2019, maxDate = 31 Dec 2019 }
 
     -- An unlimited Calendar.
-    NoLimit { disablePastDates = False }
-
-    -- Allows only `future date selection`.
-    NoLimit { disablePastDates = True }
+    NoLimit
 
 -}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
-    | NoLimit { disablePastDates : Bool }
+    | NoLimit
 
 
 {-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.

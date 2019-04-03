@@ -65,12 +65,8 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                NoLimit { disablePastDates } ->
-                    ( if disablePastDates then
-                        compareYearMonth today primaryDate == LT
-
-                      else
-                        True
+                NoLimit ->
+                    ( True
                     , True
                     , True
                     )
@@ -108,12 +104,8 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, range, timePickers }
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                NoLimit { disablePastDates } ->
-                    ( if disablePastDates then
-                        compareYearMonth today primaryDate == LT
-
-                      else
-                        True
+                NoLimit ->
+                    ( True
                     , True
                     , True
                     )
@@ -378,7 +370,7 @@ dateHtml ((Model { today, range }) as model) date =
 {-| Checks whether a given date is `disabled`.
 
   - The `disabled` dates are driven by the dateLimit value.
-  - If there is no limit we only check for past dates if `disablePastDates` === True.
+  - If there is no limit we allow for all the dates to be selected.
   - If there is some limit we disable all the dates outside of that range.
 
 -}
@@ -395,12 +387,8 @@ checkIfDisabled (Model { today, dateLimit }) date =
             DateTime.compareDates date date_ == EQ
     in
     case dateLimit of
-        NoLimit { disablePastDates } ->
-            let
-                isPastDate =
-                    isLesserThanDate today
-            in
-            disablePastDates && isPastDate
+        NoLimit ->
+            False
 
         DateLimit { minDate, maxDate } ->
             isLesserThanDate minDate || isGreaterThanDate maxDate
