@@ -6,6 +6,7 @@ module DateRangePicker.Internal.Update exposing
     , SelectionType(..)
     , TimePickerState(..)
     , ViewType(..)
+    , showClockView
     , updateDateRangeOffset
     , updatePrimaryDate
     )
@@ -14,6 +15,7 @@ import Clock
 import DateRangePicker.Types exposing (DateLimit(..), TimePickerConfig)
 import DateTime exposing (DateTime)
 import TimePicker.Update as TimePicker
+import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
 
 
@@ -180,3 +182,16 @@ updateDateRangeOffset ({ range, dateRangeOffset } as model) =
 updatePrimaryDate : DateTime -> Model -> Model
 updatePrimaryDate dt (Model model) =
     Model { model | primaryDate = dt }
+
+
+showClockView : InternalModel -> Cmd Msg
+showClockView { viewType, timePickers } =
+    case ( viewType, timePickers ) of
+        ( DoubleCalendar, NotInitialised _ ) ->
+            fireAction ShowClockView
+
+        ( DoubleCalendar, TimePickers _ ) ->
+            fireAction ShowClockView
+
+        _ ->
+            Cmd.none

@@ -257,13 +257,19 @@ update msg (Model model) =
 
                         LT ->
                             ( { model | range = BothSelected (Chosen start date) }
-                            , fireAction InitialiseTimePickers
+                            , Cmd.batch
+                                [ fireAction InitialiseTimePickers
+                                , Internal.showClockView model
+                                ]
                             , DateRangeSelected (Just { startDate = start, endDate = date })
                             )
 
                         GT ->
                             ( { model | range = BothSelected (Chosen date start) }
-                            , fireAction InitialiseTimePickers
+                            , Cmd.batch
+                                [ fireAction InitialiseTimePickers
+                                , Internal.showClockView model
+                                ]
                             , DateRangeSelected (Just { startDate = date, endDate = start })
                             )
 
