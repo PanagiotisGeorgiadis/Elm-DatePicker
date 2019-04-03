@@ -117,14 +117,8 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
             else
                 minDate
 
-        NoLimit { disablePastDates } ->
-            -- If we've disabled past dates and the `primaryDate` is a past date,
-            -- set the primaryDate == today. Else proceed.
-            if disablePastDates && DateTime.compareYearMonth date today == LT then
-                today
-
-            else
-                date
+        NoLimit ->
+            date
 
 
 {-| The initialisation function of the `DatePicker`.
@@ -152,7 +146,7 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
                             DateLimit { minDate = d1, maxDate = d2 }
 
                         _ ->
-                            NoLimit { disablePastDates = False }
+                            NoLimit
                 }
 
             timePickerConfig =

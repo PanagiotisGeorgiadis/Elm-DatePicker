@@ -60,12 +60,8 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                NoLimit { disablePastDates } ->
-                    ( if disablePastDates then
-                        compareYearMonth today primaryDate == LT
-
-                      else
-                        True
+                NoLimit ->
+                    ( True
                     , True
                     , True
                     )
@@ -104,12 +100,8 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                NoLimit { disablePastDates } ->
-                    ( if disablePastDates then
-                        compareYearMonth today primaryDate == LT
-
-                      else
-                        True
+                NoLimit ->
+                    ( True
                     , True
                     , True
                     )
@@ -262,25 +254,21 @@ dateHtml ((Model { today, selectedDate }) as model) date =
 {-| Checks whether a given date is `disabled`.
 
   - The `disabled` dates are driven by the dateLimit value.
-  - If there is no limit we only check for past dates if `disablePastDates` === True.
+  - If there is no limit we allow for all the dates to be selected.
   - If there is some limit we disable all the dates outside of that range.
 
 -}
 checkIfDisabled : Model -> DateTime -> Bool
 checkIfDisabled (Model { today, dateLimit }) date =
-    let
-        isPastDate =
-            DateTime.compareDates today date == GT
-
-        isEqualToDate date_ =
-            DateTime.compareDates date date_ == EQ
-    in
     case dateLimit of
-        NoLimit { disablePastDates } ->
-            disablePastDates && isPastDate
+        NoLimit ->
+            False
 
         DateLimit { minDate, maxDate } ->
             let
+                isEqualToDate date_ =
+                    DateTime.compareDates date date_ == EQ
+
                 isPartOfTheConstraint =
                     (DateTime.compareDates minDate date == LT || isEqualToDate minDate)
                         && (DateTime.compareDates maxDate date == GT || isEqualToDate maxDate)
