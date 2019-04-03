@@ -33,12 +33,7 @@ view ((Model { viewType, range }) as model) =
         (case viewType of
             SingleCalendar ->
                 [ singleCalendarView model
-                , case range of
-                    BothSelected (Chosen _ _) ->
-                        doubleClockView model
-
-                    _ ->
-                        text ""
+                , doubleClockView model
                 ]
 
             DoubleCalendar ->
@@ -167,7 +162,7 @@ doubleClockView (Model { range, timePickers, viewType }) =
                                 ]
 
                         Nothing ->
-                            text ""
+                            span [ class "placeholder" ] []
 
                 ( rangeStart, rangeEnd ) =
                     case range of

@@ -192,9 +192,18 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
                     validatePrimaryDate calendarConfig
             in
             case timePickerConfig of
-                Just config ->
-                    ( DateTime.setTime config.defaultTime dateTime
-                    , NotInitialised config
+                Just { pickerType, defaultTime, pickerTitles, mirrorTimes } ->
+                    let
+                        timePicker =
+                            TimePicker.initialise { time = defaultTime, pickerType = pickerType }
+                    in
+                    ( DateTime.setTime defaultTime dateTime
+                    , TimePickers
+                        { startPicker = timePicker
+                        , endPicker = timePicker
+                        , pickerTitles = pickerTitles
+                        , mirrorTimes = mirrorTimes
+                        }
                     )
 
                 Nothing ->
@@ -251,19 +260,13 @@ update msg (Model model) =
 
                         LT ->
                             ( { model | range = BothSelected (Chosen start date) }
-                            , Cmd.batch
-                                [ fireAction InitialiseTimePickers
-                                , Internal.showClockView model
-                                ]
+                            , Internal.showClockView model
                             , DateRangeSelected (Just { startDate = start, endDate = date })
                             )
 
                         GT ->
                             ( { model | range = BothSelected (Chosen date start) }
-                            , Cmd.batch
-                                [ fireAction InitialiseTimePickers
-                                , Internal.showClockView model
-                                ]
+                            , Internal.showClockView model
                             , DateRangeSelected (Just { startDate = date, endDate = start })
                             )
 
@@ -351,41 +354,6 @@ update msg (Model model) =
             , Cmd.none
             , None
             )
-
-        InitialiseTimePickers ->
-            case model.timePickers of
-                NotInitialised { pickerType, defaultTime, pickerTitles, mirrorTimes } ->
-                    case model.range of
-                        BothSelected (Chosen start end) ->
-                            let
-                                timePicker =
-                                    TimePicker.initialise { time = defaultTime, pickerType = pickerType }
-                            in
-                            ( Model
-                                { model
-                                    | timePickers =
-                                        TimePickers
-                                            { startPicker = timePicker
-                                            , endPicker = timePicker
-                                            , pickerTitles = pickerTitles
-                                            , mirrorTimes = mirrorTimes
-                                            }
-                                }
-                            , Cmd.none
-                            , None
-                            )
-
-                        _ ->
-                            ( Model model
-                            , Cmd.none
-                            , None
-                            )
-
-                _ ->
-                    ( Model model
-                    , Cmd.none
-                    , None
-                    )
 
         ToggleTimeMirroring ->
             case ( model.timePickers, model.range ) of

@@ -80,14 +80,11 @@ type SelectionType
 
     NoTimePickers -- The TimePickerConfig had a value of Nothing when passed on the initialisation function.
 
-    NotInitialised config -- The TimePickerConfig had a value of (Just config) but the user hasn't selected a `dateRange` yet.
-
     TimePickers -- The TimePickers state.
 
 -}
 type TimePickerState
     = NoTimePickers
-    | NotInitialised TimePickerConfig
     | TimePickers { startPicker : TimePicker.Model, endPicker : TimePicker.Model, pickerTitles : { start : String, end : String }, mirrorTimes : Bool }
 
 
@@ -101,7 +98,6 @@ type Msg
     | ResetVisualSelection
     | ShowClockView
     | ShowCalendarView
-    | InitialiseTimePickers
     | ToggleTimeMirroring
     | SyncTimePickers DateTime
     | RangeStartPickerMsg TimePicker.Msg
@@ -187,9 +183,6 @@ updatePrimaryDate dt (Model model) =
 showClockView : InternalModel -> Cmd Msg
 showClockView { viewType, timePickers } =
     case ( viewType, timePickers ) of
-        ( DoubleCalendar, NotInitialised _ ) ->
-            fireAction ShowClockView
-
         ( DoubleCalendar, TimePickers _ ) ->
             fireAction ShowClockView
 
