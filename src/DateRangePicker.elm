@@ -1,5 +1,6 @@
 module DateRangePicker exposing
     ( Model, Msg, ExtMsg(..), SelectedDateRange
+    , resetVisualSelection
     , initialise, update, view
     )
 
@@ -13,6 +14,8 @@ application in [this ellie-app example](https://ellie-app.com/new) or you can cl
 example repository](https://github.com/PanagiotisGeorgiadis/).
 
 @docs Model, Msg, ExtMsg, SelectedDateRange
+
+@docs resetVisualSelection
 
 @docs initialise, update, view
 
@@ -265,6 +268,8 @@ update msg (Model model) =
                             )
 
                 ( model_, cmd, extMsg ) =
+                    -- Bare in mind that this model.range is essentialy the
+                    -- 'previous' state.
                     case model.range of
                         StartDateSelected start ->
                             updateModel start
@@ -463,7 +468,12 @@ update msg (Model model) =
                                     )
 
                         timePickers =
-                            TimePickers { startPicker = subModel, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
+                            TimePickers
+                                { startPicker = subModel
+                                , endPicker = endPicker
+                                , pickerTitles = pickerTitles
+                                , mirrorTimes = mirrorTimes
+                                }
                     in
                     ( Model
                         { model
@@ -509,7 +519,12 @@ update msg (Model model) =
                                     )
 
                         timePickers =
-                            TimePickers { startPicker = startPicker, endPicker = subModel, pickerTitles = pickerTitles, mirrorTimes = mirrorTimes }
+                            TimePickers
+                                { startPicker = startPicker
+                                , endPicker = subModel
+                                , pickerTitles = pickerTitles
+                                , mirrorTimes = mirrorTimes
+                                }
                     in
                     ( Model
                         { model
@@ -534,6 +549,23 @@ update msg (Model model) =
             , Cmd.none
             , None
             )
+
+
+{-| Helper function that resets the `Visually` selected date range. **It will reset the date range if
+the user has selected only a start date.** In case the user has already selected a _**valid date range**_
+this function will do nothing.
+-}
+resetVisualSelection : Model -> Model
+resetVisualSelection (Model model) =
+    case model.range of
+        BothSelected (Visually start _) ->
+            Model (Internal.updateDateRangeOffset { model | range = NoneSelected })
+
+        StartDateSelected start ->
+            Model (Internal.updateDateRangeOffset { model | range = NoneSelected })
+
+        _ ->
+            Model model
 
 
 {-| The `DateRangePicker` view function.
