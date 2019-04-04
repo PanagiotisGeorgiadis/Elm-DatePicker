@@ -3,7 +3,7 @@
     "name": "PanagiotisGeorgiadis/elm-datepicker",
     "summary": "A date time picker built on top of elm-datetime package.",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "exposed-modules": [
         "DatePicker",
         "DatePicker.Types",
@@ -20,6 +20,5 @@
         "elm/svg": "1.0.1 <= v < 2.0.0",
         "elm/time": "1.0.0 <= v < 2.0.0"
     },
-    "test-dependencies": {
-    }
+    "test-dependencies": {}
 }
