@@ -99,7 +99,7 @@ type Msg
     | ShowClockView
     | ShowCalendarView
     | ToggleTimeMirroring
-    | SyncTimePickers DateTime
+    | SyncTimePickers Clock.Time
     | RangeStartPickerMsg TimePicker.Msg
     | RangeEndPickerMsg TimePicker.Msg
     | MoveToToday

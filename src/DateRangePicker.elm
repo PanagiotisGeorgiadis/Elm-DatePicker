@@ -259,15 +259,41 @@ update msg (Model model) =
                             )
 
                         LT ->
-                            ( { model | range = BothSelected (Chosen start date) }
+                            let
+                                ( start_, end_ ) =
+                                    case model.timePickers of
+                                        TimePickers { startPicker, endPicker } ->
+                                            ( DateTime.setTime (TimePicker.getTime startPicker) start
+                                            , DateTime.setTime (TimePicker.getTime endPicker) date
+                                            )
+
+                                        NoTimePickers ->
+                                            ( start
+                                            , date
+                                            )
+                            in
+                            ( { model | range = BothSelected (Chosen start_ end_) }
                             , Internal.showClockView model
-                            , DateRangeSelected (Just { startDate = start, endDate = date })
+                            , DateRangeSelected (Just { startDate = start_, endDate = end_ })
                             )
 
                         GT ->
-                            ( { model | range = BothSelected (Chosen date start) }
+                            let
+                                ( start_, end_ ) =
+                                    case model.timePickers of
+                                        TimePickers { startPicker, endPicker } ->
+                                            ( DateTime.setTime (TimePicker.getTime startPicker) date
+                                            , DateTime.setTime (TimePicker.getTime endPicker) start
+                                            )
+
+                                        NoTimePickers ->
+                                            ( date
+                                            , start
+                                            )
+                            in
+                            ( { model | range = BothSelected (Chosen start_ end_) }
                             , Internal.showClockView model
-                            , DateRangeSelected (Just { startDate = date, endDate = start })
+                            , DateRangeSelected (Just { startDate = start_, endDate = end_ })
                             )
 
                 ( model_, cmd, extMsg ) =
@@ -356,52 +382,61 @@ update msg (Model model) =
             )
 
         ToggleTimeMirroring ->
-            case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
+            case model.timePickers of
+                TimePickers ({ startPicker, mirrorTimes } as pickers) ->
                     ( Model
                         { model
                             | timePickers =
-                                TimePickers { startPicker = startPicker, endPicker = endPicker, pickerTitles = pickerTitles, mirrorTimes = not mirrorTimes }
+                                TimePickers { pickers | mirrorTimes = not mirrorTimes }
                         }
-                    , fireAction (SyncTimePickers start)
+                    , fireAction (SyncTimePickers (TimePicker.getTime startPicker))
                     , None
                     )
 
-                _ ->
+                NoTimePickers ->
                     ( Model model
                     , Cmd.none
                     , None
                     )
 
-        SyncTimePickers dateTime ->
-            case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
-                    if mirrorTimes == True then
+        SyncTimePickers time ->
+            case model.timePickers of
+                TimePickers ({ startPicker, endPicker, mirrorTimes } as pickers) ->
+                    if mirrorTimes then
                         let
-                            time =
-                                DateTime.getTime dateTime
-
-                            timePickerUpdateFn =
+                            updateFn =
                                 TimePicker.updateDisplayTime time
 
-                            ( updatedStartDate, updatedEndDate ) =
-                                ( DateTime.setTime time start
-                                , DateTime.setTime time end
-                                )
+                            ( range, extMsg ) =
+                                case model.range of
+                                    BothSelected (Chosen start end) ->
+                                        let
+                                            ( updatedStartDate, updatedEndDate ) =
+                                                ( DateTime.setTime time start
+                                                , DateTime.setTime time end
+                                                )
+                                        in
+                                        ( BothSelected (Chosen updatedStartDate updatedEndDate)
+                                        , DateRangeSelected (Just { startDate = updatedStartDate, endDate = updatedEndDate })
+                                        )
+
+                                    _ ->
+                                        ( model.range
+                                        , None
+                                        )
                         in
                         ( Model
                             { model
-                                | range = BothSelected (Chosen updatedStartDate updatedEndDate)
+                                | range = range
                                 , timePickers =
                                     TimePickers
-                                        { startPicker = timePickerUpdateFn startPicker
-                                        , endPicker = timePickerUpdateFn endPicker
-                                        , pickerTitles = pickerTitles
-                                        , mirrorTimes = mirrorTimes
+                                        { pickers
+                                            | startPicker = updateFn startPicker
+                                            , endPicker = updateFn endPicker
                                         }
                             }
                         , Cmd.none
-                        , DateRangeSelected (Just { startDate = updatedStartDate, endDate = updatedEndDate })
+                        , extMsg
                         )
 
                     else
@@ -410,29 +445,35 @@ update msg (Model model) =
                         , None
                         )
 
-                _ ->
+                NoTimePickers ->
                     ( Model model
                     , Cmd.none
                     , None
                     )
 
         RangeStartPickerMsg subMsg ->
-            case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
+            case model.timePickers of
+                TimePickers ({ startPicker } as pickers) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg startPicker
 
                         ( range, cmd, externalMsg ) =
-                            case extMsg of
-                                TimePicker.UpdatedTime time ->
+                            case ( extMsg, model.range ) of
+                                ( TimePicker.UpdatedTime time, BothSelected (Chosen start end) ) ->
                                     let
                                         updatedStart =
                                             DateTime.setTime time start
                                     in
                                     ( BothSelected (Chosen updatedStart end)
-                                    , fireAction (SyncTimePickers updatedStart)
+                                    , fireAction (SyncTimePickers time)
                                     , DateRangeSelected (Just { startDate = updatedStart, endDate = end })
+                                    )
+
+                                ( TimePicker.UpdatedTime time, _ ) ->
+                                    ( model.range
+                                    , fireAction (SyncTimePickers time)
+                                    , None
                                     )
 
                                 _ ->
@@ -440,19 +481,11 @@ update msg (Model model) =
                                     , Cmd.none
                                     , None
                                     )
-
-                        timePickers =
-                            TimePickers
-                                { startPicker = subModel
-                                , endPicker = endPicker
-                                , pickerTitles = pickerTitles
-                                , mirrorTimes = mirrorTimes
-                                }
                     in
                     ( Model
                         { model
                             | range = range
-                            , timePickers = timePickers
+                            , timePickers = TimePickers { pickers | startPicker = subModel }
                         }
                     , Cmd.batch
                         [ Cmd.map RangeStartPickerMsg subCmd
@@ -461,29 +494,35 @@ update msg (Model model) =
                     , externalMsg
                     )
 
-                _ ->
+                NoTimePickers ->
                     ( Model model
                     , Cmd.none
                     , None
                     )
 
         RangeEndPickerMsg subMsg ->
-            case ( model.timePickers, model.range ) of
-                ( TimePickers { startPicker, endPicker, pickerTitles, mirrorTimes }, BothSelected (Chosen start end) ) ->
+            case model.timePickers of
+                TimePickers ({ endPicker } as pickers) ->
                     let
                         ( subModel, subCmd, extMsg ) =
                             TimePicker.update subMsg endPicker
 
                         ( range, cmd, externalMsg ) =
-                            case extMsg of
-                                TimePicker.UpdatedTime time ->
+                            case ( extMsg, model.range ) of
+                                ( TimePicker.UpdatedTime time, BothSelected (Chosen start end) ) ->
                                     let
                                         updatedEnd =
                                             DateTime.setTime time end
                                     in
                                     ( BothSelected (Chosen start updatedEnd)
-                                    , fireAction (SyncTimePickers updatedEnd)
+                                    , fireAction (SyncTimePickers time)
                                     , DateRangeSelected (Just { startDate = start, endDate = updatedEnd })
+                                    )
+
+                                ( TimePicker.UpdatedTime time, _ ) ->
+                                    ( model.range
+                                    , fireAction (SyncTimePickers time)
+                                    , None
                                     )
 
                                 _ ->
@@ -491,19 +530,11 @@ update msg (Model model) =
                                     , Cmd.none
                                     , None
                                     )
-
-                        timePickers =
-                            TimePickers
-                                { startPicker = startPicker
-                                , endPicker = subModel
-                                , pickerTitles = pickerTitles
-                                , mirrorTimes = mirrorTimes
-                                }
                     in
                     ( Model
                         { model
                             | range = range
-                            , timePickers = timePickers
+                            , timePickers = TimePickers { pickers | endPicker = subModel }
                         }
                     , Cmd.batch
                         [ Cmd.map RangeEndPickerMsg subCmd
@@ -512,7 +543,7 @@ update msg (Model model) =
                     , externalMsg
                     )
 
-                _ ->
+                NoTimePickers ->
                     ( Model model
                     , Cmd.none
                     , None
