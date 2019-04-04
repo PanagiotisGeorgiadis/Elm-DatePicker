@@ -1,6 +1,6 @@
 module DateRangePicker exposing
     ( Model, Msg, ExtMsg(..), SelectedDateRange
-    , resetVisualSelection
+    , resetVisualSelection, setDateRange
     , initialise, update, view
     )
 
@@ -15,7 +15,7 @@ example repository](https://github.com/PanagiotisGeorgiadis/).
 
 @docs Model, Msg, ExtMsg, SelectedDateRange
 
-@docs resetVisualSelection
+@docs resetVisualSelection, setDateRange
 
 @docs initialise, update, view
 
@@ -571,6 +571,61 @@ resetVisualSelection (Model model) =
 
         _ ->
             Model model
+
+
+{-| Sets the date range based on the dates that were provided.
+This can be useful in setting a **default value** or even **updating the date range** from
+an "external" action that took place in the "parent" component.
+
+**Note:**
+
+  - If you've provided a `DateLimit` on your `DateRangePicker` module you need to make
+    sure that the **start and end dates** that you are using here **are within these limitations.**
+
+  - If you are using a **dateRangeOffset** limitation on your `DateRangePicker`, then you'll
+    need to make sure that the **start and end dates** are at least **n** number of dates apart,
+    where _**n == minDateRangeLength**_.
+
+  - In the case of an **invalid start or end date** the `setDateRange` function
+    will return the `Model` without any changes.
+
+-}
+setDateRange : SelectedDateRange -> Model -> Model
+setDateRange { startDate, endDate } (Model model) =
+    let
+        isOutOfBounds date =
+            case model.dateLimit of
+                DateLimit { minDate, maxDate } ->
+                    DateTime.compareDates date minDate == LT || DateTime.compareDates date maxDate == GT
+
+                NoLimit ->
+                    False
+
+        isLessThanOffset =
+            case model.dateRangeOffset of
+                Offset { minDateRangeLength } ->
+                    let
+                        dateRange =
+                            DateTime.getDateRange startDate endDate Clock.midnight
+                    in
+                    List.length dateRange < minDateRangeLength
+
+                NoOffset ->
+                    False
+    in
+    if isOutOfBounds startDate || isOutOfBounds endDate || isLessThanOffset then
+        Model model
+
+    else
+        case DateTime.compareDates startDate endDate of
+            EQ ->
+                Model model
+
+            LT ->
+                Model (Internal.updateDateRangeOffset { model | range = BothSelected (Chosen startDate endDate) })
+
+            GT ->
+                Model (Internal.updateDateRangeOffset { model | range = BothSelected (Chosen endDate startDate) })
 
 
 {-| The `DateRangePicker` view function.
