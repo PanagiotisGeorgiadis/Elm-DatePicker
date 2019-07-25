@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [2.1.0] - 2019-07-25
+### Added
+- Added a helper function which **sets the selected date** on the `DatePicker` component.
+- Added a helper function which **resets the selected date** on the `DatePicker` component.
+
 ## [2.0.0] - 2019-04-04
 ### Added
 - Added a helper function which resets the visual selection of dates. This can be used by the
