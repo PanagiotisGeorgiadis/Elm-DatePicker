@@ -1,5 +1,6 @@
 module DatePicker exposing
     ( Model, Msg, ExtMsg(..)
+    , setSelectedDate, resetSelectedDate
     , initialise, update, view
     )
 
@@ -13,6 +14,8 @@ You can see a simple `DatePicker` application in
 example repository](https://github.com/PanagiotisGeorgiadis/).
 
 @docs Model, Msg, ExtMsg
+
+@docs setSelectedDate, resetSelectedDate
 
 @docs initialise, update, view
 
@@ -299,3 +302,17 @@ update msg (Model model) =
 view : Model -> Html Msg
 view =
     Internal.view
+
+
+{-| Sets the date that's marked as selected.
+-}
+setSelectedDate : DateTime -> Model -> Model
+setSelectedDate date (Model model) =
+    Model { model | selectedDate = Just date }
+
+
+{-| Removes the date selection.
+-}
+resetSelectedDate : Model -> Model
+resetSelectedDate (Model model) =
+    Model { model | selectedDate = Nothing }
