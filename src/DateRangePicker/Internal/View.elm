@@ -57,13 +57,13 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
                     ( compareYearMonth minDate primaryDate == LT
                     , compareYearMonth maxDate primaryDate == GT
                       -- If today is not in the DateRange we shouldn't render the Today button.
-                    , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
+                    , compareYearMonth primaryDate today /= EQ
                     )
 
                 NoLimit ->
                     ( True
                     , True
-                    , True
+                    , compareYearMonth primaryDate today /= EQ
                     )
 
         pickerConfig =
@@ -96,13 +96,13 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, range, timePickers }
                     ( compareYearMonth minDate primaryDate == LT
                     , compareYearMonth maxDate nextDate == GT
                       -- If today is not in the DateRange we shouldn't render the Today button.
-                    , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
+                    , compareYearMonth primaryDate today /= EQ
                     )
 
                 NoLimit ->
                     ( True
                     , True
-                    , True
+                    , compareYearMonth primaryDate today /= EQ
                     )
 
         pickerConfig =
