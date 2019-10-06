@@ -5,14 +5,14 @@
   "version": "2.0.0",
   "description": "Date Picker module written in Elm 0.19.",
   "keywords": [
-      "Elm",
-      "DatePicker",
-      "DateTime",
-      "DateTimePicker",
-      "Posix",
-      "elm/time",
-      "elm/datetime",
-      "elm/datepicker"
+    "Elm",
+    "DatePicker",
+    "DateTime",
+    "DateTimePicker",
+    "Posix",
+    "elm/time",
+    "elm/datetime",
+    "elm/datepicker"
   ],
   "scripts": {
     "elm-bump": "elm bump",
@@ -20,7 +20,7 @@
     "elm-doc-preview": "elm-doc-preview"
   },
   "dependencies": {
-    "elm": "^0.19.0-bugfix2"
+    "elm": "^0.19.0-no-deps"
   },
   "devDependencies": {
     "elm-doc-preview": "^1.0.7"
