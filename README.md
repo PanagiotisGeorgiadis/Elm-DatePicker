@@ -58,17 +58,17 @@ or you can clone the repo and modify the styles as you wish.
 [elm-datetime-url]: https://package.elm-lang.org/packages/PanagiotisGeorgiadis/elm-datetime/latest/
 [datetime-type-url]: https://package.elm-lang.org/packages/PanagiotisGeorgiadis/elm-datetime/latest/DateTime#DateTime
 
-[single-date-picker-example]: https://ellie-app.com/new
-[double-date-picker-example]: https://ellie-app.com/new
+[single-date-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Single/DatePicker.elm
+[double-date-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Double/DatePicker.elm
 
-[single-datetime-picker-example]: https://ellie-app.com/new
-[double-datetime-picker-example]: https://ellie-app.com/new
+[single-datetime-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Single/DateTimePicker.elm
+[double-datetime-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Double/DateTimePicker.elm
 
-[single-date-range-picker-example]: https://ellie-app.com/new
-[double-date-range-picker-example]: https://ellie-app.com/new
+[single-date-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Single/DateRangePicker.elm
+[double-date-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Double/DateRangePicker.elm
 
-[single-datetime-range-picker-example]: https://ellie-app.com/new
-[double-datetime-range-picker-example]: https://ellie-app.com/new
+[single-datetime-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Single/DateTimeRangePicker.elm
+[double-datetime-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Double/DateTimeRangePicker.elm
 
 [PackageVersion]: https://reiner-dolp.github.io/elm-badges/PanagiotisGeorgiadis/elm-datepicker/version.svg
 [ElmVersion]: https://reiner-dolp.github.io/elm-badges/PanagiotisGeorgiadis/elm-datepicker/elm-version.svg
