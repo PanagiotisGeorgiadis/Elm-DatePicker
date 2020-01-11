@@ -1,6 +1,6 @@
 module DateRangePicker exposing
     ( Model, Msg, ExtMsg(..), SelectedDateRange
-    , resetVisualSelection, setDateRange
+    , resetVisualSelection, resetSelectedDateRange, setDateRange
     , initialise, update, view
     )
 
@@ -15,7 +15,7 @@ example repository](https://github.com/PanagiotisGeorgiadis/).
 
 @docs Model, Msg, ExtMsg, SelectedDateRange
 
-@docs resetVisualSelection, setDateRange
+@docs resetVisualSelection, resetSelectedDateRange, setDateRange
 
 @docs initialise, update, view
 
@@ -571,6 +571,13 @@ resetVisualSelection (Model model) =
 
         _ ->
             Model model
+
+
+{-| Helper function that resets the `SelectedDateRange`.
+-}
+resetSelectedDateRange : Model -> Model
+resetSelectedDateRange (Model model) =
+    Model { model | range = NoneSelected }
 
 
 {-| Sets the date range based on the dates that were provided.

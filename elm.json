@@ -3,7 +3,7 @@
     "name": "PanagiotisGeorgiadis/elm-datepicker",
     "summary": "A date time picker built on top of elm-datetime package.",
     "license": "BSD-3-Clause",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "exposed-modules": [
         "DatePicker",
         "DatePicker.Types",
