@@ -22,7 +22,11 @@ will be of [DateTime][datetime-type-url] type which is implemented in the
 elm install PanagiotisGeorgiadis/elm-datepicker
 ```
 
-## Usage
+## Examples
+
+For screenshots of demo implementations head over to the [screenshots][screenshots-folder] folder
+
+## Example Repository
 
 For usage examples you can check out the following links:
 
@@ -69,6 +73,8 @@ or you can clone the repo and modify the styles as you wish.
 
 [single-datetime-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Single/DateTimeRangePicker.elm
 [double-datetime-range-picker-example]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker-examples/blob/master/src/Components/Double/DateTimeRangePicker.elm
+
+[screenshots-folder]: https://github.com/PanagiotisGeorgiadis/Elm-DatePicker/tree/master/screenshots
 
 [PackageVersion]: https://reiner-dolp.github.io/elm-badges/PanagiotisGeorgiadis/elm-datepicker/version.svg
 [ElmVersion]: https://reiner-dolp.github.io/elm-badges/PanagiotisGeorgiadis/elm-datepicker/elm-version.svg

@@ -5,6 +5,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [2.1.0] - 2020-01-16
 - Renamed the `assets` folder to `screenshots`.
+- Added a link to the `screenshots` folder on the `README` file.
 
 ## [2.1.0] - 2019-07-25
 ### Added
