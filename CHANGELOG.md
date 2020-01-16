@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [2.1.0] - 2020-01-16
+- Renamed the `assets` folder to `screenshots`.
+
 ## [2.1.0] - 2019-07-25
 ### Added
 - Added a helper function which **sets the selected date** on the `DatePicker` component.
