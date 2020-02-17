@@ -194,7 +194,7 @@ doubleClockView (Model { range, timePickers, viewType }) =
                     , Html.map RangeStartPickerMsg (TimePicker.view startPicker)
                     , div [ class "checkbox", onClick ToggleTimeMirroring ]
                         [ Icons.checkbox (Icons.Size "16" "16") mirrorTimes
-                        , span [ class "text" ] [ text ("Same as " ++ String.toLower pickerTitles.end) ]
+                        , span [ class "text" ] [ text ("Same as " ++ String.toLower pickerTitles.start) ]
                         ]
                     ]
                 , div [ class "time-picker-container no-select" ]
