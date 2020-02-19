@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [2.2.1] - 2020-02-19
+- Fix "same as ..." Checkbox text for Double DateTime Picker.
+
 ## [2.1.0] - 2020-01-16
 - Renamed the `assets` folder to `screenshots`.
 - Added a link to the `screenshots` folder on the `README` file.
