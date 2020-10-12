@@ -97,16 +97,32 @@ update msg (Model model) =
                 updatedTime =
                     case timePart of
                         Hours ->
-                            Maybe.andThen (\h -> Clock.setHours h model.time) (String.toInt value)
+                            if value == "" then
+                                Clock.setHours 0 model.time
+
+                            else
+                                Maybe.andThen (\h -> Clock.setHours h model.time) (String.toInt value)
 
                         Minutes ->
-                            Maybe.andThen (\m -> Clock.setMinutes m model.time) (String.toInt value)
+                            if value == "" then
+                                Clock.setMinutes 0 model.time
+
+                            else
+                                Maybe.andThen (\m -> Clock.setMinutes m model.time) (String.toInt value)
 
                         Seconds ->
-                            Maybe.andThen (\s -> Clock.setSeconds s model.time) (String.toInt value)
+                            if value == "" then
+                                Clock.setSeconds 0 model.time
+
+                            else
+                                Maybe.andThen (\s -> Clock.setSeconds s model.time) (String.toInt value)
 
                         Milliseconds ->
-                            Maybe.andThen (\m -> Clock.setMilliseconds m model.time) (String.toInt value)
+                            if value == "" then
+                                Clock.setMilliseconds 0 model.time
+
+                            else
+                                Maybe.andThen (\m -> Clock.setMilliseconds m model.time) (String.toInt value)
             in
             case updatedTime of
                 Just time ->
