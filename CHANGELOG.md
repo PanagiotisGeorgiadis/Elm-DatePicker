@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [2.2.2] - 2020-10-12
+- Bugfix on `TimePicker` blur event. They now always default to `00` if left empty.
+
 ## [2.2.1] - 2020-02-19
 - Fix "same as ..." Checkbox text for Double DateTime Picker.
 
