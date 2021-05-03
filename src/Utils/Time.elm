@@ -5,7 +5,7 @@ module Utils.Time exposing
     )
 
 import DateTime exposing (DateTime)
-import Time exposing (Month(..), Posix, Weekday(..), Zone)
+import Time exposing (Month(..), Weekday(..))
 
 
 {-| Returns a formatted date from a given DateTime.

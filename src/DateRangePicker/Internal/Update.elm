@@ -12,7 +12,7 @@ module DateRangePicker.Internal.Update exposing
     )
 
 import Clock
-import DateRangePicker.Types exposing (DateLimit(..), TimePickerConfig)
+import DateRangePicker.Types exposing (DateLimit(..))
 import DateTime exposing (DateTime)
 import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)

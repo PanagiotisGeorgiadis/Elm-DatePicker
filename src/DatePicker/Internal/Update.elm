@@ -5,7 +5,7 @@ module DatePicker.Internal.Update exposing
     , updatePrimaryDate
     )
 
-import DatePicker.Types exposing (DateLimit, TimePickerConfig, ViewType)
+import DatePicker.Types exposing (DateLimit, ViewType)
 import DateTime exposing (DateTime)
 import TimePicker.Update as TimePicker
 

@@ -33,7 +33,7 @@ import Utils.Time as Time
 {-| The DatePicker view.
 -}
 view : Model -> Html Msg
-view ((Model { viewType, selectedDate }) as model) =
+view ((Model { viewType }) as model) =
     div [ class "date-time-picker" ]
         [ case viewType of
             Single ->
@@ -210,10 +210,8 @@ dateHtml ((Model { today, selectedDate }) as model) date =
         isEqualToDate date_ =
             DateTime.compareDates date date_ == EQ
 
-        ( isToday, isPastDate ) =
-            ( isEqualToDate today
-            , DateTime.compareDates today date == GT
-            )
+        isToday =
+            isEqualToDate today
 
         isSelected =
             case selectedDate of
@@ -259,7 +257,7 @@ dateHtml ((Model { today, selectedDate }) as model) date =
 
 -}
 checkIfDisabled : Model -> DateTime -> Bool
-checkIfDisabled (Model { today, dateLimit }) date =
+checkIfDisabled (Model { dateLimit }) date =
     case dateLimit of
         NoLimit ->
             False

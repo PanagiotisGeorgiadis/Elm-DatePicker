@@ -303,10 +303,10 @@ update msg (Model model) =
                         StartDateSelected start ->
                             updateModel start
 
-                        BothSelected (Visually start end) ->
+                        BothSelected (Visually start _) ->
                             updateModel start
 
-                        BothSelected (Chosen start end) ->
+                        BothSelected (Chosen _ _) ->
                             ( { model | range = StartDateSelected date }
                             , Cmd.none
                             , DateRangeSelected Nothing
@@ -563,10 +563,10 @@ this function will do nothing.
 resetVisualSelection : Model -> Model
 resetVisualSelection (Model model) =
     case model.range of
-        BothSelected (Visually start _) ->
+        BothSelected (Visually _ _) ->
             Model (Internal.updateDateRangeOffset { model | range = NoneSelected })
 
-        StartDateSelected start ->
+        StartDateSelected _ ->
             Model (Internal.updateDateRangeOffset { model | range = NoneSelected })
 
         _ ->

@@ -1,6 +1,5 @@
 module DateRangePicker.Internal.View exposing (view)
 
-import Clock
 import Common exposing (emptyDateHtml, getFirstDayOfTheMonth, totalCalendarCells, weekdaysHtml)
 import DateRangePicker.Internal.Update as Internal
     exposing
@@ -28,7 +27,7 @@ import Utils.Time as Time
 {-| The DateRangePicker view.
 -}
 view : Model -> Html Msg
-view ((Model { viewType, range }) as model) =
+view ((Model { viewType }) as model) =
     div [ class "date-range-picker" ]
         (case viewType of
             SingleCalendar ->
@@ -370,16 +369,13 @@ dateHtml ((Model { today, range }) as model) date =
 
 -}
 checkIfDisabled : Model -> DateTime -> Bool
-checkIfDisabled (Model { today, dateLimit }) date =
+checkIfDisabled (Model { dateLimit }) date =
     let
         isGreaterThanDate date_ =
             DateTime.compareDates date date_ == GT
 
         isLesserThanDate date_ =
             DateTime.compareDates date date_ == LT
-
-        isEqualToDate date_ =
-            DateTime.compareDates date date_ == EQ
     in
     case dateLimit of
         NoLimit ->

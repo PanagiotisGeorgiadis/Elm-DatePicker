@@ -8,7 +8,7 @@ module Icons exposing
 
 import Html exposing (Html)
 import Svg exposing (Svg, path, polygon, svg)
-import Svg.Attributes exposing (class, d, height, points, transform, viewBox, width)
+import Svg.Attributes exposing (d, height, points, transform, viewBox, width)
 import Utils.Html.Attributes as Attributes
 
 

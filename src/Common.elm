@@ -5,11 +5,9 @@ module Common exposing
     , weekdaysHtml
     )
 
-import Clock
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
-import Html.Attributes exposing (class, classList)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (class)
 
 
 
