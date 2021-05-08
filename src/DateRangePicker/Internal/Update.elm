@@ -12,6 +12,7 @@ module DateRangePicker.Internal.Update exposing
     )
 
 import Clock
+import DatePicker.I18n exposing (I18n)
 import DateRangePicker.Types exposing (DateLimit(..))
 import DateTime exposing (DateTime)
 import TimePicker.Update as TimePicker
@@ -85,7 +86,12 @@ type SelectionType
 -}
 type TimePickerState
     = NoTimePickers
-    | TimePickers { startPicker : TimePicker.Model, endPicker : TimePicker.Model, pickerTitles : { start : String, end : String }, mirrorTimes : Bool }
+    | TimePickers
+        { startPicker : TimePicker.Model
+        , endPicker : TimePicker.Model
+        , mirrorTimes : Bool
+        , i18n : DateRangePicker.Types.I18n
+        }
 
 
 {-| The Internal messages that are being used by the DateRangePicker component.
@@ -119,6 +125,7 @@ type alias InternalModel =
     , dateLimit : DateLimit
     , dateRangeOffset : DateRangeOffset
     , timePickers : TimePickerState
+    , i18n : I18n
     }
 
 

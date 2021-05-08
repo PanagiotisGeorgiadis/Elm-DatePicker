@@ -22,6 +22,8 @@ example repository](https://github.com/PanagiotisGeorgiadis/).
 -}
 
 import Clock
+import DatePicker.I18n exposing (I18n)
+import DatePicker.Internal.I18n exposing (defaultI18n)
 import DateRangePicker.Internal.Update as Internal
     exposing
         ( DateRange(..)
@@ -168,15 +170,19 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
                 Just
                     { pickerType = TimePicker.HH_MM { hoursStep = 1, minutesStep = 5 }
                     , defaultTime = Clock.midnight
-                    , pickerTitles = { start = "Start Date Time", end = "End Date Time" }
                     , mirrorTimes = True
+                    , i18n =
+                        { start = "Arrival time"
+                        , end = "Departure time"
+                        , checkboxText = "Same as arrival time"
+                        }
                     }
         in
-        DateRangePicker.initialise DateRangePicker.Single calendarConfig timePickerConfig
+        DateRangePicker.initialise DateRangePicker.Single calendarConfig timePickerConfig Nothing
 
 -}
-initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
-initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) timePickerConfig =
+initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Maybe I18n -> Model
+initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) timePickerConfig i18n =
     let
         viewType_ =
             case viewType of
@@ -192,17 +198,17 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
                     validatePrimaryDate calendarConfig
             in
             case timePickerConfig of
-                Just { pickerType, defaultTime, pickerTitles, mirrorTimes } ->
+                Just t ->
                     let
                         timePicker =
-                            TimePicker.initialise { time = defaultTime, pickerType = pickerType }
+                            TimePicker.initialise { time = t.defaultTime, pickerType = t.pickerType }
                     in
-                    ( DateTime.setTime defaultTime dateTime
+                    ( DateTime.setTime t.defaultTime dateTime
                     , TimePickers
                         { startPicker = timePicker
                         , endPicker = timePicker
-                        , pickerTitles = pickerTitles
-                        , mirrorTimes = mirrorTimes
+                        , mirrorTimes = t.mirrorTimes
+                        , i18n = t.i18n
                         }
                     )
 
@@ -227,6 +233,13 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
         , dateLimit = dateLimit
         , dateRangeOffset = dateRangeOffset_
         , timePickers = timePickers
+        , i18n =
+            case i18n of
+                Just i18n_ ->
+                    i18n_
+
+                Nothing ->
+                    defaultI18n
         }
 
 
