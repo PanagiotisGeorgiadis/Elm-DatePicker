@@ -17,12 +17,14 @@
   "scripts": {
     "elm-bump": "elm bump",
     "elm-publish": "elm publish",
-    "elm-doc-preview": "elm-doc-preview"
+    "elm-doc-preview": "elm-doc-preview",
+    "format": "elm-format src/"
   },
   "dependencies": {
     "elm": "^0.19.0-no-deps"
   },
   "devDependencies": {
-    "elm-doc-preview": "^1.0.7"
+    "elm-doc-preview": "^1.0.7",
+    "elm-format": "^0.8.5"
   }
 }

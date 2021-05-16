@@ -40,7 +40,6 @@ type ViewType
   - **`primaryDate`:** Represents the default `month - year` calendar screen.
       - If the **primaryDate** is set to `Nothing` the `DateRangePicker` will
         set the **primaryDate** equal to the **today** property.
-
       - If the consumer has provided both a **primaryDate** and a **dateLimit**
         but the **primaryDate** is out of bounds, the `DateRangePicker` will set
         the **primaryDate** equal to the minium date of the constrains.
