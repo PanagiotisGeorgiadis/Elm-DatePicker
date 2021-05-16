@@ -3,6 +3,7 @@ module MonthPicker exposing
     , singleMonthPickerView
     )
 
+import DatePicker.I18n exposing (I18n, TextMode(..))
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class)
@@ -16,11 +17,12 @@ type alias MonthPickerConfig msg =
     , previousButtonHandler : Maybe msg
     , nextButtonHandler : Maybe msg
     , todayButtonHandler : Maybe msg
+    , i18n : I18n
     }
 
 
 singleMonthPickerView : MonthPickerConfig msg -> Html msg
-singleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayButtonHandler } =
+singleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayButtonHandler, i18n } =
     let
         previousButtonHtml =
             case previousButtonHandler of
@@ -40,14 +42,14 @@ singleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayBut
     in
     div [ class "single-month-picker" ]
         [ previousButtonHtml
-        , span [ class "month-name" ] [ text (monthPickerText date) ]
+        , span [ class "month-name" ] [ text (monthPickerText i18n date) ]
         , nextButtonHtml
-        , todayButtonHtml todayButtonHandler
+        , todayButtonHtml i18n.todayButtonText todayButtonHandler
         ]
 
 
 doubleMonthPickerView : MonthPickerConfig msg -> Html msg
-doubleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayButtonHandler } =
+doubleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayButtonHandler, i18n } =
     let
         nextMonthDate =
             DateTime.incrementMonth date
@@ -71,32 +73,32 @@ doubleMonthPickerView { date, previousButtonHandler, nextButtonHandler, todayBut
     div [ class "double-month-picker" ]
         [ div [ class "previous-month" ]
             [ previousButtonHtml
-            , span [ class "month-name" ] [ text (monthPickerText date) ]
+            , span [ class "month-name" ] [ text (monthPickerText i18n date) ]
             ]
         , div [ class "next-month" ]
-            [ span [ class "month-name" ] [ text (monthPickerText nextMonthDate) ]
+            [ span [ class "month-name" ] [ text (monthPickerText i18n nextMonthDate) ]
             , nextButtonHtml
             ]
-        , todayButtonHtml todayButtonHandler
+        , todayButtonHtml i18n.todayButtonText todayButtonHandler
         ]
 
 
-monthPickerText : DateTime -> String
-monthPickerText date =
+monthPickerText : I18n -> DateTime -> String
+monthPickerText i18n date =
     let
         ( month, year ) =
             ( DateTime.getMonth date
             , DateTime.getYear date
             )
     in
-    Time.monthToString month ++ " " ++ String.fromInt year
+    i18n.monthToString Full month ++ " " ++ String.fromInt year
 
 
-todayButtonHtml : Maybe msg -> Html msg
-todayButtonHtml msg =
+todayButtonHtml : String -> Maybe msg -> Html msg
+todayButtonHtml todayButtonText msg =
     case msg of
         Just m ->
-            div [ class "today-button", onClick m ] [ text "Today" ]
+            div [ class "today-button", onClick m ] [ text todayButtonText ]
 
         Nothing ->
             text ""

@@ -48,7 +48,7 @@ view ((Model { viewType }) as model) =
 {-| A single calendar view.
 -}
 singleCalendarView : Model -> Html Msg
-singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
+singleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
     let
         -- Decides the state of the previous & next month picker buttons.
         ( isPreviousButtonActive, isNextButtonActive, isTodayButtonActive ) =
@@ -71,6 +71,7 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
             , todayButtonHandler = getTodayButtonAction isTodayButtonActive
+            , i18n = i18n
             }
     in
     div [ class "single-calendar-view no-select" ]
@@ -82,7 +83,7 @@ singleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
 {-| A double calendar view.
 -}
 doubleCalendarView : Model -> Html Msg
-doubleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
+doubleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
     let
         nextDate =
             DateTime.incrementMonth primaryDate
@@ -111,6 +112,7 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit }) as model) =
             , nextButtonHandler = getNextButtonAction isNextButtonActive
             , previousButtonHandler = getPreviousButtonAction isPreviousButtonActive
             , todayButtonHandler = getTodayButtonAction isTodayButtonActive
+            , i18n = i18n
             }
     in
     div [ class "double-calendar-view no-select" ]
@@ -133,7 +135,7 @@ singleClockView (Model model) =
                             let
                                 dateTimeStr =
                                     String.join " "
-                                        [ Time.toHumanReadableDate date
+                                        [ Time.toHumanReadableDate model.i18n date
                                         , TimePicker.toHumanReadableTime timePicker
                                         ]
                             in
@@ -167,7 +169,7 @@ singleClockView (Model model) =
 {-| A Calendar view fragment. Contains all the calendar rendering logic.
 -}
 calendarView : Model -> Html Msg
-calendarView ((Model { primaryDate }) as model) =
+calendarView ((Model { primaryDate, i18n }) as model) =
     let
         monthDates =
             DateTime.getDatesInMonth primaryDate
@@ -193,7 +195,7 @@ calendarView ((Model { primaryDate }) as model) =
             List.repeat followingDates emptyDateHtml
     in
     div [ class "calendar" ]
-        [ weekdaysHtml
+        [ weekdaysHtml i18n
         , div [ class "calendar_" ]
             (precedingDatesHtml ++ datesHtml ++ followingDatesHtml)
         ]
@@ -202,10 +204,10 @@ calendarView ((Model { primaryDate }) as model) =
 {-| Date view fragment. Contains all the logic for the `selected`, `disabled`, `today` dates.
 -}
 dateHtml : Model -> DateTime -> Html Msg
-dateHtml ((Model { today, selectedDate }) as model) date =
+dateHtml ((Model { today, selectedDate, i18n }) as model) date =
     let
         fullDateString =
-            Time.toHumanReadableDate date
+            Time.toHumanReadableDate i18n date
 
         isEqualToDate date_ =
             DateTime.compareDates date date_ == EQ

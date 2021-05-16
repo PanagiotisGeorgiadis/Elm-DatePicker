@@ -5,25 +5,27 @@ module Common exposing
     , weekdaysHtml
     )
 
+import DatePicker.I18n exposing (I18n, TextMode(..))
 import DateTime exposing (DateTime)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class)
+import Time exposing (Weekday(..))
 
 
 
 -- Common View Fragments
 
 
-weekdaysHtml : Html msg
-weekdaysHtml =
+weekdaysHtml : I18n -> Html msg
+weekdaysHtml i18n =
     div [ class "weekdays" ]
-        [ span [] [ text "Su" ]
-        , span [] [ text "Mo" ]
-        , span [] [ text "Tu" ]
-        , span [] [ text "We" ]
-        , span [] [ text "Th" ]
-        , span [] [ text "Fr" ]
-        , span [] [ text "Sa" ]
+        [ span [] [ text (i18n.weekdayToString Condensed Sun) ]
+        , span [] [ text (i18n.weekdayToString Condensed Mon) ]
+        , span [] [ text (i18n.weekdayToString Condensed Tue) ]
+        , span [] [ text (i18n.weekdayToString Condensed Wed) ]
+        , span [] [ text (i18n.weekdayToString Condensed Thu) ]
+        , span [] [ text (i18n.weekdayToString Condensed Fri) ]
+        , span [] [ text (i18n.weekdayToString Condensed Sat) ]
         ]
 
 

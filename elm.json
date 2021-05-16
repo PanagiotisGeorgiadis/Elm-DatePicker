@@ -6,6 +6,7 @@
     "version": "2.2.2",
     "exposed-modules": [
         "DatePicker",
+        "DatePicker.I18n",
         "DatePicker.Types",
         "DateRangePicker",
         "DateRangePicker.Types",

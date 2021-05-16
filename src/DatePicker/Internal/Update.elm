@@ -5,6 +5,7 @@ module DatePicker.Internal.Update exposing
     , updatePrimaryDate
     )
 
+import DatePicker.I18n exposing (I18n)
 import DatePicker.Types exposing (DateLimit, ViewType)
 import DateTime exposing (DateTime)
 import TimePicker.Update as TimePicker
@@ -20,6 +21,7 @@ type Model
         , dateLimit : DateLimit
         , selectedDate : Maybe DateTime
         , timePicker : TimePickerState
+        , i18n : I18n
         }
 
 

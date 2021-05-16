@@ -4,6 +4,7 @@ module Utils.Time exposing
     , toHumanReadableDate
     )
 
+import DatePicker.I18n exposing (I18n, TextMode(..))
 import DateTime exposing (DateTime)
 import Time exposing (Month(..), Weekday(..))
 
@@ -14,12 +15,12 @@ import Time exposing (Month(..), Weekday(..))
     toHumanReadableDate dateTime -- "Fri 27 Sep 2019" : String
 
 -}
-toHumanReadableDate : DateTime -> String
-toHumanReadableDate dateTime =
+toHumanReadableDate : I18n -> DateTime -> String
+toHumanReadableDate i18n dateTime =
     String.join " "
-        [ weekdayToStringCondensed (DateTime.getWeekday dateTime)
+        [ i18n.weekdayToString Condensed (DateTime.getWeekday dateTime)
         , String.fromInt (DateTime.getDay dateTime)
-        , monthToStringCondensed (DateTime.getMonth dateTime)
+        , i18n.monthToString Condensed (DateTime.getMonth dateTime)
         , String.fromInt (DateTime.getYear dateTime)
         ]
 

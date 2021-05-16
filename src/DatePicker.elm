@@ -22,6 +22,8 @@ example repository](https://github.com/PanagiotisGeorgiadis/).
 -}
 
 import Clock
+import DatePicker.I18n exposing (I18n)
+import DatePicker.Internal.I18n exposing (defaultI18n)
 import DatePicker.Internal.Update as Internal
     exposing
         ( Model(..)
@@ -158,11 +160,11 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
                     , pickerTitle = "Date Time"
                     }
         in
-        DatePicker.initialise DatePicker.Single calendarConfig timePickerConfig
+        DatePicker.initialise DatePicker.Single calendarConfig timePickerConfig Nothing
 
 -}
-initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Model
-initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
+initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Maybe I18n -> Model
+initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig i18n =
     let
         ( primaryDate_, timePicker_ ) =
             let
@@ -190,6 +192,13 @@ initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig =
         , selectedDate = Nothing
         , dateLimit = dateLimit
         , timePicker = timePicker_
+        , i18n =
+            case i18n of
+                Just i18n_ ->
+                    i18n_
+
+                Nothing ->
+                    defaultI18n
         }
 
 

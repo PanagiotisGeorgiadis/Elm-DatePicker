@@ -2,6 +2,7 @@ module DateRangePicker.Types exposing
     ( ViewType(..)
     , CalendarConfig, DateLimit(..)
     , TimePickerConfig
+    , I18n
     )
 
 {-| Contains types that are being used by the _**parent application**_ in order to initialise
@@ -15,6 +16,8 @@ a `DateRangePicker`.
 @docs CalendarConfig, DateLimit
 
 @docs TimePickerConfig
+
+@docs I18n
 
 -}
 
@@ -77,23 +80,37 @@ type DateLimit
     | NoLimit
 
 
+{-| The TimePicker `I18n` config
+
+  - **start:** Refers to the start time title
+  - **end:** Refers to the end time title
+  - **checkboxText:** Refers to the `mirrorTimes` checkbox text
+
+-}
+type alias I18n =
+    { start : String
+    , end : String
+    , checkboxText : String
+    }
+
+
 {-| Used in order to configure the `TimePicker` part of the `DateRangePicker`.
 
   - **`pickerType`:** Defines the type of the picker as described in the [TimePicker module](TimePicker.Types#PickerType).
 
   - **`defaultTime`:** Defines the defaultTime that will be used as the default value of the `TimePicker`.
 
-  - **`pickerTitles`:** Defines the `TimePicker` titles.
-
   - **`mirrorTimes`:** Dictates if both the `TimePickers` should be in sync.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     **Note:** The synchronisation takes place using the
     [onBlur](https://package.elm-lang.org/packages/elm/html/latest/Html-Events#onBlur)
     event of the input.
 
+  - **i18n:** The TimePicker `I18n` config
+
 -}
 type alias TimePickerConfig =
     { pickerType : TimePicker.PickerType
     , defaultTime : Clock.Time
-    , pickerTitles : { start : String, end : String }
     , mirrorTimes : Bool
+    , i18n : I18n
     }
