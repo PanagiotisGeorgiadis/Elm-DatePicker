@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [3.0.0] - 2021-05-16
+- Add `i18n` support.
+
 ## [2.2.2] - 2020-10-12
 - Bugfix on `TimePicker` blur event. They now always default to `00` if left empty.
 
