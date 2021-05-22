@@ -4,6 +4,7 @@ module Utils.Time exposing
     , toHumanReadableDate
     )
 
+import Common
 import DatePicker.I18n exposing (I18n, TextMode(..))
 import DateTime exposing (DateTime)
 import Time exposing (Month(..), Weekday(..))
@@ -114,29 +115,40 @@ monthToStringCondensed =
     String.left 3 << monthToString
 
 
-{-| Gets the precedingWeekdays based on the assumption that the week starts
-on Sunday. May need to rething a better approach for that.
+type PrecedingWeekdaysMatch
+    = Searching Int
+    | Matched Int
+
+
+{-| Gets the precedingWeekdays based on the `startingWeekday` of the Calendar config
+and the `firstWeekday` of the current month.
 -}
-precedingWeekdays : Weekday -> Int
-precedingWeekdays weekday =
-    case weekday of
-        Sun ->
+precedingWeekdays : DateTime -> Weekday -> Int
+precedingWeekdays firstDayOfTheMonth startingWeekday =
+    let
+        firstWeekdayOfTheMonth =
+            DateTime.getWeekday firstDayOfTheMonth
+
+        precedingWeekdaysMatch =
+            List.foldl
+                (\weekday res ->
+                    case res of
+                        Matched c ->
+                            Matched c
+
+                        Searching c ->
+                            if weekday == firstWeekdayOfTheMonth then
+                                Matched c
+
+                            else
+                                Searching (c + 1)
+                )
+                (Searching 0)
+                (Common.getSortedWeekdays startingWeekday)
+    in
+    case precedingWeekdaysMatch of
+        Searching _ ->
             0
 
-        Mon ->
-            1
-
-        Tue ->
-            2
-
-        Wed ->
-            3
-
-        Thu ->
-            4
-
-        Fri ->
-            5
-
-        Sat ->
-            6
+        Matched c ->
+            c

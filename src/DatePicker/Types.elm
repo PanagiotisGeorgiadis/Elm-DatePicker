@@ -20,6 +20,7 @@ a `DatePicker`.
 
 import Clock
 import DateTime exposing (DateTime)
+import Time exposing (Weekday)
 import TimePicker.Types as TimePicker
 
 
@@ -33,6 +34,8 @@ type ViewType
 {-| Used in order to configure the `Calendar` part of the `DatePicker`.
 
   - **`today`:** Represents today as `DateTime` provided by the **parent application**.
+
+  - **`startingWeekday`:** The starting weekday of the calendar.
 
   - **`primaryDate`:** Represents the default `month - year` calendar screen.
       - If the **primaryDate** is set to `Nothing` the `DatePicker` will
@@ -49,6 +52,7 @@ type ViewType
 -}
 type alias CalendarConfig =
     { today : DateTime
+    , startingWeekday : Weekday
     , primaryDate : Maybe DateTime
     , dateLimit : DateLimit
     }

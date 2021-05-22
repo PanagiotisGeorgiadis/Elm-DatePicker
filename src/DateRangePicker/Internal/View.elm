@@ -219,7 +219,7 @@ doubleClockView (Model { range, timePickers, viewType, i18n }) =
 {-| A Calendar view fragment. Contains all the calendar rendering logic.
 -}
 calendarView : Model -> Html Msg
-calendarView ((Model { primaryDate, i18n }) as model) =
+calendarView ((Model { primaryDate, i18n, startingWeekday }) as model) =
     let
         monthDates =
             DateTime.getDatesInMonth primaryDate
@@ -230,7 +230,7 @@ calendarView ((Model { primaryDate, i18n }) as model) =
         precedingWeekdaysCount =
             case getFirstDayOfTheMonth primaryDate of
                 Just firstDayOfTheMonth ->
-                    Time.precedingWeekdays (DateTime.getWeekday firstDayOfTheMonth)
+                    Time.precedingWeekdays firstDayOfTheMonth startingWeekday
 
                 Nothing ->
                     0
@@ -245,7 +245,7 @@ calendarView ((Model { primaryDate, i18n }) as model) =
             List.repeat followingDates emptyDateHtml
     in
     div [ class "calendar" ]
-        [ weekdaysHtml i18n
+        [ weekdaysHtml startingWeekday i18n
         , div [ class "calendar_" ]
             (precedingDatesHtml ++ datesHtml ++ followingDatesHtml)
         ]

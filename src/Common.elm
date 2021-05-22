@@ -1,6 +1,7 @@
 module Common exposing
     ( emptyDateHtml
     , getFirstDayOfTheMonth
+    , getSortedWeekdays
     , totalCalendarCells
     , weekdaysHtml
     )
@@ -16,17 +17,37 @@ import Time exposing (Weekday(..))
 -- Common View Fragments
 
 
-weekdaysHtml : I18n -> Html msg
-weekdaysHtml i18n =
-    div [ class "weekdays" ]
-        [ span [] [ text (i18n.weekdayToString Condensed Sun) ]
-        , span [] [ text (i18n.weekdayToString Condensed Mon) ]
-        , span [] [ text (i18n.weekdayToString Condensed Tue) ]
-        , span [] [ text (i18n.weekdayToString Condensed Wed) ]
-        , span [] [ text (i18n.weekdayToString Condensed Thu) ]
-        , span [] [ text (i18n.weekdayToString Condensed Fri) ]
-        , span [] [ text (i18n.weekdayToString Condensed Sat) ]
-        ]
+getSortedWeekdays : Weekday -> List Weekday
+getSortedWeekdays startingWeekday =
+    case startingWeekday of
+        Sun ->
+            [ Sun, Mon, Tue, Wed, Thu, Fri, Sat ]
+
+        Mon ->
+            [ Mon, Tue, Wed, Thu, Fri, Sat, Sun ]
+
+        Tue ->
+            [ Tue, Wed, Thu, Fri, Sat, Sun, Mon ]
+
+        Wed ->
+            [ Wed, Thu, Fri, Sat, Sun, Mon, Tue ]
+
+        Thu ->
+            [ Thu, Fri, Sat, Sun, Mon, Tue, Wed ]
+
+        Fri ->
+            [ Fri, Sat, Sun, Mon, Tue, Wed, Thu ]
+
+        Sat ->
+            [ Sat, Sun, Mon, Tue, Wed, Thu, Fri ]
+
+
+weekdaysHtml : Weekday -> I18n -> Html msg
+weekdaysHtml weekday i18n =
+    div [ class "weekdays" ] <|
+        List.map
+            (\w -> span [] [ text (i18n.weekdayToString Condensed w) ])
+            (getSortedWeekdays weekday)
 
 
 emptyDateHtml : Html msg

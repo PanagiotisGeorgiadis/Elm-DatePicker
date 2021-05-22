@@ -8,6 +8,7 @@ module DatePicker.Internal.Update exposing
 import DatePicker.I18n exposing (I18n)
 import DatePicker.Types exposing (DateLimit, ViewType)
 import DateTime exposing (DateTime)
+import Time exposing (Weekday)
 import TimePicker.Update as TimePicker
 
 
@@ -17,6 +18,7 @@ type Model
     = Model
         { today : DateTime
         , viewType : ViewType
+        , startingWeekday : Weekday
         , primaryDate : DateTime
         , dateLimit : DateLimit
         , selectedDate : Maybe DateTime

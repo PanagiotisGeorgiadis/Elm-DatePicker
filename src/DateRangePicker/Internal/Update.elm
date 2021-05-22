@@ -15,6 +15,7 @@ import Clock
 import DatePicker.I18n exposing (I18n)
 import DateRangePicker.Types exposing (DateLimit(..))
 import DateTime exposing (DateTime)
+import Time exposing (Weekday)
 import TimePicker.Update as TimePicker
 import Utils.Actions exposing (fireAction)
 import Utils.DateTime as DateTime
@@ -120,6 +121,7 @@ type Model
 type alias InternalModel =
     { viewType : ViewType
     , today : DateTime
+    , startingWeekday : Weekday
     , primaryDate : DateTime
     , range : DateRange
     , dateLimit : DateLimit
