@@ -182,7 +182,7 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
 
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Maybe I18n -> Model
-initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) timePickerConfig i18n =
+initialise viewType ({ today, dateLimit, dateRangeOffset, startingWeekday } as calendarConfig) timePickerConfig i18n =
     let
         viewType_ =
             case viewType of
@@ -228,6 +228,7 @@ initialise viewType ({ today, dateLimit, dateRangeOffset } as calendarConfig) ti
     Model
         { viewType = viewType_
         , today = today
+        , startingWeekday = startingWeekday
         , primaryDate = primaryDate_
         , range = NoneSelected
         , dateLimit = dateLimit

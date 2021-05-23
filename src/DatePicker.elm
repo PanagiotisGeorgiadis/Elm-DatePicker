@@ -164,7 +164,7 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
 
 -}
 initialise : ViewType -> CalendarConfig -> Maybe TimePickerConfig -> Maybe I18n -> Model
-initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig i18n =
+initialise viewType ({ today, dateLimit, startingWeekday } as calendarConfig) timePickerConfig i18n =
     let
         ( primaryDate_, timePicker_ ) =
             let
@@ -188,6 +188,7 @@ initialise viewType ({ today, dateLimit } as calendarConfig) timePickerConfig i1
     Model
         { today = today
         , viewType = viewType
+        , startingWeekday = startingWeekday
         , primaryDate = primaryDate_
         , selectedDate = Nothing
         , dateLimit = dateLimit
