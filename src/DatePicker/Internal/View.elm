@@ -60,6 +60,12 @@ singleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
+                Custom isDisabledDate ->
+                    ( True
+                    , True
+                    , not <| isDisabledDate today today
+                    )
+
                 NoLimit ->
                     ( True
                     , True
@@ -99,6 +105,12 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
                     , compareYearMonth maxDate nextDate == GT
                       -- If today is not in the DateRange we shouldn't render the Today button.
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
+                    )
+
+                Custom isDisabledDate ->
+                    ( True
+                    , True
+                    , not <| isDisabledDate today today
                     )
 
                 NoLimit ->
@@ -259,10 +271,13 @@ dateHtml ((Model { today, selectedDate, i18n }) as model) date =
 
 -}
 checkIfDisabled : Model -> DateTime -> Bool
-checkIfDisabled (Model { dateLimit }) date =
+checkIfDisabled (Model { dateLimit, today }) date =
     case dateLimit of
         NoLimit ->
             False
+
+        Custom isDisabledDate ->
+            isDisabledDate date today
 
         DateLimit { minDate, maxDate } ->
             let
