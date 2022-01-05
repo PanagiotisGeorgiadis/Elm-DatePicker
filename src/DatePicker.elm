@@ -121,7 +121,7 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
             else
                 minDate
 
-        Custom isValid ->
+        CustomLimit isValid ->
             if isValid date today then
                 date
 

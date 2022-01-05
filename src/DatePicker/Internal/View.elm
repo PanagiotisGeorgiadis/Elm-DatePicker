@@ -60,7 +60,7 @@ singleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                Custom isDisabledDate ->
+                CustomLimit isDisabledDate ->
                     ( True
                     , True
                     , not <| isDisabledDate today today
@@ -107,7 +107,7 @@ doubleCalendarView ((Model { today, primaryDate, dateLimit, i18n }) as model) =
                     , compareYearMonth minDate today == LT && compareYearMonth maxDate today == GT
                     )
 
-                Custom isDisabledDate ->
+                CustomLimit isDisabledDate ->
                     ( True
                     , True
                     , not <| isDisabledDate today today
@@ -276,7 +276,7 @@ checkIfDisabled (Model { dateLimit, today }) date =
         NoLimit ->
             False
 
-        Custom isDisabledDate ->
+        CustomLimit isDisabledDate ->
             isDisabledDate date today
 
         DateLimit { minDate, maxDate } ->
