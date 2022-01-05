@@ -133,6 +133,13 @@ validatePrimaryDate { today, primaryDate, dateLimit } =
             else
                 minDate
 
+        CustomLimit isValid ->
+            if isValid date today then
+                date
+
+            else
+                today
+
         NoLimit ->
             date
 
@@ -618,6 +625,9 @@ setDateRange { startDate, endDate } (Model model) =
             case model.dateLimit of
                 DateLimit { minDate, maxDate } ->
                     DateTime.compareDates date minDate == LT || DateTime.compareDates date maxDate == GT
+
+                CustomLimit isValid ->
+                    not (isValid startDate model.today) || not (isValid endDate model.today)
 
                 NoLimit ->
                     False
