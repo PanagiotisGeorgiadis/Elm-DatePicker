@@ -80,6 +80,7 @@ on the repository of this package.
 -}
 type DateLimit
     = DateLimit { minDate : DateTime, maxDate : DateTime }
+    | CustomLimit (DateTime -> DateTime -> Bool)
     | NoLimit
 
 
